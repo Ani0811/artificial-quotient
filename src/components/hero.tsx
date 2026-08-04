@@ -42,12 +42,17 @@ export default function Hero() {
                 </div>
                 <div>
                   <h3 className="font-heading font-bold text-xl">Artificial Quotient</h3>
-                  <p className="text-gray-400 text-sm">@ArtificialQuotient</p>
+                  <p className="text-gray-400 text-sm">{"@" + "ArtificialQuotient"}</p>
                 </div>
               </div>
-              <div className="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
+              <a
+                href={"https://www.youtube.com/" + "@" + "ArtificialQuotient01"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3.5 py-1.5 rounded-full uppercase tracking-wide transition-all hover:scale-105 active:scale-95 inline-block cursor-pointer shadow-sm hover:shadow-red-600/30"
+              >
                 Subscribe
-              </div>
+              </a>
             </div>
 
             <div className="grid grid-cols-2 gap-6 mb-6">

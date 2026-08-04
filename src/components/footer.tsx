@@ -28,7 +28,7 @@ export default function Footer() {
 
             <div className="flex items-center gap-3 pt-2">
               <a
-                href="https://youtube.com"
+                href={"https://www.youtube.com/" + "@" + "ArtificialQuotient01"}
                 target="_blank"
                 rel="noreferrer"
                 className="w-10 h-10 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 flex items-center justify-center transition-all hover:scale-105 border border-red-500/20"
@@ -118,15 +118,6 @@ export default function Footer() {
               >
                 sponsor@artificialquotient.com
               </a>
-              <div className="pt-2">
-                <Link
-                  href="/admin/login"
-                  className="inline-flex items-center gap-1.5 text-xs text-brand-muted dark:text-zinc-500 hover:text-brand-text dark:hover:text-zinc-300 transition-colors"
-                >
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>Admin Portal</span>
-                </Link>
-              </div>
             </div>
           </div>
 
@@ -134,7 +125,9 @@ export default function Footer() {
 
         {/* Bottom copyright bar */}
         <div className="pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-brand-muted dark:text-zinc-500">
-          <p>&copy; {new Date().getFullYear()} Artificial Quotient. All rights reserved.</p>
+          <p>
+            &copy; <span suppressHydrationWarning>{new Date().getFullYear()}</span> Artificial Quotient. All rights reserved.
+          </p>
           
           <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-brand-green/10 text-brand-green font-medium">
             <span className="w-2 h-2 rounded-full bg-brand-green animate-pulse"></span>

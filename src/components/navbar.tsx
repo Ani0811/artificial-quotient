@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Sparkles, Lock } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
 
@@ -9,6 +10,9 @@ interface NavbarProps {
 }
 
 export default function Navbar({ isAdmin = false }: NavbarProps) {
+  const pathname = usePathname();
+  const isLoginPage = pathname === "/admin/login";
+
   return (
     <nav className="w-full border-b border-brand-border dark:border-zinc-800 bg-brand-bg/80 dark:bg-zinc-950/80 backdrop-blur-md sticky top-0 z-50 transition-colors">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
@@ -42,14 +46,24 @@ export default function Navbar({ isAdmin = false }: NavbarProps) {
         <div className="flex items-center gap-3">
           <ThemeToggle />
 
-          {isAdmin && (
+          {isAdmin ? (
             <Link
               href="/admin"
-              className="text-brand-muted hover:text-brand-text dark:text-zinc-400 dark:hover:text-white px-2 py-2 rounded-lg font-medium text-sm flex items-center gap-1.5 transition-colors"
+              className="text-brand-text dark:text-white hover:text-brand-blue dark:hover:text-brand-blue px-3 py-2 rounded-lg font-medium text-sm flex items-center gap-1.5 transition-colors border border-brand-border dark:border-zinc-800 bg-brand-card dark:bg-zinc-900 shadow-sm"
             >
-              <Lock className="w-4 h-4" />
-              Admin
+              <Lock className="w-4 h-4 text-brand-blue" />
+              Admin Portal
             </Link>
+          ) : (
+            !isLoginPage && (
+              <Link
+                href="/admin/login"
+                className="text-brand-muted hover:text-brand-text dark:text-zinc-400 dark:hover:text-white p-2 rounded-lg transition-colors"
+                title="Admin Login"
+              >
+                <Lock className="w-4 h-4 opacity-70 hover:opacity-100 transition-opacity" />
+              </Link>
+            )
           )}
 
           <Link

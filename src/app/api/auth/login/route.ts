@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { getAdminPassword } from "@/lib/auth-store";
 
 export const dynamic = "force-dynamic";
 
@@ -7,8 +8,7 @@ export async function POST(request: Request) {
   try {
     const { password } = await request.json();
 
-    // Use a simple hardcoded password for now.
-    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
+    const ADMIN_PASSWORD = getAdminPassword();
 
     if (password === ADMIN_PASSWORD) {
       // Set cookie
