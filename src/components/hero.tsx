@@ -23,10 +23,15 @@ export default function Hero() {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
-            <Link href="/sponsor" className="bg-brand-blue hover:bg-brand-blue-hover text-white px-8 py-4 rounded-lg font-bold text-lg text-center transition-all shadow-sm">
+            <a 
+              href="https://forms.gle/4uTUZkEi5o3iqYrs5" 
+              target="_blank" 
+              rel="noreferrer" 
+              className="bg-brand-blue hover:bg-brand-blue-hover text-white px-8 py-4 rounded-lg font-bold text-lg text-center transition-all shadow-sm"
+            >
               Sponsor the Channel
-            </Link>
-            <Link href="/case-studies" className="bg-brand-card dark:bg-zinc-900 hover:bg-gray-50 dark:hover:bg-zinc-800 text-brand-text dark:text-white border border-brand-border dark:border-zinc-800 px-8 py-4 rounded-lg font-bold text-lg text-center transition-all shadow-sm">
+            </a>
+            <Link href="/#case-studies" className="bg-brand-card dark:bg-zinc-900 hover:bg-gray-50 dark:hover:bg-zinc-800 text-brand-text dark:text-white border border-brand-border dark:border-zinc-800 px-8 py-4 rounded-lg font-bold text-lg text-center transition-all shadow-sm">
               View Case Studies
             </Link>
           </div>

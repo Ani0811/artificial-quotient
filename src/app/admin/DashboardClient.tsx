@@ -1,21 +1,202 @@
 "use client";
 
-import { Save, BarChart, Database, FileText, LogOut, Check, Lock, ExternalLink, UploadCloud, Image as ImageIcon, Trash2, X } from "lucide-react";
-import { useState } from "react";
+import { 
+  Save, BarChart, Database, FileText, LogOut, Check, ExternalLink, 
+  UploadCloud, Eye, Edit3, Sparkles, Award, Plus, Trash2, ShieldCheck
+} from "lucide-react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
-export default function DashboardClient() {
-  const [activeTab, setActiveTab] = useState<"stats" | "tools" | "blog">("stats");
-  const [savedSuccess, setSavedSuccess] = useState(false);
+interface ToolItem {
+  id: string;
+  name: string;
+  category: string;
+  discount: string;
+  desc: string;
+  tryUrl: string;
+  tutorialUrl: string;
+  logo: string;
+}
 
-  // Form states with uploaded media URLs
-  const [toolLogo, setToolLogo] = useState<string>("");
-  const [blogCover, setBlogCover] = useState<string>("");
-  const [channelBanner, setChannelBanner] = useState<string>("");
-  
+interface BlogItem {
+  id: string;
+  title: string;
+  category: string;
+  excerpt: string;
+  ytUrl: string;
+  author: string;
+  cover: string;
+}
+
+interface PerformItem {
+  id: string;
+  title: string;
+  views: string;
+  clicks: string;
+  type: string;
+  thumb: string;
+  highlight: string;
+  ytUrl?: string;
+  thumbnail?: string;
+}
+
+function getYoutubeId(url?: string) {
+  if (!url) return null;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : null;
+}
+
+export default function DashboardClient() {
+  const [activeTab, setActiveTab] = useState<"stats" | "case-studies" | "what-performs" | "tools" | "blog" | "backup">("stats");
+  const [savedSuccess, setSavedSuccess] = useState(false);
+  const [layoutMode, setLayoutMode] = useState<"split" | "edit" | "preview">("split");
+  const [loading, setLoading] = useState(true);
+
+  // Form states initialized with defaults
+  const [statsForm, setStatsForm] = useState({
+    subscribers: "10,100+",
+    subscribersSub: "+12.4% this month",
+    monthlyViews: "850,000+",
+    monthlyViewsSub: "~120K monthly views",
+    newSubs: "+1,200",
+    newSubsSub: "High velocity growth",
+    videosCount: "222",
+    videosCountSub: "Active weekly cadence",
+    retention: "27",
+    channelBanner: "",
+  });
+
+  const [ratesForm, setRatesForm] = useState({
+    dedicatedRate: "$500",
+    integrationRate: "$300",
+  });
+
+  const [demoForm, setDemoForm] = useState({
+    age25_34: "39.9%",
+    age18_24: "28.5%",
+    malePercent: "84.7%",
+    femalePercent: "15.3%",
+  });
+
+  const [geoForm, setGeoForm] = useState({
+    usa: "24.1%",
+    india: "21.6%",
+    uk: "4.6%",
+    germany: "3.9%",
+  });
+
+  const [whatPerforms, setWhatPerforms] = useState<PerformItem[]>([
+    {
+      id: "1",
+      title: "Revid.AI",
+      views: "18.2k",
+      clicks: "1.4k+",
+      type: "Dedicated Video",
+      thumb: "🎬",
+      highlight: "High Conversion",
+      ytUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      thumbnail: "",
+    },
+    {
+      id: "2",
+      title: "Flashloop AI",
+      views: "12.5k",
+      clicks: "950+",
+      type: "Integration",
+      thumb: "⚡",
+      highlight: "Solid ROI",
+      ytUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      thumbnail: "",
+    },
+    {
+      id: "3",
+      title: "Marky Agent",
+      views: "21.1k",
+      clicks: "2.1k+",
+      type: "Dedicated Video",
+      thumb: "🤖",
+      highlight: "Viral Reach",
+      ytUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      thumbnail: "",
+    },
+  ]);
+
+  const [sponsorResults, setSponsorResults] = useState([
+    {
+      id: "1",
+      partnerName: "Revid.AI",
+      campaignType: "Dedicated Video",
+      quote: "The highest converting sponsorship we've ran this quarter. Incredible audience fit.",
+      stat1Label: "Signups Generated",
+      stat1Value: "450+",
+      stat2Label: "Est. ROI Multiplier",
+      stat2Value: "3.2x",
+    },
+    {
+      id: "2",
+      partnerName: "Flashloop",
+      campaignType: "Integration",
+      quote: "We saw an immediate spike in traffic during the first 48 hours of upload.",
+      stat1Label: "Link Clicks",
+      stat1Value: "1,200+",
+      stat2Label: "Cost Per Click",
+      stat2Value: "$0.25",
+    },
+  ]);
+
+  const [toolsList, setToolsList] = useState<ToolItem[]>([
+    {
+      id: "1",
+      name: "Make.com",
+      category: "Automation",
+      discount: "20% OFF 1st Year",
+      desc: "The ultimate visual automation platform for building advanced workflows without code.",
+      tryUrl: "https://make.com",
+      tutorialUrl: "https://youtube.com",
+      logo: "",
+    }
+  ]);
+
+  const [blogList, setBlogList] = useState<BlogItem[]>([
+    {
+      id: "1",
+      title: "How to Automate Short Form Videos with Make.com & AI",
+      category: "Tutorials & Workflows",
+      excerpt: "Learn step-by-step how to build fully automated video generation workflows using Make.com and AI tools.",
+      ytUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      author: "Artificial Quotient",
+      cover: "",
+    }
+  ]);
+
   const [uploadingField, setUploadingField] = useState<string | null>(null);
 
-  // Generic handler to upload media for any specific form field
+  // Fetch initial site data from API on mount
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const res = await fetch("/api/admin/data");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.stats) setStatsForm(data.stats);
+          if (data.rates) setRatesForm(data.rates);
+          if (data.demographics) setDemoForm(data.demographics);
+          if (data.geographies) setGeoForm(data.geographies);
+          if (data.whatPerforms) setWhatPerforms(data.whatPerforms);
+          if (data.sponsorResults) setSponsorResults(data.sponsorResults);
+          if (data.tools && data.tools.length > 0) setToolsList(data.tools);
+          if (data.blog && data.blog.length > 0) setBlogList(data.blog);
+        }
+      } catch {
+        // Fall back to initial defaults
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
+
   const handleInlineMediaUpload = async (files: FileList | null, setFieldUrl: (url: string) => void, fieldId: string) => {
     if (!files || files.length === 0) return;
     setUploadingField(fieldId);
@@ -42,9 +223,93 @@ export default function DashboardClient() {
     }
   };
 
-  const handleSave = () => {
-    setSavedSuccess(true);
-    setTimeout(() => setSavedSuccess(false), 3000);
+  const handleSaveAll = async () => {
+    const payload = {
+      stats: statsForm,
+      rates: ratesForm,
+      demographics: demoForm,
+      geographies: geoForm,
+      whatPerforms,
+      sponsorResults,
+      tools: toolsList,
+      blog: blogList,
+    };
+
+    try {
+      const res = await fetch("/api/admin/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        setSavedSuccess(true);
+        setTimeout(() => setSavedSuccess(false), 3000);
+      }
+    } catch {
+      // Ignore error
+    }
+  };
+
+  const handleDownloadBackup = async () => {
+    const payload = {
+      stats: statsForm,
+      rates: ratesForm,
+      demographics: demoForm,
+      geographies: geoForm,
+      whatPerforms,
+      sponsorResults,
+      tools: toolsList,
+      blog: blogList,
+    };
+
+    const jsonStr = JSON.stringify(payload, null, 2);
+    const blob = new Blob([jsonStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const dateStr = new Date().toISOString().split("T")[0];
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `artificial-quotient-backup-${dateStr}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleRestoreBackup = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+
+      if (data.stats) setStatsForm(data.stats);
+      if (data.rates) setRatesForm(data.rates);
+      if (data.demographics) setDemoForm(data.demographics);
+      if (data.geographies) setGeoForm(data.geographies);
+      if (data.whatPerforms) setWhatPerforms(data.whatPerforms);
+      if (data.sponsorResults) setSponsorResults(data.sponsorResults);
+      if (data.tools) setToolsList(data.tools);
+      if (data.blog) setBlogList(data.blog);
+
+      // Persist restored backup
+      const res = await fetch("/api/admin/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: text,
+      });
+
+      if (res.ok) {
+        setSavedSuccess(true);
+        setTimeout(() => setSavedSuccess(false), 3000);
+      }
+    } catch {
+      alert("Failed to restore backup file. Ensure it is a valid JSON backup file.");
+    } finally {
+      e.target.value = "";
+    }
   };
 
   const handleLogout = async () => {
@@ -52,402 +317,1096 @@ export default function DashboardClient() {
     window.location.href = "/";
   };
 
-  return (
-    <div className="w-full py-12 px-4 bg-brand-bg dark:bg-zinc-950 text-brand-text dark:text-zinc-100 min-h-[calc(100vh-4rem)] transition-colors duration-200 relative overflow-hidden">
-      {/* Decorative ambient glows */}
-      <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-brand-blue/10 dark:bg-brand-blue/15 blur-[120px] rounded-full pointer-events-none"></div>
+  if (loading) {
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center bg-brand-bg dark:bg-[#061612] text-emerald-50 font-bold text-lg">
+        Loading Admin Dashboard...
+      </div>
+    );
+  }
 
-      <div className="max-w-5xl mx-auto relative z-10">
+  return (
+    <div className="w-full py-10 px-6 sm:px-8 bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-emerald-50 min-h-[calc(100vh-4rem)] transition-colors duration-200 relative overflow-hidden">
+      {/* Ambient background glow */}
+      <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-emerald-500/10 dark:bg-emerald-500/15 blur-[120px] rounded-full pointer-events-none"></div>
+
+      <div className="max-w-[1700px] mx-auto relative z-10 space-y-8">
         
-        {/* Dedicated Admin Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 bg-white/80 dark:bg-zinc-900/80 border border-brand-border/60 dark:border-zinc-800/80 backdrop-blur-xl rounded-2xl p-6 shadow-md transition-colors duration-200">
+        {/* Redesigned Clean Admin Header */}
+        <div className="bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] backdrop-blur-xl rounded-2xl p-6 shadow-md flex flex-wrap items-center justify-between gap-5">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-brand-blue/10 dark:bg-brand-blue/20 rounded-xl flex items-center justify-center text-brand-blue shrink-0 shadow-inner">
-              <Lock className="w-6 h-6" />
+            <div className="w-12 h-12 bg-emerald-500/10 dark:bg-emerald-500/20 rounded-xl overflow-hidden shrink-0 border border-emerald-500/30 flex items-center justify-center shadow-sm">
+              <img src="/logo/logo.jpeg" alt="Artificial Quotient Logo" className="w-full h-full object-cover" />
             </div>
             <div>
-              <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-2.5">
                 <h1 className="font-heading text-2xl font-bold text-brand-text dark:text-white tracking-tight">
                   Admin Management Portal
                 </h1>
-                <span className="text-xs bg-brand-blue/15 dark:bg-brand-blue/25 text-brand-blue dark:text-blue-400 border border-brand-blue/30 dark:border-blue-500/30 px-2.5 py-0.5 rounded-full font-bold">
-                  Authenticated
+                <span className="text-xs bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-bold">
+                  Auth Active
                 </span>
               </div>
-              <p className="text-xs text-brand-muted dark:text-zinc-400 mt-0.5">
+              <p className="text-sm text-brand-muted dark:text-emerald-200/70 font-medium mt-0.5">
                 System Control &bull; Artificial Quotient Platform
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
+            {/* View Mode Toggle Pill */}
+            <div className="inline-flex p-1.5 rounded-xl bg-brand-bg dark:bg-[#102922] border border-brand-border dark:border-[#16382e]">
+              <button
+                type="button"
+                onClick={() => setLayoutMode("split")}
+                className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 ${
+                  layoutMode === "split"
+                    ? "bg-emerald-600 text-white shadow-sm"
+                    : "text-brand-muted dark:text-emerald-200/70 hover:text-white"
+                }`}
+              >
+                <Sparkles className="w-4 h-4" /> Split View
+              </button>
+              <button
+                type="button"
+                onClick={() => setLayoutMode("edit")}
+                className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 ${
+                  layoutMode === "edit"
+                    ? "bg-emerald-600 text-white shadow-sm"
+                    : "text-brand-muted dark:text-emerald-200/70 hover:text-white"
+                }`}
+              >
+                <Edit3 className="w-4 h-4" /> Form Only
+              </button>
+              <button
+                type="button"
+                onClick={() => setLayoutMode("preview")}
+                className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 ${
+                  layoutMode === "preview"
+                    ? "bg-emerald-600 text-white shadow-sm"
+                    : "text-brand-muted dark:text-emerald-200/70 hover:text-white"
+                }`}
+              >
+                <Eye className="w-4 h-4" /> Preview Only
+              </button>
+            </div>
+
             <Link 
               href="/" 
-              className="px-4 py-2 rounded-xl border border-brand-border/80 dark:border-zinc-700/80 bg-white/60 dark:bg-zinc-800/60 text-xs font-bold text-brand-text dark:text-zinc-200 hover:bg-white dark:hover:bg-zinc-800 transition-all flex items-center gap-1.5 shadow-sm"
+              className="px-4 py-2.5 rounded-xl border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#102922] text-xs sm:text-sm font-bold text-brand-text dark:text-emerald-100 hover:bg-emerald-500/10 transition-all flex items-center gap-1.5 shadow-sm"
             >
-              <span>View Live Site</span>
-              <ExternalLink className="w-3.5 h-3.5 text-brand-muted dark:text-zinc-400" />
+              <span>Live Site</span>
+              <ExternalLink className="w-4 h-4 text-emerald-400" />
             </Link>
+
             <button
               onClick={handleLogout}
-              className="px-4 py-2 rounded-xl bg-red-500/10 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200/50 dark:border-red-900/40 hover:bg-red-500/20 dark:hover:bg-red-900/40 text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm"
+              className="px-4 py-2.5 rounded-xl bg-red-500/10 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/40 hover:bg-red-500/20 text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 shadow-sm"
             >
-              <LogOut className="w-3.5 h-3.5" /> Sign Out
+              <LogOut className="w-4 h-4" /> Sign Out
             </button>
           </div>
         </div>
 
-        {/* Dashboard Grid */}
-        <div className="grid md:grid-cols-4 gap-8">
+        {/* Main Dashboard Grid */}
+        <div className="grid md:grid-cols-12 gap-8">
           
-          {/* Sidebar Tabs */}
-          <div className="flex flex-col gap-2.5">
+          {/* Sidebar Navigation */}
+          <div className="md:col-span-3 lg:col-span-3 flex flex-col gap-2.5">
             <button
               onClick={() => setActiveTab("stats")}
-              className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-left font-bold text-sm transition-all shadow-sm ${
+              className={`flex items-center gap-3.5 px-5 py-3.5 rounded-xl text-left font-bold text-sm transition-all shadow-sm ${
                 activeTab === "stats"
-                  ? "bg-brand-blue text-white shadow-brand-blue/20"
-                  : "bg-white/70 dark:bg-zinc-900/70 border border-brand-border/60 dark:border-zinc-800/80 text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white hover:bg-white dark:hover:bg-zinc-800/60"
+                  ? "bg-emerald-600 text-white shadow-emerald-600/20"
+                  : "bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] text-brand-muted dark:text-emerald-200/70 hover:text-white hover:bg-emerald-50 dark:hover:bg-[#102922]"
               }`}
             >
-              <BarChart className="w-4.5 h-4.5" /> Channel Stats &amp; Rates
+              <BarChart className="w-4 h-4" /> Channel Stats &amp; Rates
             </button>
+
+            <button
+              onClick={() => setActiveTab("case-studies")}
+              className={`flex items-center gap-3.5 px-5 py-3.5 rounded-xl text-left font-bold text-sm transition-all shadow-sm ${
+                activeTab === "case-studies"
+                  ? "bg-emerald-600 text-white shadow-emerald-600/20"
+                  : "bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] text-brand-muted dark:text-emerald-200/70 hover:text-white hover:bg-emerald-50 dark:hover:bg-[#102922]"
+              }`}
+            >
+              <Award className="w-4 h-4" /> Sponsor Case Studies
+            </button>
+
+            <button
+              onClick={() => setActiveTab("what-performs")}
+              className={`flex items-center gap-3.5 px-5 py-3.5 rounded-xl text-left font-bold text-sm transition-all shadow-sm ${
+                activeTab === "what-performs"
+                  ? "bg-emerald-600 text-white shadow-emerald-600/20"
+                  : "bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] text-brand-muted dark:text-emerald-200/70 hover:text-white hover:bg-emerald-50 dark:hover:bg-[#102922]"
+              }`}
+            >
+              <Sparkles className="w-4 h-4" /> What Performs
+            </button>
+
             <button
               onClick={() => setActiveTab("tools")}
-              className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-left font-bold text-sm transition-all shadow-sm ${
+              className={`flex items-center gap-3.5 px-5 py-3.5 rounded-xl text-left font-bold text-sm transition-all shadow-sm ${
                 activeTab === "tools"
-                  ? "bg-brand-blue text-white shadow-brand-blue/20"
-                  : "bg-white/70 dark:bg-zinc-900/70 border border-brand-border/60 dark:border-zinc-800/80 text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white hover:bg-white dark:hover:bg-zinc-800/60"
+                  ? "bg-emerald-600 text-white shadow-emerald-600/20"
+                  : "bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] text-brand-muted dark:text-emerald-200/70 hover:text-white hover:bg-emerald-50 dark:hover:bg-[#102922]"
               }`}
             >
-              <Database className="w-4.5 h-4.5" /> AI Tool Vault
+              <Database className="w-4 h-4" /> AI Tool Vault
             </button>
+
             <button
               onClick={() => setActiveTab("blog")}
-              className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-left font-bold text-sm transition-all shadow-sm ${
+              className={`flex items-center gap-3.5 px-5 py-3.5 rounded-xl text-left font-bold text-sm transition-all shadow-sm ${
                 activeTab === "blog"
-                  ? "bg-brand-blue text-white shadow-brand-blue/20"
-                  : "bg-white/70 dark:bg-zinc-900/70 border border-brand-border/60 dark:border-zinc-800/80 text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white hover:bg-white dark:hover:bg-zinc-800/60"
+                  ? "bg-emerald-600 text-white shadow-emerald-600/20"
+                  : "bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] text-brand-muted dark:text-emerald-200/70 hover:text-white hover:bg-emerald-50 dark:hover:bg-[#102922]"
               }`}
             >
-              <FileText className="w-4.5 h-4.5" /> Script-to-Blog Hub
+              <FileText className="w-4 h-4" /> Script-to-Blog Hub
+            </button>
+
+            <button
+              onClick={() => setActiveTab("backup")}
+              className={`flex items-center gap-3.5 px-5 py-3.5 rounded-xl text-left font-bold text-sm transition-all shadow-sm ${
+                activeTab === "backup"
+                  ? "bg-emerald-600 text-white shadow-emerald-600/20"
+                  : "bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] text-brand-muted dark:text-emerald-200/70 hover:text-white hover:bg-emerald-50 dark:hover:bg-[#102922]"
+              }`}
+            >
+              <ShieldCheck className="w-4 h-4" /> Backup &amp; System
             </button>
           </div>
 
-          {/* Main Content Area */}
-          <div className="md:col-span-3 bg-white/80 dark:bg-zinc-900/80 border border-brand-border/60 dark:border-zinc-800/80 backdrop-blur-xl rounded-2xl p-8 shadow-md transition-colors duration-200">
+          {/* Main Workspace */}
+          <div className="md:col-span-9 lg:col-span-9 flex flex-col gap-6">
             
             {savedSuccess && (
-              <div className="mb-6 bg-green-50/80 dark:bg-green-950/30 border border-green-200 dark:border-green-900/50 text-green-700 dark:text-green-400 px-4 py-3 rounded-xl text-sm font-bold flex items-center gap-2 animate-fade-in shadow-sm">
-                <Check className="w-4 h-4 text-green-500" /> Changes saved successfully!
+              <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 px-5 py-3.5 rounded-xl text-sm font-bold flex items-center gap-2.5 animate-fade-in shadow-sm">
+                <Check className="w-5 h-5 text-emerald-500" /> Changes saved &amp; published live on site!
               </div>
             )}
 
-            {/* TAB 1: Channel Stats */}
-            {activeTab === "stats" && (
-              <div>
-                <h2 className="font-heading text-xl font-bold mb-6 text-brand-text dark:text-white tracking-tight">
-                  Channel Snapshot &amp; Rates
-                </h2>
-                
-                <form className="space-y-6">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-xs font-bold text-brand-text dark:text-zinc-300 mb-2 uppercase tracking-wider">
-                        Subscribers
-                      </label>
-                      <input 
-                        type="text" 
-                        defaultValue="10.1k" 
-                        className="w-full border border-brand-border/80 dark:border-zinc-700/80 bg-white/50 dark:bg-zinc-950/60 text-brand-text dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue transition-all" 
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-brand-text dark:text-zinc-300 mb-2 uppercase tracking-wider">
-                        Monthly Views
-                      </label>
-                      <input 
-                        type="text" 
-                        defaultValue="69.5k" 
-                        className="w-full border border-brand-border/80 dark:border-zinc-700/80 bg-white/50 dark:bg-zinc-950/60 text-brand-text dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue transition-all" 
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-brand-text dark:text-zinc-300 mb-2 uppercase tracking-wider">
-                        Avg. Retention (%)
-                      </label>
-                      <input 
-                        type="text" 
-                        defaultValue="27" 
-                        className="w-full border border-brand-border/80 dark:border-zinc-700/80 bg-white/50 dark:bg-zinc-950/60 text-brand-text dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue transition-all" 
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-brand-text dark:text-zinc-300 mb-2 uppercase tracking-wider">
-                        Tutorials Uploaded
-                      </label>
-                      <input 
-                        type="text" 
-                        defaultValue="224" 
-                        className="w-full border border-brand-border/80 dark:border-zinc-700/80 bg-white/50 dark:bg-zinc-950/60 text-brand-text dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue transition-all" 
-                      />
-                    </div>
+            <div className={`grid gap-8 ${layoutMode === "split" ? "lg:grid-cols-12" : "grid-cols-1"}`}>
+              
+              {/* EDIT FORM CONTAINER */}
+              {(layoutMode === "split" || layoutMode === "edit") && (
+                <div className={`${layoutMode === "split" ? "lg:col-span-7" : "w-full"} bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] backdrop-blur-xl rounded-2xl p-7 shadow-md transition-colors duration-200`}>
+                  <div className="flex items-center justify-between pb-5 mb-6 border-b border-brand-border dark:border-[#16382e]">
+                    <h2 className="font-heading text-lg font-bold text-brand-text dark:text-white flex items-center gap-2.5">
+                      <Edit3 className="w-5 h-5 text-emerald-500" />
+                      {activeTab === "stats" && "Edit Channel Stats & Pricing"}
+                      {activeTab === "case-studies" && "Manage Sponsor Case Studies"}
+                      {activeTab === "what-performs" && "Manage What Performs Cards"}
+                      {activeTab === "tools" && "Manage AI Tool Vault"}
+                      {activeTab === "blog" && "Manage Script-to-Blog Hub"}
+                      {activeTab === "backup" && "System Backup & Data Operations"}
+                    </h2>
                   </div>
 
-                  {/* Channel Banner Upload Inline */}
-                  <div className="space-y-2 pt-2">
-                    <label className="block text-xs font-bold text-brand-text dark:text-zinc-300 uppercase tracking-wider">
-                      Channel Banner / Brand Header Image
-                    </label>
-                    <div className="flex items-center gap-3">
-                      <input 
-                        type="text" 
-                        value={channelBanner}
-                        onChange={(e) => setChannelBanner(e.target.value)}
-                        placeholder="Upload or paste image URL..." 
-                        className="flex-1 border border-brand-border/80 dark:border-zinc-700/80 bg-white/50 dark:bg-zinc-950/60 text-brand-text dark:text-white placeholder:text-brand-muted dark:placeholder:text-zinc-500 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue transition-all" 
-                      />
-                      <label className="bg-brand-blue/10 dark:bg-brand-blue/20 hover:bg-brand-blue/20 dark:hover:bg-brand-blue/30 text-brand-blue font-bold px-4 py-2.5 rounded-xl cursor-pointer text-xs flex items-center gap-2 border border-brand-blue/30 transition-all shrink-0">
-                        <UploadCloud className="w-4 h-4" />
-                        <span>{uploadingField === "banner" ? "Uploading..." : "Upload Media"}</span>
-                        <input 
-                          type="file" 
-                          accept="image/*"
-                          onChange={(e) => handleInlineMediaUpload(e.target.files, setChannelBanner, "banner")}
-                          className="hidden" 
-                        />
-                      </label>
-                    </div>
-                    {channelBanner && (
-                      <div className="relative w-full h-24 rounded-xl border border-brand-border/60 dark:border-zinc-800/80 overflow-hidden bg-zinc-100 dark:bg-zinc-950 mt-2">
-                        <img src={channelBanner} alt="Banner Preview" className="w-full h-full object-cover" />
-                        <button
-                          type="button"
-                          onClick={() => setChannelBanner("")}
-                          className="absolute top-2 right-2 p-1.5 rounded-full bg-black/60 text-white hover:bg-red-600 transition-colors"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="pt-6 border-t border-brand-border/60 dark:border-zinc-800/80">
-                    <h3 className="font-heading font-bold mb-4 text-brand-text dark:text-white">
-                      Sponsorship Rates
-                    </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-xs font-bold text-brand-text dark:text-zinc-300 mb-2 uppercase tracking-wider">
-                          Tier 1 (Dedicated Video)
-                        </label>
-                        <input 
-                          type="text" 
-                          defaultValue="$500" 
-                          className="w-full border border-brand-border/80 dark:border-zinc-700/80 bg-white/50 dark:bg-zinc-950/60 text-brand-text dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue transition-all" 
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold text-brand-text dark:text-zinc-300 mb-2 uppercase tracking-wider">
-                          Tier 2 (Integration)
-                        </label>
-                        <input 
-                          type="text" 
-                          defaultValue="$300" 
-                          className="w-full border border-brand-border/80 dark:border-zinc-700/80 bg-white/50 dark:bg-zinc-950/60 text-brand-text dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue transition-all" 
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-end pt-6 border-t border-brand-border/60 dark:border-zinc-800/80">
-                    <button 
-                      type="button" 
-                      onClick={handleSave} 
-                      className="bg-brand-blue hover:bg-brand-blue-hover text-white font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-md hover:shadow-brand-blue/20 text-sm"
-                    >
-                      <Save className="w-4 h-4" /> Save Stats &amp; Rates
-                    </button>
-                  </div>
-                </form>
-              </div>
-            )}
-
-            {/* TAB 2: Tool Vault Manager */}
-            {activeTab === "tools" && (
-              <div>
-                <h2 className="font-heading text-xl font-bold mb-6 text-brand-text dark:text-white tracking-tight">
-                  Add New AI Tool to Directory
-                </h2>
-                
-                <form className="space-y-6">
-                  <div>
-                    <label className="block text-xs font-bold text-brand-text dark:text-zinc-300 mb-2 uppercase tracking-wider">
-                      Tool Name
-                    </label>
-                    <input 
-                      type="text" 
-                      placeholder="e.g. Make.com" 
-                      className="w-full border border-brand-border/80 dark:border-zinc-700/80 bg-white/50 dark:bg-zinc-950/60 text-brand-text dark:text-white placeholder:text-brand-muted dark:placeholder:text-zinc-500 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue transition-all" 
-                    />
-                  </div>
-
-                  {/* Tool Logo Upload Field */}
-                  <div className="space-y-2">
-                    <label className="block text-xs font-bold text-brand-text dark:text-zinc-300 uppercase tracking-wider">
-                      Tool Logo / Icon Media
-                    </label>
-                    <div className="flex items-center gap-3">
-                      <input 
-                        type="text" 
-                        value={toolLogo}
-                        onChange={(e) => setToolLogo(e.target.value)}
-                        placeholder="Upload logo file or paste image URL..." 
-                        className="flex-1 border border-brand-border/80 dark:border-zinc-700/80 bg-white/50 dark:bg-zinc-950/60 text-brand-text dark:text-white placeholder:text-brand-muted dark:placeholder:text-zinc-500 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue transition-all" 
-                      />
-                      <label className="bg-brand-blue/10 dark:bg-brand-blue/20 hover:bg-brand-blue/20 dark:hover:bg-brand-blue/30 text-brand-blue font-bold px-4 py-2.5 rounded-xl cursor-pointer text-xs flex items-center gap-2 border border-brand-blue/30 transition-all shrink-0">
-                        <UploadCloud className="w-4 h-4" />
-                        <span>{uploadingField === "toolLogo" ? "Uploading..." : "Upload Logo"}</span>
-                        <input 
-                          type="file" 
-                          accept="image/*"
-                          onChange={(e) => handleInlineMediaUpload(e.target.files, setToolLogo, "toolLogo")}
-                          className="hidden" 
-                        />
-                      </label>
-                    </div>
-                    {toolLogo && (
-                      <div className="flex items-center gap-3 pt-2">
-                        <div className="w-12 h-12 rounded-xl border border-brand-border/80 dark:border-zinc-700 bg-white dark:bg-zinc-950 flex items-center justify-center overflow-hidden p-1 relative shadow-sm">
-                          <img src={toolLogo} alt="Tool Logo Preview" className="w-full h-full object-contain" />
+                  {/* TAB 1: STATS & PRICING */}
+                  {activeTab === "stats" && (
+                    <form className="space-y-6">
+                      <div className="space-y-4">
+                        <h3 className="font-heading font-bold text-sm text-brand-text dark:text-emerald-400 uppercase tracking-wider">Channel Performance Metrics</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Subscribers</label>
+                            <input 
+                              type="text" 
+                              value={statsForm.subscribers} 
+                              onChange={(e) => setStatsForm({ ...statsForm, subscribers: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-2" 
+                            />
+                            <label className="block text-[11px] font-bold text-brand-muted dark:text-emerald-200/60 mb-1">Subscribers Subtext</label>
+                            <input 
+                              type="text" 
+                              value={statsForm.subscribersSub} 
+                              onChange={(e) => setStatsForm({ ...statsForm, subscribersSub: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500" 
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Total View Count</label>
+                            <input 
+                              type="text" 
+                              value={statsForm.monthlyViews} 
+                              onChange={(e) => setStatsForm({ ...statsForm, monthlyViews: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-2" 
+                            />
+                            <label className="block text-[11px] font-bold text-brand-muted dark:text-emerald-200/60 mb-1">View Count Subtext</label>
+                            <input 
+                              type="text" 
+                              value={statsForm.monthlyViewsSub} 
+                              onChange={(e) => setStatsForm({ ...statsForm, monthlyViewsSub: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500" 
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">New Subs (30D)</label>
+                            <input 
+                              type="text" 
+                              value={statsForm.newSubs} 
+                              onChange={(e) => setStatsForm({ ...statsForm, newSubs: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-2" 
+                            />
+                            <label className="block text-[11px] font-bold text-brand-muted dark:text-emerald-200/60 mb-1">New Subs Subtext</label>
+                            <input 
+                              type="text" 
+                              value={statsForm.newSubsSub} 
+                              onChange={(e) => setStatsForm({ ...statsForm, newSubsSub: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500" 
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Videos Published</label>
+                            <input 
+                              type="text" 
+                              value={statsForm.videosCount} 
+                              onChange={(e) => setStatsForm({ ...statsForm, videosCount: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-2" 
+                            />
+                            <label className="block text-[11px] font-bold text-brand-muted dark:text-emerald-200/60 mb-1">Videos Subtext</label>
+                            <input 
+                              type="text" 
+                              value={statsForm.videosCountSub} 
+                              onChange={(e) => setStatsForm({ ...statsForm, videosCountSub: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500" 
+                            />
+                          </div>
                         </div>
-                        <span className="text-xs text-green-600 dark:text-green-400 font-medium flex items-center gap-1">
-                          <Check className="w-3.5 h-3.5" /> Media uploaded &amp; attached
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => setToolLogo("")}
-                          className="text-xs text-brand-muted hover:text-red-500 underline ml-auto transition-colors"
+                      </div>
+
+                      <div className="pt-5 border-t border-brand-border dark:border-[#16382e] space-y-4">
+                        <h3 className="font-heading font-bold text-sm text-brand-text dark:text-emerald-400 uppercase tracking-wider">Sponsorship Rates</h3>
+                        <div className="grid grid-cols-2 gap-5">
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Dedicated Video ($)</label>
+                            <input 
+                              type="text" 
+                              value={ratesForm.dedicatedRate} 
+                              onChange={(e) => setRatesForm({ ...ratesForm, dedicatedRate: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" 
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Integration ($)</label>
+                            <input 
+                              type="text" 
+                              value={ratesForm.integrationRate} 
+                              onChange={(e) => setRatesForm({ ...ratesForm, integrationRate: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" 
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex justify-end pt-5 border-t border-brand-border dark:border-[#16382e]">
+                        <button 
+                          type="button" 
+                          onClick={handleSaveAll} 
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-md text-sm"
                         >
-                          Remove
+                          <Save className="w-4 h-4" /> Save &amp; Publish Stats
                         </button>
                       </div>
-                    )}
-                  </div>
+                    </form>
+                  )}
 
-                  <div>
-                    <label className="block text-xs font-bold text-brand-text dark:text-zinc-300 mb-2 uppercase tracking-wider">
-                      Category
-                    </label>
-                    <select className="w-full border border-brand-border/80 dark:border-zinc-700/80 bg-white/50 dark:bg-zinc-950/60 text-brand-text dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue transition-all">
-                      <option className="dark:bg-zinc-900">Automation</option>
-                      <option className="dark:bg-zinc-900">Video</option>
-                      <option className="dark:bg-zinc-900">Coding</option>
-                      <option className="dark:bg-zinc-900">Productivity</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-brand-text dark:text-zinc-300 mb-2 uppercase tracking-wider">
-                      Discount Code / Badge
-                    </label>
-                    <input 
-                      type="text" 
-                      placeholder="e.g. 20% OFF or Code ARTIFICIAL" 
-                      className="w-full border border-brand-border/80 dark:border-zinc-700/80 bg-white/50 dark:bg-zinc-950/60 text-brand-text dark:text-white placeholder:text-brand-muted dark:placeholder:text-zinc-500 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue transition-all" 
-                    />
-                  </div>
-                  <div className="flex justify-end pt-6 border-t border-brand-border/60 dark:border-zinc-800/80">
-                    <button 
-                      type="button" 
-                      onClick={handleSave} 
-                      className="bg-brand-blue hover:bg-brand-blue-hover text-white font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-md hover:shadow-brand-blue/20 text-sm"
-                    >
-                      <Save className="w-4 h-4" /> Add Tool Entry
-                    </button>
-                  </div>
-                </form>
-              </div>
-            )}
+                  {/* TAB 2: SPONSOR CASE STUDIES */}
+                  {activeTab === "case-studies" && (
+                    <div className="space-y-6">
+                      <div className="flex justify-between items-center">
+                        <h3 className="font-heading font-bold text-sm text-brand-text dark:text-emerald-400 uppercase tracking-wider">Partner Case Studies</h3>
+                        <button
+                          type="button"
+                          onClick={() => setSponsorResults([...sponsorResults, {
+                            id: Date.now().toString(),
+                            partnerName: "New Sponsor",
+                            campaignType: "Integration",
+                            quote: "Awesome results!",
+                            stat1Label: "Conversions",
+                            stat1Value: "200+",
+                            stat2Label: "ROI",
+                            stat2Value: "2.5x"
+                          }])}
+                          className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold px-4 py-2 rounded-xl text-xs sm:text-sm flex items-center gap-1.5 border border-emerald-500/30"
+                        >
+                          <Plus className="w-4 h-4" /> Add Case Study
+                        </button>
+                      </div>
 
-            {/* TAB 3: Blog Hub Manager */}
-            {activeTab === "blog" && (
-              <div>
-                <h2 className="font-heading text-xl font-bold mb-6 text-brand-text dark:text-white tracking-tight">
-                  Publish Video Script Article
-                </h2>
-                
-                <form className="space-y-6">
-                  <div>
-                    <label className="block text-xs font-bold text-brand-text dark:text-zinc-300 mb-2 uppercase tracking-wider">
-                      Article Title
-                    </label>
-                    <input 
-                      type="text" 
-                      placeholder="e.g. How to Automate Shorts with Make.com" 
-                      className="w-full border border-brand-border/80 dark:border-zinc-700/80 bg-white/50 dark:bg-zinc-950/60 text-brand-text dark:text-white placeholder:text-brand-muted dark:placeholder:text-zinc-500 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue transition-all" 
-                    />
-                  </div>
+                      <div className="space-y-5">
+                        {sponsorResults.map((item, idx) => (
+                          <div key={item.id} className="p-5 rounded-2xl border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] space-y-4 relative">
+                            <button
+                              type="button"
+                              onClick={() => setSponsorResults(sponsorResults.filter(s => s.id !== item.id))}
+                              className="absolute top-4 right-4 text-red-500 hover:text-red-600 p-1.5 bg-red-500/10 rounded-lg transition-colors"
+                              title="Delete case study"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                            <div className="grid grid-cols-2 gap-4 pr-10">
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Partner Brand Name</label>
+                                <input 
+                                  type="text" 
+                                  value={item.partnerName} 
+                                  onChange={(e) => {
+                                    const next = [...sponsorResults];
+                                    next[idx].partnerName = e.target.value;
+                                    setSponsorResults(next);
+                                  }}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm" 
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Campaign Type</label>
+                                <input 
+                                  type="text" 
+                                  value={item.campaignType} 
+                                  onChange={(e) => {
+                                    const next = [...sponsorResults];
+                                    next[idx].campaignType = e.target.value;
+                                    setSponsorResults(next);
+                                  }}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm" 
+                                />
+                              </div>
+                            </div>
 
-                  {/* Blog Article Cover Image Upload Field */}
-                  <div className="space-y-2">
-                    <label className="block text-xs font-bold text-brand-text dark:text-zinc-300 uppercase tracking-wider">
-                      Article Cover Image / Video Thumbnail Media
-                    </label>
-                    <div className="flex items-center gap-3">
-                      <input 
-                        type="text" 
-                        value={blogCover}
-                        onChange={(e) => setBlogCover(e.target.value)}
-                        placeholder="Upload cover image or paste URL..." 
-                        className="flex-1 border border-brand-border/80 dark:border-zinc-700/80 bg-white/50 dark:bg-zinc-950/60 text-brand-text dark:text-white placeholder:text-brand-muted dark:placeholder:text-zinc-500 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue transition-all" 
-                      />
-                      <label className="bg-brand-blue/10 dark:bg-brand-blue/20 hover:bg-brand-blue/20 dark:hover:bg-brand-blue/30 text-brand-blue font-bold px-4 py-2.5 rounded-xl cursor-pointer text-xs flex items-center gap-2 border border-brand-blue/30 transition-all shrink-0">
-                        <UploadCloud className="w-4 h-4" />
-                        <span>{uploadingField === "blogCover" ? "Uploading..." : "Upload Cover"}</span>
-                        <input 
-                          type="file" 
-                          accept="image/*"
-                          onChange={(e) => handleInlineMediaUpload(e.target.files, setBlogCover, "blogCover")}
-                          className="hidden" 
-                        />
-                      </label>
+                            <div>
+                              <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Testimonial Quote</label>
+                              <textarea 
+                                rows={2}
+                                value={item.quote} 
+                                onChange={(e) => {
+                                  const next = [...sponsorResults];
+                                  next[idx].quote = e.target.value;
+                                  setSponsorResults(next);
+                                }}
+                                className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm" 
+                              />
+                            </div>
+
+                            <div className="grid grid-cols-4 gap-3">
+                              <div>
+                                <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">Stat 1 Label</label>
+                                <input 
+                                  type="text" 
+                                  value={item.stat1Label} 
+                                  onChange={(e) => {
+                                    const next = [...sponsorResults];
+                                    next[idx].stat1Label = e.target.value;
+                                    setSponsorResults(next);
+                                  }}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs" 
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">Stat 1 Value</label>
+                                <input 
+                                  type="text" 
+                                  value={item.stat1Value} 
+                                  onChange={(e) => {
+                                    const next = [...sponsorResults];
+                                    next[idx].stat1Value = e.target.value;
+                                    setSponsorResults(next);
+                                  }}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs" 
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">Stat 2 Label</label>
+                                <input 
+                                  type="text" 
+                                  value={item.stat2Label} 
+                                  onChange={(e) => {
+                                    const next = [...sponsorResults];
+                                    next[idx].stat2Label = e.target.value;
+                                    setSponsorResults(next);
+                                  }}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs" 
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">Stat 2 Value</label>
+                                <input 
+                                  type="text" 
+                                  value={item.stat2Value} 
+                                  onChange={(e) => {
+                                    const next = [...sponsorResults];
+                                    next[idx].stat2Value = e.target.value;
+                                    setSponsorResults(next);
+                                  }}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs" 
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="flex justify-end pt-5 border-t border-brand-border dark:border-[#16382e]">
+                        <button 
+                          type="button" 
+                          onClick={handleSaveAll} 
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-md text-sm"
+                        >
+                          <Save className="w-4 h-4" /> Save Sponsor Results
+                        </button>
+                      </div>
                     </div>
-                    {blogCover && (
-                      <div className="relative w-full h-36 rounded-xl border border-brand-border/60 dark:border-zinc-800/80 overflow-hidden bg-zinc-100 dark:bg-zinc-950 mt-2 shadow-sm">
-                        <img src={blogCover} alt="Cover Preview" className="w-full h-full object-cover" />
+                  )}
+
+                  {/* TAB 3: WHAT PERFORMS */}
+                  {activeTab === "what-performs" && (
+                    <div className="space-y-6">
+                      <div className="flex justify-between items-center">
+                        <h3 className="font-heading font-bold text-sm text-brand-text dark:text-emerald-400 uppercase tracking-wider">What Performs Cards</h3>
                         <button
                           type="button"
-                          onClick={() => setBlogCover("")}
-                          className="absolute top-2 right-2 p-1.5 rounded-full bg-black/60 text-white hover:bg-red-600 transition-colors"
+                          onClick={() => setWhatPerforms([...whatPerforms, {
+                            id: Date.now().toString(),
+                            title: "New Highlight",
+                            views: "10.0k",
+                            clicks: "800+",
+                            type: "Integration",
+                            thumb: "🚀",
+                            highlight: "High CTR",
+                            ytUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                            thumbnail: ""
+                          }])}
+                          className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold px-4 py-2 rounded-xl text-xs sm:text-sm flex items-center gap-1.5 border border-emerald-500/30"
                         >
-                          <X className="w-3.5 h-3.5" />
+                          <Plus className="w-4 h-4" /> Add Perform Card
                         </button>
                       </div>
-                    )}
+
+                      <div className="space-y-5">
+                        {whatPerforms.map((item, idx) => (
+                          <div key={item.id} className="p-5 rounded-2xl border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] space-y-4 relative">
+                            <button
+                              type="button"
+                              onClick={() => setWhatPerforms(whatPerforms.filter(w => w.id !== item.id))}
+                              className="absolute top-4 right-4 text-red-500 hover:text-red-600 p-1.5 bg-red-500/10 rounded-lg transition-colors"
+                              title="Delete item"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                            <div className="grid grid-cols-2 gap-4 pr-10">
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Title / Tool Name</label>
+                                <input 
+                                  type="text" 
+                                  value={item.title} 
+                                  onChange={(e) => {
+                                    const next = [...whatPerforms];
+                                    next[idx].title = e.target.value;
+                                    setWhatPerforms(next);
+                                  }}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm" 
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Sponsorship Type</label>
+                                <input 
+                                  type="text" 
+                                  value={item.type} 
+                                  onChange={(e) => {
+                                    const next = [...whatPerforms];
+                                    next[idx].type = e.target.value;
+                                    setWhatPerforms(next);
+                                  }}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm" 
+                                />
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">YouTube Video Link</label>
+                                <input 
+                                  type="text" 
+                                  placeholder="https://youtube.com/watch?v=..."
+                                  value={item.ytUrl || ""} 
+                                  onChange={(e) => {
+                                    const next = [...whatPerforms];
+                                    next[idx] = { ...next[idx], ytUrl: e.target.value };
+                                    setWhatPerforms(next);
+                                  }}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm" 
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Thumbnail Media</label>
+                                <div className="flex items-center gap-2">
+                                  <input 
+                                    type="text" 
+                                    placeholder="/uploads/file.png or YouTube thumb..."
+                                    value={item.thumbnail || ""} 
+                                    onChange={(e) => {
+                                      const next = [...whatPerforms];
+                                      next[idx] = { ...next[idx], thumbnail: e.target.value };
+                                      setWhatPerforms(next);
+                                    }}
+                                    className="flex-1 border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs sm:text-sm" 
+                                  />
+                                  <label 
+                                    htmlFor={`perform-thumb-input-${item.id}`}
+                                    className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold px-3.5 py-2 rounded-xl cursor-pointer text-xs flex items-center gap-1.5 border border-emerald-500/30 shrink-0"
+                                  >
+                                    {uploadingField === `perform-thumb-${item.id}` ? "Saving..." : "Upload"}
+                                    <input 
+                                      id={`perform-thumb-input-${item.id}`}
+                                      type="file" 
+                                      accept="image/*" 
+                                      className="hidden" 
+                                      onChange={(e) => handleInlineMediaUpload(
+                                        e.target.files, 
+                                        (url) => {
+                                          const next = [...whatPerforms];
+                                          next[idx] = { ...next[idx], thumbnail: url };
+                                          setWhatPerforms(next);
+                                        },
+                                        `perform-thumb-${item.id}`
+                                      )}
+                                    />
+                                  </label>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-3 gap-3">
+                              <div>
+                                <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">Views Count</label>
+                                <input 
+                                  type="text" 
+                                  value={item.views} 
+                                  onChange={(e) => {
+                                    const next = [...whatPerforms];
+                                    next[idx].views = e.target.value;
+                                    setWhatPerforms(next);
+                                  }}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs" 
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">Clicks Count</label>
+                                <input 
+                                  type="text" 
+                                  value={item.clicks} 
+                                  onChange={(e) => {
+                                    const next = [...whatPerforms];
+                                    next[idx].clicks = e.target.value;
+                                    setWhatPerforms(next);
+                                  }}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs" 
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">Emoji Fallback</label>
+                                <input 
+                                  type="text" 
+                                  value={item.thumb || "🎬"} 
+                                  onChange={(e) => {
+                                    const next = [...whatPerforms];
+                                    next[idx].thumb = e.target.value;
+                                    setWhatPerforms(next);
+                                  }}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs" 
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="flex justify-end pt-5 border-t border-brand-border dark:border-[#16382e]">
+                        <button 
+                          type="button" 
+                          onClick={handleSaveAll} 
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-md text-sm"
+                        >
+                          <Save className="w-4 h-4" /> Save What Performs
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* TAB 4: AI TOOL VAULT */}
+                  {activeTab === "tools" && (
+                    <div className="space-y-6">
+                      <div className="flex justify-between items-center">
+                        <h3 className="font-heading font-bold text-sm text-brand-text dark:text-emerald-400 uppercase tracking-wider">AI Tool Vault Directory</h3>
+                        <button
+                          type="button"
+                          onClick={() => setToolsList([...toolsList, {
+                            id: Date.now().toString(),
+                            name: "New AI Tool",
+                            category: "Automation",
+                            discount: "10% OFF",
+                            desc: "Tool description...",
+                            tryUrl: "https://example.com",
+                            tutorialUrl: "",
+                            logo: ""
+                          }])}
+                          className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold px-4 py-2 rounded-xl text-xs sm:text-sm flex items-center gap-1.5 border border-emerald-500/30"
+                        >
+                          <Plus className="w-4 h-4" /> Add Tool Entry
+                        </button>
+                      </div>
+
+                      <div className="space-y-5">
+                        {toolsList.map((tool, idx) => (
+                          <div key={tool.id} className="p-5 rounded-2xl border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] space-y-4 relative">
+                            <button
+                              type="button"
+                              onClick={() => setToolsList(toolsList.filter(t => t.id !== tool.id))}
+                              className="absolute top-4 right-4 text-red-500 hover:text-red-600 p-1.5 bg-red-500/10 rounded-lg transition-colors"
+                              title="Delete tool entry"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+
+                            <div className="grid grid-cols-3 gap-4 pr-10">
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Tool Name</label>
+                                <input 
+                                  type="text" 
+                                  value={tool.name} 
+                                  onChange={(e) => {
+                                    const next = [...toolsList];
+                                    next[idx].name = e.target.value;
+                                    setToolsList(next);
+                                  }}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm" 
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Category</label>
+                                <input 
+                                  type="text" 
+                                  value={tool.category} 
+                                  onChange={(e) => {
+                                    const next = [...toolsList];
+                                    next[idx].category = e.target.value;
+                                    setToolsList(next);
+                                  }}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm" 
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Discount Tag</label>
+                                <input 
+                                  type="text" 
+                                  value={tool.discount} 
+                                  onChange={(e) => {
+                                    const next = [...toolsList];
+                                    next[idx].discount = e.target.value;
+                                    setToolsList(next);
+                                  }}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm" 
+                                />
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Description</label>
+                              <textarea 
+                                rows={2}
+                                value={tool.desc} 
+                                onChange={(e) => {
+                                  const next = [...toolsList];
+                                  next[idx].desc = e.target.value;
+                                  setToolsList(next);
+                                }}
+                                className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm" 
+                              />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">Try Link URL</label>
+                                <input 
+                                  type="text" 
+                                  value={tool.tryUrl} 
+                                  onChange={(e) => {
+                                    const next = [...toolsList];
+                                    next[idx].tryUrl = e.target.value;
+                                    setToolsList(next);
+                                  }}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs" 
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">Tutorial URL</label>
+                                <input 
+                                  type="text" 
+                                  value={tool.tutorialUrl} 
+                                  onChange={(e) => {
+                                    const next = [...toolsList];
+                                    next[idx].tutorialUrl = e.target.value;
+                                    setToolsList(next);
+                                  }}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs" 
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="flex justify-end pt-5 border-t border-brand-border dark:border-[#16382e]">
+                        <button 
+                          type="button" 
+                          onClick={handleSaveAll} 
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-md text-sm"
+                        >
+                          <Save className="w-4 h-4" /> Save Tool Directory
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* TAB 5: SCRIPT-TO-BLOG HUB */}
+                  {activeTab === "blog" && (
+                    <div className="space-y-6">
+                      <div className="flex justify-between items-center">
+                        <h3 className="font-heading font-bold text-sm text-brand-text dark:text-emerald-400 uppercase tracking-wider">Script-to-Blog Articles</h3>
+                        <button
+                          type="button"
+                          onClick={() => setBlogList([...blogList, {
+                            id: Date.now().toString(),
+                            title: "New Tutorial Guide",
+                            category: "Tutorials & Workflows",
+                            excerpt: "Guide excerpt...",
+                            ytUrl: "https://youtube.com",
+                            author: "Artificial Quotient",
+                            cover: ""
+                          }])}
+                          className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold px-4 py-2 rounded-xl text-xs sm:text-sm flex items-center gap-1.5 border border-emerald-500/30"
+                        >
+                          <Plus className="w-4 h-4" /> Publish Article
+                        </button>
+                      </div>
+
+                      <div className="space-y-5">
+                        {blogList.map((post, idx) => (
+                          <div key={post.id} className="p-5 rounded-2xl border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] space-y-4 relative">
+                            <button
+                              type="button"
+                              onClick={() => setBlogList(blogList.filter(b => b.id !== post.id))}
+                              className="absolute top-4 right-4 text-red-500 hover:text-red-600 p-1.5 bg-red-500/10 rounded-lg transition-colors"
+                              title="Delete article"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+
+                            <div className="grid grid-cols-2 gap-4 pr-10">
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Article Title</label>
+                                <input 
+                                  type="text" 
+                                  value={post.title} 
+                                  onChange={(e) => {
+                                    const next = [...blogList];
+                                    next[idx].title = e.target.value;
+                                    setBlogList(next);
+                                  }}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm" 
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Category</label>
+                                <input 
+                                  type="text" 
+                                  value={post.category} 
+                                  onChange={(e) => {
+                                    const next = [...blogList];
+                                    next[idx].category = e.target.value;
+                                    setBlogList(next);
+                                  }}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm" 
+                                />
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Excerpt</label>
+                              <textarea 
+                                rows={2}
+                                value={post.excerpt} 
+                                onChange={(e) => {
+                                  const next = [...blogList];
+                                  next[idx].excerpt = e.target.value;
+                                  setBlogList(next);
+                                }}
+                                className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm" 
+                              />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">YouTube Video Link</label>
+                                <input 
+                                  type="text" 
+                                  value={post.ytUrl} 
+                                  onChange={(e) => {
+                                    const next = [...blogList];
+                                    next[idx].ytUrl = e.target.value;
+                                    setBlogList(next);
+                                  }}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs" 
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">Author</label>
+                                <input 
+                                  type="text" 
+                                  value={post.author} 
+                                  onChange={(e) => {
+                                    const next = [...blogList];
+                                    next[idx].author = e.target.value;
+                                    setBlogList(next);
+                                  }}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs" 
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="flex justify-end pt-5 border-t border-brand-border dark:border-[#16382e]">
+                        <button 
+                          type="button" 
+                          onClick={handleSaveAll} 
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-md text-sm"
+                        >
+                          <Save className="w-4 h-4" /> Save Blog Articles
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* TAB 6: BACKUP & SYSTEM CONTROL */}
+                  {activeTab === "backup" && (
+                    <div className="space-y-6">
+                      <div>
+                        <h3 className="font-heading font-bold text-base text-brand-text dark:text-white mb-1">
+                          Data Backup &amp; Disaster Recovery
+                        </h3>
+                        <p className="text-xs sm:text-sm text-brand-muted dark:text-emerald-200/70">
+                          Export complete system backups or restore your website data from a previously saved JSON snapshot.
+                        </p>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div className="p-6 rounded-2xl border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] flex flex-col justify-between space-y-5">
+                          <div>
+                            <div className="flex items-center gap-2.5 text-emerald-500 font-bold text-base mb-1.5">
+                              <UploadCloud className="w-5 h-5 rotate-180" /> Export JSON Backup
+                            </div>
+                            <p className="text-xs sm:text-sm text-brand-muted dark:text-emerald-200/70 leading-relaxed">
+                              Download a complete offline copy of your channel stats, pricing, tools, case studies, and blog articles.
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={handleDownloadBackup}
+                            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm py-3 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2"
+                          >
+                            <UploadCloud className="w-4 h-4 rotate-180" /> Download Backup File
+                          </button>
+                        </div>
+
+                        <div className="p-6 rounded-2xl border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] flex flex-col justify-between space-y-5">
+                          <div>
+                            <div className="flex items-center gap-2.5 text-emerald-500 font-bold text-base mb-1.5">
+                              <UploadCloud className="w-5 h-5" /> Restore JSON Backup
+                            </div>
+                            <p className="text-xs sm:text-sm text-brand-muted dark:text-emerald-200/70 leading-relaxed">
+                              Upload a previously exported JSON backup file to instantly restore your entire website configuration.
+                            </p>
+                          </div>
+                          <label className="w-full bg-brand-card dark:bg-[#102922] border border-emerald-500/40 text-emerald-600 dark:text-emerald-300 font-bold text-xs sm:text-sm py-3 rounded-xl hover:bg-emerald-500/20 transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer">
+                            <UploadCloud className="w-4 h-4" /> Select Backup File
+                            <input type="file" accept=".json" onChange={handleRestoreBackup} className="hidden" />
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                </div>
+              )}
+
+              {/* LIVE PREVIEW CONTAINER */}
+              {(layoutMode === "split" || layoutMode === "preview") && (
+                <div className={`${layoutMode === "split" ? "lg:col-span-5" : "w-full"} bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] backdrop-blur-xl rounded-2xl p-7 shadow-md transition-colors duration-200`}>
+                  <div className="flex items-center justify-between pb-5 mb-6 border-b border-brand-border dark:border-[#16382e]">
+                    <div className="flex items-center gap-2.5">
+                      <Eye className="w-5 h-5 text-emerald-500 animate-pulse" />
+                      <h3 className="font-heading text-sm font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
+                        Live Pre-Publish Preview
+                      </h3>
+                    </div>
+                    <span className="text-xs bg-emerald-500/10 text-emerald-500 font-bold px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+                      Real-time
+                    </span>
                   </div>
 
-                  <div>
-                    <label className="block text-xs font-bold text-brand-text dark:text-zinc-300 mb-2 uppercase tracking-wider">
-                      YouTube Video URL
-                    </label>
-                    <input 
-                      type="text" 
-                      placeholder="https://youtube.com/watch?v=..." 
-                      className="w-full border border-brand-border/80 dark:border-zinc-700/80 bg-white/50 dark:bg-zinc-950/60 text-brand-text dark:text-white placeholder:text-brand-muted dark:placeholder:text-zinc-500 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue transition-all" 
-                    />
-                  </div>
-                  <div className="flex justify-end pt-6 border-t border-brand-border/60 dark:border-zinc-800/80">
-                    <button 
-                      type="button" 
-                      onClick={handleSave} 
-                      className="bg-brand-blue hover:bg-brand-blue-hover text-white font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-md hover:shadow-brand-blue/20 text-sm"
-                    >
-                      <Save className="w-4 h-4" /> Publish Post
-                    </button>
-                  </div>
-                </form>
-              </div>
-            )}
+                  {/* PREVIEW TAB 1: STATS & PRICING */}
+                  {activeTab === "stats" && (
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-brand-bg dark:bg-[#061612] border border-brand-border dark:border-[#16382e] rounded-xl p-4">
+                          <div className="text-xs font-bold text-brand-muted dark:text-emerald-200/60 uppercase">Subscribers</div>
+                          <div className="text-xl font-bold text-brand-text dark:text-white mt-1">{statsForm.subscribers}</div>
+                        </div>
+
+                        <div className="bg-brand-bg dark:bg-[#061612] border border-brand-border dark:border-[#16382e] rounded-xl p-4">
+                          <div className="text-xs font-bold text-brand-muted dark:text-emerald-200/60 uppercase">View Count</div>
+                          <div className="text-xl font-bold text-brand-text dark:text-white mt-1">{statsForm.monthlyViews}</div>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4 pt-2">
+                        <div className="p-4 rounded-xl bg-brand-bg dark:bg-[#061612] border border-brand-border dark:border-[#16382e]">
+                          <div className="text-xs text-emerald-500 font-bold uppercase">Dedicated Rate</div>
+                          <div className="text-xl font-bold text-brand-text dark:text-white mt-1">{ratesForm.dedicatedRate}</div>
+                        </div>
+                        <div className="p-4 rounded-xl bg-brand-bg dark:bg-[#061612] border border-brand-border dark:border-[#16382e]">
+                          <div className="text-xs text-brand-muted dark:text-emerald-200/70 font-bold uppercase">Integration Rate</div>
+                          <div className="text-xl font-bold text-brand-text dark:text-white mt-1">{ratesForm.integrationRate}</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* PREVIEW TAB 2: SPONSOR CASE STUDIES */}
+                  {activeTab === "case-studies" && (
+                    <div className="space-y-5">
+                      <div className="text-sm font-bold text-brand-text dark:text-white mb-2">Live Case Studies Preview</div>
+                      <div className="space-y-4">
+                        {sponsorResults.map((item) => (
+                          <div key={item.id} className="p-4 rounded-xl border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] space-y-3">
+                            <div className="flex justify-between items-center">
+                              <span className="font-bold text-sm text-brand-text dark:text-white">{item.partnerName}</span>
+                              <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500">{item.campaignType}</span>
+                            </div>
+                            <p className="font-handwritten text-sm text-brand-muted dark:text-emerald-200/80 italic">&quot;{item.quote}&quot;</p>
+                            <div className="flex justify-between text-xs font-bold border-t border-brand-border dark:border-[#16382e] pt-2">
+                              <span>{item.stat1Label}: <span className="text-emerald-500">{item.stat1Value}</span></span>
+                              <span>{item.stat2Label}: <span className="text-emerald-500">{item.stat2Value}</span></span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* PREVIEW TAB 3: WHAT PERFORMS */}
+                  {activeTab === "what-performs" && (
+                    <div className="space-y-5">
+                      <div className="text-sm font-bold text-brand-text dark:text-white mb-2">What Performs Preview</div>
+                      <div className="grid grid-cols-1 gap-4">
+                        {whatPerforms.map((item) => {
+                          const ytId = getYoutubeId(item.ytUrl);
+                          const thumbImg = item.thumbnail || (ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : null);
+
+                          return (
+                            <div key={item.id} className="p-4 rounded-xl border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] flex items-center justify-between gap-4">
+                              <div className="flex items-center gap-3.5">
+                                <div className="w-16 h-10 bg-zinc-800 rounded-lg overflow-hidden flex items-center justify-center text-sm shrink-0 border border-brand-border/40">
+                                  {thumbImg ? (
+                                    <img src={thumbImg} alt="" className="w-full h-full object-cover" />
+                                  ) : (
+                                    <span>{item.thumb || "🎬"}</span>
+                                  )}
+                                </div>
+                                <div>
+                                  <div className="font-bold text-sm text-brand-text dark:text-white">{item.title}</div>
+                                  <div className="text-xs text-brand-muted dark:text-emerald-200/70">{item.type}</div>
+                                </div>
+                              </div>
+                              <div className="text-right text-xs font-bold shrink-0">
+                                <div className="text-brand-text dark:text-white">{item.views} views</div>
+                                <div className="text-emerald-500">{item.clicks} clicks</div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* PREVIEW TAB 4: TOOL VAULT */}
+                  {activeTab === "tools" && (
+                    <div className="space-y-4">
+                      <div className="text-sm font-bold text-brand-text dark:text-white mb-2">AI Tool Vault Directory</div>
+                      {toolsList.map(tool => (
+                        <div key={tool.id} className="bg-brand-bg dark:bg-[#061612] rounded-xl border border-brand-border dark:border-[#16382e] p-5 shadow-sm">
+                          <div className="flex justify-between items-start mb-2">
+                            <h4 className="font-heading font-bold text-base text-brand-text dark:text-white">{tool.name}</h4>
+                            {tool.discount && (
+                              <span className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+                                {tool.discount}
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mb-2 block">{tool.category}</span>
+                          <p className="text-xs sm:text-sm text-brand-muted dark:text-emerald-200/70 mb-3 leading-relaxed">{tool.desc}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* PREVIEW TAB 5: BLOG HUB */}
+                  {activeTab === "blog" && (
+                    <div className="space-y-4">
+                      <div className="text-sm font-bold text-brand-text dark:text-white mb-2">Script-to-Blog Hub Articles</div>
+                      {blogList.map(post => (
+                        <div key={post.id} className="bg-brand-bg dark:bg-[#061612] rounded-xl border border-brand-border dark:border-[#16382e] p-5 shadow-sm">
+                          <h4 className="font-heading font-bold text-base text-brand-text dark:text-white mb-1">{post.title}</h4>
+                          <span className="text-xs text-emerald-500 font-bold mb-2 block">{post.category}</span>
+                          <p className="text-xs sm:text-sm text-brand-muted dark:text-emerald-200/70 leading-relaxed">{post.excerpt}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* PREVIEW TAB 6: BACKUP SUMMARY */}
+                  {activeTab === "backup" && (
+                    <div className="p-5 rounded-xl border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] space-y-4">
+                      <div className="flex items-center gap-2.5 text-sm font-bold text-emerald-500">
+                        <ShieldCheck className="w-5 h-5" /> System Health Status
+                      </div>
+                      <div className="space-y-2.5 text-xs sm:text-sm">
+                        <div className="flex justify-between border-b border-brand-border/40 pb-2">
+                          <span className="text-brand-muted dark:text-emerald-200/60">Backup System</span>
+                          <span className="text-emerald-400 font-bold">Operational</span>
+                        </div>
+                        <div className="flex justify-between border-b border-brand-border/40 pb-2">
+                          <span className="text-brand-muted dark:text-emerald-200/60">Auto Snapshots</span>
+                          <span className="text-emerald-400 font-bold">Rolling (Limit 20)</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-brand-muted dark:text-emerald-200/60">Data Store</span>
+                          <span className="text-white font-bold">site-data.json</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                </div>
+              )}
+
+            </div>
 
           </div>
 

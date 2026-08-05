@@ -4,12 +4,13 @@ import { setAdminPassword } from "@/lib/auth-store";
 
 export const dynamic = "force-dynamic";
 
-// Valid recovery keys / master keys for verification
-const VALID_RECOVERY_KEYS = [
-  "AQ-RESET-2026",
-  "sponsor@artificialquotient.com",
-  "admin",
-];
+function getRecoveryKeys(): string[] {
+  const envKeys = process.env.ADMIN_RECOVERY_KEYS;
+  if (!envKeys) {
+    return [];
+  }
+  return envKeys.split(",").map((key) => key.trim()).filter(Boolean);
+}
 
 export async function POST(request: Request) {
   try {
@@ -22,7 +23,8 @@ export async function POST(request: Request) {
       );
     }
 
-    const isKeyValid = VALID_RECOVERY_KEYS.some(
+    const validKeys = getRecoveryKeys();
+    const isKeyValid = validKeys.some(
       (key) => key.toLowerCase() === recoveryKey.trim().toLowerCase()
     );
 

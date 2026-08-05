@@ -1,0 +1,115 @@
+{
+  "stats": {
+    "subscribers": "10,100+",
+    "subscribersSub": "+12.4% this month",
+    "monthlyViews": "850,000+",
+    "monthlyViewsSub": "~120K monthly views",
+    "newSubs": "+1,200",
+    "newSubsSub": "High velocity growth",
+    "videosCount": "222",
+    "videosCountSub": "Active weekly cadence",
+    "retention": "27",
+    "channelBanner": ""
+  },
+  "rates": {
+    "dedicatedRate": "$500",
+    "integrationRate": "$300"
+  },
+  "demographics": {
+    "age25_34": "39.9%",
+    "age18_24": "28.5%",
+    "malePercent": "84.7%",
+    "femalePercent": "15.3%"
+  },
+  "geographies": {
+    "usa": "24.1%",
+    "india": "21.6%",
+    "uk": "4.6%",
+    "germany": "3.9%"
+  },
+  "buyerIntent": {
+    "title": "High Buyer Intent",
+    "desc": "Our audience actively searches for SaaS tools to solve their workflow bottlenecks.",
+    "badges": ["Automation Builders", "Tech Professionals", "Agency Owners"]
+  },
+  "whatPerforms": [
+    {
+      "id": "1",
+      "title": "Revid.AI",
+      "views": "18.2k",
+      "clicks": "1.4k+",
+      "type": "Dedicated Video",
+      "thumb": "🎬",
+      "highlight": "High Conversion",
+      "ytUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "thumbnail": ""
+    },
+    {
+      "id": "2",
+      "title": "Flashloop AI",
+      "views": "12.5k",
+      "clicks": "950+",
+      "type": "Integration",
+      "thumb": "⚡",
+      "highlight": "Solid ROI",
+      "ytUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "thumbnail": ""
+    },
+    {
+      "id": "3",
+      "title": "Marky Agent",
+      "views": "21.1k",
+      "clicks": "2.1k+",
+      "type": "Dedicated Video",
+      "thumb": "🤖",
+      "highlight": "Viral Reach",
+      "ytUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "thumbnail": ""
+    }
+  ],
+  "sponsorResults": [
+    {
+      "id": "1",
+      "partnerName": "Revid.AI",
+      "campaignType": "Dedicated Video",
+      "quote": "The highest converting sponsorship we've ran this quarter. Incredible audience fit.",
+      "stat1Label": "Signups Generated",
+      "stat1Value": "450+",
+      "stat2Label": "Est. ROI Multiplier",
+      "stat2Value": "3.2x"
+    },
+    {
+      "id": "2",
+      "partnerName": "Flashloop",
+      "campaignType": "Integration",
+      "quote": "We saw an immediate spike in traffic during the first 48 hours of upload.",
+      "stat1Label": "Link Clicks",
+      "stat1Value": "1,200+",
+      "stat2Label": "Cost Per Click",
+      "stat2Value": "$0.25"
+    }
+  ],
+  "tools": [
+    {
+      "id": "1",
+      "name": "Make.com",
+      "logo": "",
+      "category": "Automation",
+      "discount": "20% OFF 1st Year",
+      "desc": "The ultimate visual automation platform for building advanced workflows without code.",
+      "tryUrl": "https://make.com",
+      "tutorialUrl": "https://youtube.com"
+    }
+  ],
+  "blog": [
+    {
+      "id": "1",
+      "title": "How to Automate Short Form Videos with Make.com & AI",
+      "cover": "",
+      "category": "Tutorials & Workflows",
+      "excerpt": "Learn step-by-step how to build fully automated video generation workflows using Make.com and AI tools.",
+      "ytUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "author": "Artificial Quotient"
+    }
+  ]
+}

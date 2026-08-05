@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { Mail, ArrowUpRight, Sparkles, ShieldCheck } from "lucide-react";
+import { Mail, Sparkles } from "lucide-react";
 
 export default function Footer() {
   return (
     <footer className="w-full border-t border-brand-border/80 dark:border-zinc-800/80 bg-white/60 dark:bg-zinc-950/60 backdrop-blur-md transition-colors relative overflow-hidden">
       {/* Background Accent Orbs */}
-      <div className="absolute top-0 right-1/4 w-96 h-96 bg-brand-blue/5 dark:bg-brand-blue/10 blur-[100px] rounded-full pointer-events-none"></div>
-      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-purple-500/5 dark:bg-indigo-500/10 blur-[100px] rounded-full pointer-events-none"></div>
+      <div className="absolute top-0 right-1/4 w-96 h-96 bg-emerald-500/5 dark:bg-emerald-500/10 blur-[100px] rounded-full pointer-events-none"></div>
+      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-teal-500/5 dark:bg-teal-500/10 blur-[100px] rounded-full pointer-events-none"></div>
 
       <div className="max-w-6xl mx-auto px-4 pt-16 pb-12 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-brand-border dark:border-zinc-800/80">
@@ -14,11 +14,11 @@ export default function Footer() {
           {/* Brand & Mission Column (Spans 2 cols on lg) */}
           <div className="lg:col-span-2 flex flex-col gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-blue to-purple-600 flex items-center justify-center text-xl shadow-md text-white">
-                🐼
+              <div className="w-10 h-10 rounded-xl overflow-hidden border border-emerald-500/30 shadow-md flex items-center justify-center bg-brand-dark dark:bg-zinc-800">
+                <img src="/logo/logo.jpeg" alt="Artificial Quotient Logo" className="w-full h-full object-cover" />
               </div>
               <span className="font-heading font-bold text-xl text-brand-text dark:text-white tracking-tight">
-                Artificial<span className="text-brand-blue">Quotient</span>
+                Artificial<span className="text-emerald-500">Quotient</span>
               </span>
             </div>
 
@@ -39,8 +39,8 @@ export default function Footer() {
                 </svg>
               </a>
               <a
-                href="mailto:sponsor@artificialquotient.com"
-                className="w-10 h-10 rounded-xl bg-brand-blue/10 hover:bg-brand-blue/20 text-brand-blue dark:text-blue-400 flex items-center justify-center transition-all hover:scale-105 border border-brand-blue/20"
+                href="mailto:artificialquotient01@gmail.com"
+                className="w-10 h-10 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center transition-all hover:scale-105 border border-emerald-500/20"
                 aria-label="Email Us"
               >
                 <Mail className="w-5 h-5" />
@@ -52,87 +52,62 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Navigation Links Column */}
+          {/* Quick Links Column */}
           <div className="flex flex-col gap-3">
-            <h4 className="font-heading font-bold text-sm uppercase tracking-wider text-brand-text dark:text-white">
-              Sponsorship
-            </h4>
-            <ul className="space-y-2.5 text-sm">
-              <li>
-                <Link href="/sponsor" className="text-brand-muted dark:text-zinc-400 hover:text-brand-blue dark:hover:text-white transition-colors flex items-center gap-1">
-                  Rate Cards
-                </Link>
-              </li>
-              <li>
-                <Link href="/stats" className="text-brand-muted dark:text-zinc-400 hover:text-brand-blue dark:hover:text-white transition-colors">
-                  Audience Snapshot
-                </Link>
-              </li>
-              <li>
-                <Link href="/case-studies" className="text-brand-muted dark:text-zinc-400 hover:text-brand-blue dark:hover:text-white transition-colors">
-                  Case Studies
-                </Link>
-              </li>
-            </ul>
+            <h3 className="font-heading font-bold text-sm text-brand-text dark:text-white uppercase tracking-wider">
+              Explore
+            </h3>
+            <Link href="/#stats" className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors">
+              Channel Stats
+            </Link>
+            <Link href="/#case-studies" className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors">
+              Case Studies
+            </Link>
+            <Link href="/tools" className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors">
+              AI Tool Directory
+            </Link>
+            <Link href="/blog" className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors">
+              Script-to-Blog Hub
+            </Link>
           </div>
 
-          {/* Resources Column */}
+          {/* Sponsoring Column */}
           <div className="flex flex-col gap-3">
-            <h4 className="font-heading font-bold text-sm uppercase tracking-wider text-brand-text dark:text-white">
-              Content Hub
-            </h4>
-            <ul className="space-y-2.5 text-sm">
-              <li>
-                <Link href="/tools" className="text-brand-muted dark:text-zinc-400 hover:text-brand-blue dark:hover:text-white transition-colors">
-                  Tool Vault
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog" className="text-brand-muted dark:text-zinc-400 hover:text-brand-blue dark:hover:text-white transition-colors">
-                  Blog & Guides
-                </Link>
-              </li>
-              <li>
-                <a 
-                  href="mailto:sponsor@artificialquotient.com?subject=Custom%20Partnership"
-                  className="text-brand-muted dark:text-zinc-400 hover:text-brand-blue dark:hover:text-white transition-colors flex items-center gap-1"
-                >
-                  Custom Media Kit <ArrowUpRight className="w-3.5 h-3.5" />
-                </a>
-              </li>
-            </ul>
+            <h3 className="font-heading font-bold text-sm text-brand-text dark:text-white uppercase tracking-wider">
+              Sponsorships
+            </h3>
+            <a href="https://forms.gle/4uTUZkEi5o3iqYrs5" target="_blank" rel="noreferrer" className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors">
+              Book Dedicated Video
+            </a>
+            <a href="https://forms.gle/4uTUZkEi5o3iqYrs5" target="_blank" rel="noreferrer" className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors">
+              Book Integration
+            </a>
+            <a href="mailto:artificialquotient01@gmail.com?subject=Sponsorship%20Inquiry" className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors">
+              Custom Campaign
+            </a>
           </div>
 
-          {/* Contact & Admin Column */}
+          {/* Admin & Legal Column */}
           <div className="flex flex-col gap-3">
-            <h4 className="font-heading font-bold text-sm uppercase tracking-wider text-brand-text dark:text-white">
-              Direct Contact
-            </h4>
-            <div className="space-y-2 text-sm">
-              <p className="text-brand-muted dark:text-zinc-400">
-                Bookings & Inquiries:
-              </p>
-              <a 
-                href="mailto:sponsor@artificialquotient.com" 
-                className="font-medium text-brand-blue dark:text-blue-400 hover:underline block truncate"
-              >
-                sponsor@artificialquotient.com
-              </a>
-            </div>
+            <h3 className="font-heading font-bold text-sm text-brand-text dark:text-white uppercase tracking-wider">
+              Management
+            </h3>
+            <Link href="/admin" className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors">
+              Admin Portal
+            </Link>
+            <Link href="/admin/login" className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors">
+              Admin Login
+            </Link>
+            <Link href="/contact" className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors">
+              Support &amp; Contact
+            </Link>
           </div>
 
         </div>
 
-        {/* Bottom copyright bar */}
         <div className="pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-brand-muted dark:text-zinc-500">
-          <p>
-            &copy; <span suppressHydrationWarning>{new Date().getFullYear()}</span> Artificial Quotient. All rights reserved.
-          </p>
-          
-          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-brand-green/10 text-brand-green font-medium">
-            <span className="w-2 h-2 rounded-full bg-brand-green animate-pulse"></span>
-            <span>Q3 Sponsorships Available</span>
-          </div>
+          <p>&copy; {new Date().getFullYear()} Artificial Quotient. All rights reserved.</p>
+          <p>Built for AI Creators &amp; SaaS Partners.</p>
         </div>
       </div>
     </footer>

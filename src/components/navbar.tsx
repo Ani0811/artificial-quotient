@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Sparkles, Lock } from "lucide-react";
+import { Lock } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
 
 interface NavbarProps {
@@ -17,21 +17,21 @@ export default function Navbar({ isAdmin = false }: NavbarProps) {
     <nav className="w-full border-b border-brand-border dark:border-zinc-800 bg-brand-bg/80 dark:bg-zinc-950/80 backdrop-blur-md sticky top-0 z-50 transition-colors">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-10 h-10 rounded-full bg-brand-dark dark:bg-zinc-800 flex items-center justify-center text-xl transition-transform group-hover:scale-105">
-            🐼
+        <Link href="/" className="flex items-center gap-3 group">
+          <div className="w-10 h-10 rounded-full overflow-hidden border border-emerald-500/30 flex items-center justify-center bg-brand-dark dark:bg-zinc-800 transition-transform group-hover:scale-105 shadow-sm">
+            <img src="/logo/logo.jpeg" alt="Artificial Quotient Logo" className="w-full h-full object-cover" />
           </div>
           <span className="font-heading font-bold text-lg tracking-tight text-brand-text dark:text-white">
-            Artificial<span className="text-brand-blue">Quotient</span>
+            Artificial<span className="text-emerald-500">Quotient</span>
           </span>
         </Link>
         
         {/* Nav Links */}
         <div className="hidden md:flex items-center gap-8">
-          <Link href="/stats" className="text-sm font-medium text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white transition-colors">
+          <Link href="/#stats" className="text-sm font-medium text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white transition-colors">
             Stats
           </Link>
-          <Link href="/case-studies" className="text-sm font-medium text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white transition-colors">
+          <Link href="/#case-studies" className="text-sm font-medium text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white transition-colors">
             Case Studies
           </Link>
           <Link href="/tools" className="text-sm font-medium text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white transition-colors">
@@ -40,39 +40,34 @@ export default function Navbar({ isAdmin = false }: NavbarProps) {
           <Link href="/blog" className="text-sm font-medium text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white transition-colors">
             Blog
           </Link>
+          <Link href="/contact" className="text-sm font-medium text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white transition-colors">
+            Contact
+          </Link>
         </div>
 
         {/* Right Actions */}
         <div className="flex items-center gap-3">
           <ThemeToggle />
-
           {isAdmin ? (
             <Link
               href="/admin"
-              className="text-brand-text dark:text-white hover:text-brand-blue dark:hover:text-brand-blue px-3 py-2 rounded-lg font-medium text-sm flex items-center gap-1.5 transition-colors border border-brand-border dark:border-zinc-800 bg-brand-card dark:bg-zinc-900 shadow-sm"
+              className="text-brand-text dark:text-white hover:text-emerald-500 px-3.5 py-2 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors border border-brand-border dark:border-zinc-800 bg-brand-card dark:bg-zinc-900 shadow-sm"
             >
-              <Lock className="w-4 h-4 text-brand-blue" />
+              <Lock className="w-3.5 h-3.5 text-emerald-500" />
               Admin Portal
             </Link>
           ) : (
             !isLoginPage && (
-              <Link
-                href="/admin/login"
-                className="text-brand-muted hover:text-brand-text dark:text-zinc-400 dark:hover:text-white p-2 rounded-lg transition-colors"
-                title="Admin Login"
+              <a
+                href="https://forms.gle/4uTUZkEi5o3iqYrs5"
+                target="_blank"
+                rel="noreferrer"
+                className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all shadow-sm"
               >
-                <Lock className="w-4 h-4 opacity-70 hover:opacity-100 transition-opacity" />
-              </Link>
+                Become a Sponsor
+              </a>
             )
           )}
-
-          <Link
-            href="/sponsor"
-            className="bg-brand-blue hover:bg-brand-blue-hover text-white px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 transition-all shadow-sm"
-          >
-            <Sparkles className="w-4 h-4" />
-            Become a Sponsor
-          </Link>
         </div>
       </div>
     </nav>

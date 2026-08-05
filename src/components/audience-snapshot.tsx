@@ -1,4 +1,7 @@
-import { BarChart3, Globe, ShieldCheck } from "lucide-react";
+"use client";
+
+import { BarChart3, Globe, ShieldCheck, Users, Eye, TrendingUp, PlaySquare } from "lucide-react";
+import { useEffect, useState } from "react";
 
 // Country SVG Flags
 const USAFlag = () => (
@@ -48,27 +51,160 @@ const GermanyFlag = () => (
   </svg>
 );
 
+interface SiteData {
+  stats?: {
+    subscribers?: string;
+    subscribersSub?: string;
+    monthlyViews?: string;
+    monthlyViewsSub?: string;
+    newSubs?: string;
+    newSubsSub?: string;
+    videosCount?: string;
+    videosCountSub?: string;
+  };
+  demographics?: {
+    age25_34?: string;
+    age18_24?: string;
+    malePercent?: string;
+    femalePercent?: string;
+  };
+  geographies?: {
+    usa?: string;
+    india?: string;
+    uk?: string;
+    germany?: string;
+  };
+  buyerIntent?: {
+    title?: string;
+    desc?: string;
+    badges?: string[];
+  };
+}
+
 export default function AudienceSnapshot() {
+  const [data, setData] = useState<SiteData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await fetch("/api/admin/data");
+        if (res.ok) {
+          const json = await res.json();
+          setData(json);
+        }
+      } catch {
+        // Handle error
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
+
+  if (loading || !data) {
+    return (
+      <section className="w-full py-20 px-4 border-t border-brand-border dark:border-[#14352b] transition-colors">
+        <div className="max-w-6xl mx-auto space-y-8 animate-pulse">
+          <div className="h-8 bg-emerald-500/10 rounded-lg w-64"></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-32 bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] rounded-2xl"></div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  const stats = data.stats || {};
+  const demographics = data.demographics || {};
+  const geographies = data.geographies || {};
+  const buyerIntent = data.buyerIntent || {};
+
+  const channelMetrics = [
+    {
+      label: "Subscribers",
+      value: stats.subscribers || "0",
+      sub: stats.subscribersSub || "",
+      icon: Users,
+      color: "text-emerald-500 dark:text-emerald-400",
+      bg: "bg-emerald-500/10 border-emerald-500/20",
+    },
+    {
+      label: "View Count",
+      value: stats.monthlyViews || "0",
+      sub: stats.monthlyViewsSub || "",
+      icon: Eye,
+      color: "text-blue-500 dark:text-blue-400",
+      bg: "bg-blue-500/10 border-blue-500/20",
+    },
+    {
+      label: "New Subs (30D)",
+      value: stats.newSubs || "0",
+      sub: stats.newSubsSub || "",
+      icon: TrendingUp,
+      color: "text-purple-500 dark:text-purple-400",
+      bg: "bg-purple-500/10 border-purple-500/20",
+    },
+    {
+      label: "Videos Published",
+      value: stats.videosCount || "0",
+      sub: stats.videosCountSub || "",
+      icon: PlaySquare,
+      color: "text-red-500 dark:text-red-400",
+      bg: "bg-red-500/10 border-red-500/20",
+    },
+  ];
+
   return (
-    <section className="w-full py-20 px-4 border-t border-brand-border dark:border-zinc-800 transition-colors">
+    <section className="w-full py-20 px-4 border-t border-brand-border dark:border-[#14352b] transition-colors">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col gap-2 mb-12 text-center md:text-left">
           <h2 className="font-heading text-3xl md:text-4xl font-bold text-brand-text dark:text-white">
-            Audience Snapshot
+            Audience &amp; Channel Snapshot
           </h2>
-          <p className="text-brand-muted dark:text-zinc-400 font-medium text-lg">
-            Who you&apos;re reaching when you sponsor Artificial Quotient.
+          <p className="text-brand-muted dark:text-emerald-200/70 font-medium text-lg">
+            Real-time performance metrics and demographic reach for Artificial Quotient.
           </p>
+        </div>
+
+        {/* Dynamic Stat Cards Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          {channelMetrics.map((metric, i) => {
+            const Icon = metric.icon;
+            return (
+              <div
+                key={i}
+                className="bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] rounded-2xl p-6 shadow-sm hover:shadow-lg dark:hover:border-emerald-500/40 transition-all duration-300 hover:-translate-y-1"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-300/60">
+                    {metric.label}
+                  </span>
+                  <div className={`p-2.5 rounded-xl border ${metric.bg}`}>
+                    <Icon className={`w-5 h-5 ${metric.color}`} />
+                  </div>
+                </div>
+                <div className="font-heading text-3xl font-extrabold text-brand-text dark:text-white mb-1">
+                  {metric.value}
+                </div>
+                <div className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                  {metric.sub}
+                </div>
+              </div>
+            );
+          })}
         </div>
 
         <div className="grid md:grid-cols-2 gap-8">
           {/* Demographics Card */}
-          <div className="group relative bg-brand-bg dark:bg-zinc-950 rounded-2xl p-8 border border-brand-border dark:border-zinc-800 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-brand-blue/10 dark:hover:shadow-brand-blue/5 hover:border-brand-blue/40 dark:hover:border-brand-blue/40 overflow-hidden">
+          <div className="group relative bg-brand-bg dark:bg-[#0c201a] rounded-2xl p-8 border border-brand-border dark:border-[#16382e] shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-500/5 hover:border-emerald-500/40 dark:hover:border-emerald-500/40 overflow-hidden">
             {/* Ambient top border glow line */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-brand-blue to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
             <h3 className="font-heading text-xl font-bold mb-6 flex items-center gap-2 text-brand-text dark:text-white">
-              <BarChart3 className="w-5 h-5 text-brand-blue transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6" />
+              <BarChart3 className="w-5 h-5 text-emerald-500 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6" />
               Demographics
             </h3>
             
@@ -76,32 +212,32 @@ export default function AudienceSnapshot() {
               <div className="transition-transform duration-300 group-hover:translate-x-0.5">
                 <div className="flex justify-between text-sm font-medium mb-2 text-brand-text dark:text-zinc-300">
                   <span>Age 25-34</span>
-                  <span className="text-brand-blue font-bold transition-transform duration-300 group-hover:scale-105 inline-block">39.9%</span>
+                  <span className="text-emerald-500 font-bold transition-transform duration-300 group-hover:scale-105 inline-block">{demographics.age25_34 || "0%"}</span>
                 </div>
-                <div className="w-full bg-gray-200 dark:bg-zinc-800 rounded-full h-2 overflow-hidden">
-                  <div className="bg-brand-blue h-2 rounded-full w-[39.9%] transition-all duration-500 group-hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] group-hover:brightness-110"></div>
+                <div className="w-full bg-gray-200 dark:bg-[#16382e] rounded-full h-2 overflow-hidden">
+                  <div className="bg-emerald-500 h-2 rounded-full transition-all duration-500 group-hover:shadow-[0_0_12px_rgba(16,185,129,0.6)] group-hover:brightness-110" style={{ width: demographics.age25_34 || "0%" }}></div>
                 </div>
               </div>
               
               <div className="transition-transform duration-300 group-hover:translate-x-0.5">
                 <div className="flex justify-between text-sm font-medium mb-2 text-brand-text dark:text-zinc-300">
                   <span>Age 18-24</span>
-                  <span className="text-brand-blue font-bold transition-transform duration-300 group-hover:scale-105 inline-block">28.5%</span>
+                  <span className="text-emerald-500 font-bold transition-transform duration-300 group-hover:scale-105 inline-block">{demographics.age18_24 || "0%"}</span>
                 </div>
-                <div className="w-full bg-gray-200 dark:bg-zinc-800 rounded-full h-2 overflow-hidden">
-                  <div className="bg-brand-blue h-2 rounded-full w-[28.5%] opacity-70 transition-all duration-500 group-hover:opacity-90 group-hover:shadow-[0_0_10px_rgba(59,130,246,0.4)]"></div>
+                <div className="w-full bg-gray-200 dark:bg-[#16382e] rounded-full h-2 overflow-hidden">
+                  <div className="bg-emerald-500 h-2 rounded-full opacity-70 transition-all duration-500 group-hover:opacity-90 group-hover:shadow-[0_0_10px_rgba(16,185,129,0.4)]" style={{ width: demographics.age18_24 || "0%" }}></div>
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-brand-border dark:border-zinc-800 transition-colors duration-300 group-hover:border-brand-blue/20 dark:group-hover:border-zinc-700">
+              <div className="pt-4 border-t border-brand-border dark:border-[#16382e] transition-colors duration-300 group-hover:border-emerald-500/20 dark:group-hover:border-[#1e483b]">
                 <div className="flex gap-4">
-                  <div className="flex-1 p-2 rounded-lg transition-all duration-300 hover:bg-brand-blue/5 dark:hover:bg-zinc-900/80">
-                    <p className="text-sm text-brand-muted dark:text-zinc-400 mb-1">Male</p>
-                    <p className="text-xl font-bold text-brand-text dark:text-white transition-transform duration-300 group-hover:scale-105 inline-block">84.7%</p>
+                  <div className="flex-1 p-2 rounded-lg transition-all duration-300 hover:bg-emerald-500/5 dark:hover:bg-[#102922]">
+                    <p className="text-sm text-brand-muted dark:text-emerald-200/60 mb-1">Male</p>
+                    <p className="text-xl font-bold text-brand-text dark:text-white transition-transform duration-300 group-hover:scale-105 inline-block">{demographics.malePercent || "0%"}</p>
                   </div>
-                  <div className="flex-1 p-2 rounded-lg transition-all duration-300 hover:bg-brand-blue/5 dark:hover:bg-zinc-900/80">
-                    <p className="text-sm text-brand-muted dark:text-zinc-400 mb-1">Female</p>
-                    <p className="text-xl font-bold text-brand-text dark:text-white transition-transform duration-300 group-hover:scale-105 inline-block">15.3%</p>
+                  <div className="flex-1 p-2 rounded-lg transition-all duration-300 hover:bg-emerald-500/5 dark:hover:bg-[#102922]">
+                    <p className="text-sm text-brand-muted dark:text-emerald-200/60 mb-1">Female</p>
+                    <p className="text-xl font-bold text-brand-text dark:text-white transition-transform duration-300 group-hover:scale-105 inline-block">{demographics.femalePercent || "0%"}</p>
                   </div>
                 </div>
               </div>
@@ -110,78 +246,74 @@ export default function AudienceSnapshot() {
 
           {/* Top Geographies & Intent Card */}
           <div className="flex flex-col gap-8">
-            <div className="group relative bg-brand-bg dark:bg-zinc-950 rounded-2xl p-8 border border-brand-border dark:border-zinc-800 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-brand-blue/10 dark:hover:shadow-brand-blue/5 hover:border-brand-blue/40 dark:hover:border-brand-blue/40 overflow-hidden">
+            <div className="group relative bg-brand-bg dark:bg-[#0c201a] rounded-2xl p-8 border border-brand-border dark:border-[#16382e] shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-500/5 hover:border-emerald-500/40 dark:hover:border-emerald-500/40 overflow-hidden">
               {/* Ambient top border glow line */}
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-brand-blue to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
               <h3 className="font-heading text-xl font-bold mb-6 flex items-center gap-2 text-brand-text dark:text-white">
-                <Globe className="w-5 h-5 text-brand-blue transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-12" />
+                <Globe className="w-5 h-5 text-emerald-500 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-12" />
                 Top Geographies
               </h3>
               
               <div className="grid grid-cols-2 gap-4">
-                <div className="group/item flex items-center justify-between p-3.5 bg-white dark:bg-zinc-900 rounded-xl border border-brand-border dark:border-zinc-800 shadow-sm text-brand-text dark:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:border-brand-blue/40 hover:bg-brand-blue/5 dark:hover:bg-zinc-900/90 hover:shadow-md hover:shadow-brand-blue/10 cursor-pointer">
+                <div className="group/item flex items-center justify-between p-3.5 bg-white dark:bg-[#102922] rounded-xl border border-brand-border dark:border-[#16382e] shadow-sm text-brand-text dark:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:border-emerald-500/40 hover:bg-emerald-500/5 dark:hover:bg-[#14332a] hover:shadow-md cursor-pointer">
                   <span className="flex items-center gap-2.5 font-medium">
                     <span className="transition-transform duration-200 group-hover/item:scale-125 inline-block">
                       <USAFlag />
                     </span>
                     <span className="font-semibold">USA</span>
                   </span>
-                  <span className="font-bold text-brand-blue transition-transform duration-200 group-hover/item:scale-110">24.1%</span>
+                  <span className="font-bold text-emerald-500 transition-transform duration-200 group-hover/item:scale-110">{geographies.usa || "0%"}</span>
                 </div>
-                <div className="group/item flex items-center justify-between p-3.5 bg-white dark:bg-zinc-900 rounded-xl border border-brand-border dark:border-zinc-800 shadow-sm text-brand-text dark:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:border-brand-blue/40 hover:bg-brand-blue/5 dark:hover:bg-zinc-900/90 hover:shadow-md hover:shadow-brand-blue/10 cursor-pointer">
+                <div className="group/item flex items-center justify-between p-3.5 bg-white dark:bg-[#102922] rounded-xl border border-brand-border dark:border-[#16382e] shadow-sm text-brand-text dark:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:border-emerald-500/40 hover:bg-emerald-500/5 dark:hover:bg-[#14332a] hover:shadow-md cursor-pointer">
                   <span className="flex items-center gap-2.5 font-medium">
                     <span className="transition-transform duration-200 group-hover/item:scale-125 inline-block">
                       <IndiaFlag />
                     </span>
                     <span className="font-semibold">India</span>
                   </span>
-                  <span className="font-bold text-brand-blue transition-transform duration-200 group-hover/item:scale-110">21.6%</span>
+                  <span className="font-bold text-emerald-500 transition-transform duration-200 group-hover/item:scale-110">{geographies.india || "0%"}</span>
                 </div>
-                <div className="group/item flex items-center justify-between p-3.5 bg-white dark:bg-zinc-900 rounded-xl border border-brand-border dark:border-zinc-800 shadow-sm text-brand-text dark:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:border-brand-blue/40 hover:bg-brand-blue/5 dark:hover:bg-zinc-900/90 hover:shadow-md hover:shadow-brand-blue/10 cursor-pointer">
+                <div className="group/item flex items-center justify-between p-3.5 bg-white dark:bg-[#102922] rounded-xl border border-brand-border dark:border-[#16382e] shadow-sm text-brand-text dark:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:border-emerald-500/40 hover:bg-emerald-500/5 dark:hover:bg-[#14332a] hover:shadow-md cursor-pointer">
                   <span className="flex items-center gap-2.5 font-medium">
                     <span className="transition-transform duration-200 group-hover/item:scale-125 inline-block">
                       <UKFlag />
                     </span>
                     <span className="font-semibold">UK</span>
                   </span>
-                  <span className="font-bold text-brand-blue transition-transform duration-200 group-hover/item:scale-110">4.6%</span>
+                  <span className="font-bold text-emerald-500 transition-transform duration-200 group-hover/item:scale-110">{geographies.uk || "0%"}</span>
                 </div>
-                <div className="group/item flex items-center justify-between p-3.5 bg-white dark:bg-zinc-900 rounded-xl border border-brand-border dark:border-zinc-800 shadow-sm text-brand-text dark:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:border-brand-blue/40 hover:bg-brand-blue/5 dark:hover:bg-zinc-900/90 hover:shadow-md hover:shadow-brand-blue/10 cursor-pointer">
+                <div className="group/item flex items-center justify-between p-3.5 bg-white dark:bg-[#102922] rounded-xl border border-brand-border dark:border-[#16382e] shadow-sm text-brand-text dark:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:border-emerald-500/40 hover:bg-emerald-500/5 dark:hover:bg-[#14332a] hover:shadow-md cursor-pointer">
                   <span className="flex items-center gap-2.5 font-medium">
                     <span className="transition-transform duration-200 group-hover/item:scale-125 inline-block">
                       <GermanyFlag />
                     </span>
                     <span className="font-semibold">Germany</span>
                   </span>
-                  <span className="font-bold text-brand-blue transition-transform duration-200 group-hover/item:scale-110">3.9%</span>
+                  <span className="font-bold text-emerald-500 transition-transform duration-200 group-hover/item:scale-110">{geographies.germany || "0%"}</span>
                 </div>
               </div>
             </div>
 
-            <div className="group relative bg-brand-bg dark:bg-zinc-950 rounded-2xl p-6 shadow-sm overflow-hidden border border-brand-border dark:border-zinc-800 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-brand-blue/10 dark:hover:shadow-brand-blue/5 hover:border-brand-blue/40 dark:hover:border-brand-blue/40">
+            <div className="group relative bg-brand-bg dark:bg-[#0c201a] rounded-2xl p-6 shadow-sm overflow-hidden border border-brand-border dark:border-[#16382e] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-500/5 hover:border-emerald-500/40 dark:hover:border-emerald-500/40">
               {/* Ambient top border glow line */}
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-brand-blue to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-              <div className="absolute top-0 right-0 p-4 text-brand-blue/10 dark:text-brand-blue/20 transition-all duration-500 ease-out group-hover:scale-125 group-hover:rotate-6 group-hover:text-brand-blue/25 dark:group-hover:text-brand-blue/35 pointer-events-none">
+              <div className="absolute top-0 right-0 p-4 text-emerald-500/10 dark:text-emerald-500/20 transition-all duration-500 ease-out group-hover:scale-125 group-hover:rotate-6 pointer-events-none">
                 <ShieldCheck className="w-24 h-24" />
               </div>
-              <h3 className="font-heading text-lg font-bold mb-2 text-brand-text dark:text-white relative z-10 transition-colors duration-300 group-hover:text-brand-blue dark:group-hover:text-blue-400">
-                High Buyer Intent
+              <h3 className="font-heading text-lg font-bold mb-2 text-brand-text dark:text-white relative z-10 transition-colors duration-300 group-hover:text-emerald-500 dark:group-hover:text-emerald-400">
+                {buyerIntent.title || "High Buyer Intent"}
               </h3>
-              <p className="text-brand-muted dark:text-zinc-400 text-sm mb-4 relative z-10">
-                Our audience actively searches for SaaS tools to solve their workflow bottlenecks.
+              <p className="text-brand-muted dark:text-emerald-200/70 text-sm mb-4 relative z-10">
+                {buyerIntent.desc || "Our audience actively searches for SaaS tools to solve their workflow bottlenecks."}
               </p>
               <div className="flex flex-wrap gap-2 relative z-10">
-                <span className="text-xs font-bold px-3 py-1.5 bg-brand-blue/10 dark:bg-brand-blue/20 text-brand-blue dark:text-blue-300 rounded-lg transition-all duration-200 hover:scale-105 hover:bg-brand-blue hover:text-white dark:hover:bg-brand-blue dark:hover:text-white cursor-pointer hover:shadow-md hover:shadow-brand-blue/20">
-                  Automation Builders
-                </span>
-                <span className="text-xs font-bold px-3 py-1.5 bg-brand-blue/10 dark:bg-brand-blue/20 text-brand-blue dark:text-blue-300 rounded-lg transition-all duration-200 hover:scale-105 hover:bg-brand-blue hover:text-white dark:hover:bg-brand-blue dark:hover:text-white cursor-pointer hover:shadow-md hover:shadow-brand-blue/20">
-                  Tech Professionals
-                </span>
-                <span className="text-xs font-bold px-3 py-1.5 bg-brand-blue/10 dark:bg-brand-blue/20 text-brand-blue dark:text-blue-300 rounded-lg transition-all duration-200 hover:scale-105 hover:bg-brand-blue hover:text-white dark:hover:bg-brand-blue dark:hover:text-white cursor-pointer hover:shadow-md hover:shadow-brand-blue/20">
-                  Agency Owners
-                </span>
+                {(buyerIntent.badges || ["Automation Builders", "Tech Professionals", "Agency Owners"]).map((badge: string, bIdx: number) => (
+                  <span key={bIdx} className="text-xs font-bold px-3 py-1.5 bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 rounded-lg transition-all duration-200 hover:scale-105 hover:bg-emerald-500 hover:text-white dark:hover:bg-emerald-500 dark:hover:text-white cursor-pointer shadow-sm">
+                    {badge}
+                  </span>
+                ))}
               </div>
             </div>
           </div>

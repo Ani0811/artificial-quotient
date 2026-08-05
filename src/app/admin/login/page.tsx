@@ -191,11 +191,11 @@ export default function AdminLogin() {
                 value={recoveryKey}
                 onChange={(e) => setRecoveryKey(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl border border-brand-border/80 dark:border-zinc-700 bg-white/50 dark:bg-zinc-950/50 focus:outline-none focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue dark:focus:border-brand-blue text-brand-text dark:text-white transition-all text-sm"
-                placeholder="e.g. AQ-RESET-2026 or sponsor@artificialquotient.com"
+                placeholder="Enter security recovery key or admin email"
                 required
               />
               <p className="text-[11px] text-brand-muted dark:text-zinc-500">
-                Default recovery key: <code className="bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">AQ-RESET-2026</code> or admin email.
+                Enter one of the recovery keys configured in your <code className="bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">ADMIN_RECOVERY_KEYS</code> environment variable.
               </p>
             </div>
 

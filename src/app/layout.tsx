@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   title: "Artificial Quotient — AI Automation Workflows",
   description: "Automated AI workflows for different industries",
   icons: {
-    icon: "/favicon.svg",
+    icon: "/logo/logo.jpeg",
   },
 };
 
@@ -40,10 +40,10 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
-      <body suppressHydrationWarning className={`${inter.variable} ${outfit.variable} ${caveat.variable} antialiased bg-brand-bg dark:bg-zinc-950 text-brand-text dark:text-zinc-100 font-body flex flex-col min-h-screen transition-colors duration-200 relative`}>
+      <body suppressHydrationWarning className={`${inter.variable} ${outfit.variable} ${caveat.variable} antialiased bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-emerald-50 font-body flex flex-col min-h-screen transition-colors duration-200 relative`}>
         {/* Global Ambient Background Glows */}
-        <div className="fixed top-0 left-1/4 w-[500px] h-[500px] bg-brand-blue/10 dark:bg-brand-blue/15 blur-[120px] rounded-full pointer-events-none z-0"></div>
-        <div className="fixed bottom-0 right-1/4 w-[600px] h-[600px] bg-purple-500/10 dark:bg-indigo-500/15 blur-[140px] rounded-full pointer-events-none z-0"></div>
+        <div className="fixed top-0 left-1/4 w-[500px] h-[500px] bg-emerald-500/10 dark:bg-emerald-500/15 blur-[120px] rounded-full pointer-events-none z-0"></div>
+        <div className="fixed bottom-0 right-1/4 w-[600px] h-[600px] bg-teal-500/10 dark:bg-emerald-700/15 blur-[140px] rounded-full pointer-events-none z-0"></div>
 
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <Navbar isAdmin={isAdmin} />

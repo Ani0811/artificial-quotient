@@ -59,11 +59,21 @@ export default function Home() {
   return (
     <div className="flex flex-col">
       <Hero />
-      <AudienceSnapshot />
-      <WhatPerforms />
-      <SponsorResults />
-      <RateCard />
-      <CampaignWorkflow />
+      <div id="stats" className="scroll-mt-16">
+        <AudienceSnapshot />
+      </div>
+      <div id="case-studies" className="scroll-mt-16">
+        <WhatPerforms />
+      </div>
+      <div id="sponsor-results" className="scroll-mt-16">
+        <SponsorResults />
+      </div>
+      <div id="sponsor" className="scroll-mt-16">
+        <RateCard />
+      </div>
+      <div id="workflow" className="scroll-mt-16">
+        <CampaignWorkflow />
+      </div>
       
       {/* Bottom CTA */}
       <section className="w-full py-24 px-4 border-t border-brand-border dark:border-zinc-800 relative transition-colors duration-200 bg-grid-pattern overflow-hidden">
@@ -84,7 +94,9 @@ export default function Home() {
               Join leading AI automation tools sponsoring Artificial Quotient.
             </p>
             <a
-              href="mailto:sponsor@artificialquotient.com?subject=Sponsorship%20Inquiry"
+              href="https://forms.gle/4uTUZkEi5o3iqYrs5"
+              target="_blank"
+              rel="noreferrer"
               className="inline-block bg-brand-blue hover:bg-brand-blue-hover text-white px-8 py-4 rounded-xl font-bold text-lg transition-all shadow-lg shadow-brand-blue/25 hover:shadow-xl hover:shadow-brand-blue/35 hover:-translate-y-0.5"
             >
               Inquire About Sponsorship
