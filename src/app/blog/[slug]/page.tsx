@@ -21,8 +21,8 @@ export default function BlogPost() {
           </h1>
           
           <div className="flex items-center gap-4 border-b border-brand-border dark:border-zinc-800 pb-8">
-            <div className="w-12 h-12 bg-brand-dark dark:bg-zinc-800 rounded-full flex items-center justify-center text-xl">
-              🐼
+            <div className="w-12 h-12 bg-brand-dark dark:bg-zinc-800 rounded-full flex items-center justify-center overflow-hidden border border-emerald-500/30">
+              <img src="/logo/logo.jpeg" alt="Artificial Quotient Logo" className="w-full h-full object-cover" />
             </div>
             <div>
               <p className="font-bold text-brand-text dark:text-white">Adarsh Pillai</p>
