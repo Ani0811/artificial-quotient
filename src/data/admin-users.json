@@ -1,0 +1,24 @@
+[
+  {
+    "id": "admin-1",
+    "name": "Primary Admin",
+    "email": "admin@artificialquotient.com",
+    "password": "admin123",
+    "role": "Super Admin",
+    "permissions": ["stats", "case-studies", "what-performs", "tools", "blog", "backup", "users"],
+    "recoveryKey": "AQ-SEC-9842",
+    "status": "Active",
+    "lastLogin": "2026-08-08T14:30:00.000Z"
+  },
+  {
+    "id": "admin-2",
+    "name": "Campaign Manager",
+    "email": "partnerships@artificialquotient.com",
+    "password": "partner123",
+    "role": "Editor",
+    "permissions": ["case-studies", "what-performs", "tools", "blog"],
+    "recoveryKey": "AQ-SEC-4173",
+    "status": "Active",
+    "lastLogin": "2026-08-07T11:15:00.000Z"
+  }
+]

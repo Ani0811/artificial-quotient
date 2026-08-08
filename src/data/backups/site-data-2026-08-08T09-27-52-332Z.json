@@ -35,9 +35,9 @@
       "clicks": "1.4k+",
       "type": "Dedicated Video",
       "thumb": "🎬",
-      "thumbnail": "/uploads/1786190125631_Screenshot__1_.png",
+      "highlight": "High Conversion",
       "ytUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-      "highlight": "High Conversion"
+      "thumbnail": "/uploads/1786181270594_Screenshot__1_.png"
     },
     {
       "id": "2",
@@ -46,9 +46,9 @@
       "clicks": "950+",
       "type": "Integration",
       "thumb": "⚡",
-      "thumbnail": "/uploads/1786190129096_Screenshot__2_.png",
+      "highlight": "Solid ROI",
       "ytUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-      "highlight": "Solid ROI"
+      "thumbnail": ""
     },
     {
       "id": "3",
@@ -57,9 +57,9 @@
       "clicks": "2.1k+",
       "type": "Dedicated Video",
       "thumb": "🤖",
-      "thumbnail": "/uploads/1786190136501_Screenshot_2026-05-16_163503.png",
+      "highlight": "Viral Reach",
       "ytUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-      "highlight": "Viral Reach"
+      "thumbnail": ""
     }
   ],
   "sponsorResults": [
@@ -68,34 +68,20 @@
       "partnerName": "Revid.AI",
       "campaignType": "Dedicated Video",
       "quote": "The highest converting sponsorship we've ran this quarter. Incredible audience fit.",
-      "quoteFont": "Caveat",
       "stat1Label": "Signups Generated",
       "stat1Value": "450+",
       "stat2Label": "Est. ROI Multiplier",
-      "stat2Value": "3.2x",
-      "description": "Full end-to-end dedicated video breakdown showcasing how Revid.AI automates viral short-form video generation using Make.com and custom AI prompts.",
-      "deliverables": "10-minute dedicated YouTube video, custom workflow blueprint JSON download, and featured link in newsletter.",
-      "ytUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-      "roiBreakdown": "3.2x Return on Investment within 30 days of campaign launch",
-      "publishDate": "Q2 2026",
-      "logoUrl": ""
+      "stat2Value": "3.2x"
     },
     {
       "id": "2",
       "partnerName": "Flashloop",
       "campaignType": "Integration",
       "quote": "We saw an immediate spike in traffic during the first 48 hours of upload.",
-      "quoteFont": "Dancing Script",
       "stat1Label": "Link Clicks",
       "stat1Value": "1,200+",
       "stat2Label": "Cost Per Click",
-      "stat2Value": "$0.25",
-      "description": "Mid-roll integration highlighting Flashloop's API speed and web automation webhooks for automated content pipelines.",
-      "deliverables": "60-second video integration, pinned YouTube comment with tracked affiliate link, and Tool Vault placement.",
-      "ytUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-      "roiBreakdown": "Instant 1,200+ direct clicks with $0.25 effective CPC",
-      "publishDate": "Q2 2026",
-      "logoUrl": ""
+      "stat2Value": "$0.25"
     }
   ],
   "tools": [
@@ -106,19 +92,19 @@
       "category": "Automation",
       "discount": "20% OFF 1st Year",
       "desc": "The ultimate visual automation platform for building advanced workflows without code.",
-      "tryUrl": "https://make.com"
+      "tryUrl": "https://make.com",
+      "tutorialUrl": "https://youtube.com"
     }
   ],
   "blog": [
     {
       "id": "1",
       "title": "How to Automate Short Form Videos with Make.com & AI",
+      "cover": "",
       "category": "Tutorials & Workflows",
       "excerpt": "Learn step-by-step how to build fully automated video generation workflows using Make.com and AI tools.",
       "ytUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-      "author": "Artificial Quotient",
-      "cover": "",
-      "content": "Learn step-by-step how to build fully automated video generation workflows using Make.com and AI tools."
+      "author": "Artificial Quotient"
     }
   ]
 }

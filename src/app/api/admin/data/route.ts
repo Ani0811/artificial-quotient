@@ -1,50 +1,101 @@
 import { NextResponse } from "next/server";
+import { initDatabase } from "@/lib/db";
+import { 
+  getSiteConfig, 
+  upsertSiteConfig, 
+  getSponsorCaseStudies, 
+  syncSponsorCaseStudies, 
+  getWhatPerforms, 
+  syncWhatPerforms, 
+  getToolItems, 
+  syncToolItems, 
+  getBlogArticles, 
+  syncBlogArticles 
+} from "@/schema";
 import fs from "fs/promises";
 import path from "path";
 
-const dataFilePath = path.join(process.cwd(), "src", "data", "site-data.json");
+export const dynamic = "force-dynamic";
+
+const filePath = path.join(process.cwd(), "src", "data", "site-data.json");
 const backupDir = path.join(process.cwd(), "src", "data", "backups");
 
 export async function GET() {
   try {
-    const fileContents = await fs.readFile(dataFilePath, "utf8");
+    await initDatabase();
+
+    const siteConfigData = await getSiteConfig();
+    if (siteConfigData) {
+      const sponsorResults = await getSponsorCaseStudies();
+      const whatPerforms = await getWhatPerforms();
+      const tools = await getToolItems();
+      const blog = await getBlogArticles();
+
+      return NextResponse.json({
+        stats: siteConfigData.stats,
+        rates: siteConfigData.rates,
+        demographics: siteConfigData.demographics,
+        geographies: siteConfigData.geographies,
+        sponsorResults,
+        whatPerforms,
+        tools,
+        blog,
+        dbStatus: "Connected to MySQL (AQ-Dashboard) via Knex",
+      });
+    }
+
+    // Fallback to JSON if database rows empty
+    const fileContents = await fs.readFile(filePath, "utf8");
     const data = JSON.parse(fileContents);
-    return NextResponse.json(data);
-  } catch {
-    return NextResponse.json({ error: "Failed to read site data" }, { status: 500 });
+    return NextResponse.json({ ...data, dbStatus: "Fallback JSON Data Store" });
+  } catch (err: any) {
+    console.error("GET site data error:", err);
+    try {
+      const fileContents = await fs.readFile(filePath, "utf8");
+      const data = JSON.parse(fileContents);
+      return NextResponse.json({ ...data, dbStatus: "Fallback JSON (MySQL Error)" });
+    } catch {
+      return NextResponse.json({ error: "Failed to read site data" }, { status: 500 });
+    }
   }
 }
 
-export async function POST(req: Request) {
+export async function POST(request: Request) {
   try {
-    const newData = await req.json();
-    const formatted = JSON.stringify(newData, null, 2);
+    const data = await request.json();
+    await initDatabase();
 
-    // Write main data file
-    await fs.writeFile(dataFilePath, formatted, "utf8");
+    // Delegate database operations to specialized schema modules
+    await upsertSiteConfig(data);
 
-    // Automatic server-side backup snapshot
-    try {
-      await fs.mkdir(backupDir, { recursive: true });
-      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-      const backupPath = path.join(backupDir, `site-data-${timestamp}.json`);
-      await fs.writeFile(backupPath, formatted, "utf8");
-
-      // Maintain rolling limit of 20 backups
-      const files = await fs.readdir(backupDir);
-      const jsonBackups = files.filter(f => f.startsWith("site-data-") && f.endsWith(".json")).sort();
-      if (jsonBackups.length > 20) {
-        const toDelete = jsonBackups.slice(0, jsonBackups.length - 20);
-        for (const file of toDelete) {
-          await fs.unlink(path.join(backupDir, file)).catch(() => {});
-        }
-      }
-    } catch {
-      // Ignore backup error if write succeeded
+    if (data.sponsorResults && Array.isArray(data.sponsorResults)) {
+      await syncSponsorCaseStudies(data.sponsorResults);
     }
 
-    return NextResponse.json({ success: true, data: newData });
-  } catch {
-    return NextResponse.json({ error: "Failed to save site data" }, { status: 500 });
+    if (data.whatPerforms && Array.isArray(data.whatPerforms)) {
+      await syncWhatPerforms(data.whatPerforms);
+    }
+
+    if (data.tools && Array.isArray(data.tools)) {
+      await syncToolItems(data.tools);
+    }
+
+    if (data.blog && Array.isArray(data.blog)) {
+      await syncBlogArticles(data.blog);
+    }
+
+    // Also write JSON file backup snapshot
+    const formattedData = JSON.stringify(data, null, 2);
+    await fs.writeFile(filePath, formattedData, "utf8");
+
+    await fs.mkdir(backupDir, { recursive: true });
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const snapshotPath = path.join(backupDir, `site-data-${timestamp}.json`);
+    await fs.writeFile(snapshotPath, formattedData, "utf8");
+
+    return NextResponse.json({ success: true, message: "Saved to MySQL (AQ-Dashboard) via Knex Schema Modules!" });
+  } catch (err: any) {
+    console.error("POST site data error:", err);
+    return NextResponse.json({ success: false, message: err.message || "Failed to update site data" }, { status: 500 });
   }
 }

@@ -29,6 +29,8 @@ export const metadata: Metadata = {
 };
 
 import { cookies } from "next/headers";
+import FontProvider from "@/components/font-provider";
+import ScrollToTop from "@/components/scroll-to-top";
 
 export default async function RootLayout({
   children,
@@ -46,11 +48,14 @@ export default async function RootLayout({
         <div className="fixed bottom-0 right-1/4 w-[600px] h-[600px] bg-teal-500/10 dark:bg-emerald-700/15 blur-[140px] rounded-full pointer-events-none z-0"></div>
 
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <Navbar isAdmin={isAdmin} />
-          <main className="flex-grow relative z-10">
-            {children}
-          </main>
-          <Footer />
+          <FontProvider>
+            <Navbar isAdmin={isAdmin} />
+            <main className="flex-grow relative z-10">
+              {children}
+            </main>
+            <Footer />
+            <ScrollToTop />
+          </FontProvider>
         </ThemeProvider>
       </body>
     </html>

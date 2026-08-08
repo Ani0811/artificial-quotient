@@ -1,37 +1,23 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { setAdminPassword } from "@/lib/auth-store";
+import { setAdminPassword, getAdminUsers, saveAdminUsers } from "@/lib/auth-store";
 
 export const dynamic = "force-dynamic";
 
-function getRecoveryKeys(): string[] {
+function getEnvRecoveryKeys(): string[] {
   const envKeys = process.env.ADMIN_RECOVERY_KEYS;
-  if (!envKeys) {
-    return [];
-  }
+  if (!envKeys) return [];
   return envKeys.split(",").map((key) => key.trim()).filter(Boolean);
 }
 
 export async function POST(request: Request) {
   try {
-    const { recoveryKey, newPassword } = await request.json();
+    const { email, recoveryKey, newPassword } = await request.json();
 
     if (!recoveryKey || !newPassword) {
       return NextResponse.json(
-        { success: false, message: "Recovery key and new password are required." },
+        { success: false, message: "Security recovery key and new password are required." },
         { status: 400 }
-      );
-    }
-
-    const validKeys = getRecoveryKeys();
-    const isKeyValid = validKeys.some(
-      (key) => key.toLowerCase() === recoveryKey.trim().toLowerCase()
-    );
-
-    if (!isKeyValid) {
-      return NextResponse.json(
-        { success: false, message: "Invalid Recovery Key or Admin Security Email." },
-        { status: 401 }
       );
     }
 
@@ -42,10 +28,48 @@ export async function POST(request: Request) {
       );
     }
 
-    // Update the password in memory
+    const adminUsers = await getAdminUsers();
+    const envKeys = getEnvRecoveryKeys();
+
+    const normalizedKey = recoveryKey.trim().toLowerCase();
+
+    // Check if recovery key matches an admin user
+    let matchedUserIndex = -1;
+
+    if (email) {
+      const normalizedEmail = email.trim().toLowerCase();
+      matchedUserIndex = adminUsers.findIndex(
+        (u) =>
+          u.email.toLowerCase() === normalizedEmail &&
+          u.recoveryKey.trim().toLowerCase() === normalizedKey
+      );
+    }
+
+    if (matchedUserIndex === -1) {
+      matchedUserIndex = adminUsers.findIndex(
+        (u) => u.recoveryKey.trim().toLowerCase() === normalizedKey
+      );
+    }
+
+    const isEnvKeyValid = envKeys.some((k) => k.toLowerCase() === normalizedKey);
+
+    if (matchedUserIndex === -1 && !isEnvKeyValid) {
+      return NextResponse.json(
+        { success: false, message: "Invalid Security Recovery Key or Admin Email." },
+        { status: 401 }
+      );
+    }
+
+    // Update password
+    if (matchedUserIndex !== -1) {
+      adminUsers[matchedUserIndex].password = newPassword;
+      adminUsers[matchedUserIndex].lastLogin = new Date().toISOString();
+      await saveAdminUsers(adminUsers);
+    }
+
     setAdminPassword(newPassword);
 
-    // Automatically authenticate the user
+    // Automatically authenticate user
     const cookieStore = await cookies();
     cookieStore.set("admin_session", "authenticated", {
       httpOnly: true,
@@ -57,7 +81,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      message: "Password reset successful! You are now logged in.",
+      message: "Password reset successfully! Authenticated and redirecting...",
     });
   } catch {
     return NextResponse.json(

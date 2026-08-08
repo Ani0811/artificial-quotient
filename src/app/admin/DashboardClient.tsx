@@ -2,10 +2,11 @@
 
 import { 
   Save, BarChart, Database, FileText, LogOut, Check, ExternalLink, 
-  UploadCloud, Eye, Edit3, Sparkles, Award, Plus, Trash2, ShieldCheck
+  UploadCloud, Eye, Edit3, Sparkles, Award, Plus, Trash2, ShieldCheck, Users
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { QUOTE_FONT_OPTIONS, loadGoogleFont } from "@/components/font-provider";
 
 interface ToolItem {
   id: string;
@@ -40,6 +41,36 @@ interface PerformItem {
   thumbnail?: string;
 }
 
+interface SponsorItem {
+  id: string;
+  partnerName: string;
+  campaignType: string;
+  quote: string;
+  quoteFont?: string;
+  stat1Label: string;
+  stat1Value: string;
+  stat2Label: string;
+  stat2Value: string;
+  description?: string;
+  deliverables?: string;
+  ytUrl?: string;
+  roiBreakdown?: string;
+  publishDate?: string;
+  logoUrl?: string;
+}
+
+interface AdminUser {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+  role: "Super Admin" | "Editor" | "Viewer";
+  permissions: string[];
+  recoveryKey: string;
+  status: "Active" | "Inactive";
+  lastLogin?: string;
+}
+
 function getYoutubeId(url?: string) {
   if (!url) return null;
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -48,12 +79,12 @@ function getYoutubeId(url?: string) {
 }
 
 export default function DashboardClient() {
-  const [activeTab, setActiveTab] = useState<"stats" | "case-studies" | "what-performs" | "tools" | "blog" | "backup">("stats");
+  const [activeTab, setActiveTab] = useState<"stats" | "case-studies" | "what-performs" | "tools" | "blog" | "users" | "backup">("stats");
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [layoutMode, setLayoutMode] = useState<"split" | "edit" | "preview">("split");
   const [loading, setLoading] = useState(true);
-
-  // Form states initialized with defaults
+  const [dbStatus, setDbStatus] = useState<string>("Connected to MySQL: AQ-Dashboard");
+  const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [statsForm, setStatsForm] = useState({
     subscribers: "10,100+",
     subscribersSub: "+12.4% this month",
@@ -122,7 +153,7 @@ export default function DashboardClient() {
     },
   ]);
 
-  const [sponsorResults, setSponsorResults] = useState([
+  const [sponsorResults, setSponsorResults] = useState<SponsorItem[]>([
     {
       id: "1",
       partnerName: "Revid.AI",
@@ -184,9 +215,22 @@ export default function DashboardClient() {
           if (data.demographics) setDemoForm(data.demographics);
           if (data.geographies) setGeoForm(data.geographies);
           if (data.whatPerforms) setWhatPerforms(data.whatPerforms);
-          if (data.sponsorResults) setSponsorResults(data.sponsorResults);
+          if (data.sponsorResults) {
+            setSponsorResults(data.sponsorResults);
+            data.sponsorResults.forEach((s: { quoteFont?: string }) => {
+              if (s.quoteFont) loadGoogleFont(s.quoteFont);
+            });
+          }
           if (data.tools && data.tools.length > 0) setToolsList(data.tools);
           if (data.blog && data.blog.length > 0) setBlogList(data.blog);
+          if (data.dbStatus) setDbStatus(data.dbStatus);
+        }
+
+        const usersRes = await fetch("/api/admin/users");
+        if (usersRes.ok) {
+          const usersData = await usersRes.json();
+          if (usersData.users) setAdminUsers(usersData.users);
+          if (usersData.dbStatus) setDbStatus(usersData.dbStatus);
         }
       } catch {
         // Fall back to initial defaults
@@ -220,6 +264,23 @@ export default function DashboardClient() {
       // Ignore error
     } finally {
       setUploadingField(null);
+    }
+  };
+
+  const handleSaveUsers = async () => {
+    try {
+      const res = await fetch("/api/admin/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ users: adminUsers }),
+      });
+
+      if (res.ok) {
+        setSavedSuccess(true);
+        setTimeout(() => setSavedSuccess(false), 3000);
+      }
+    } catch {
+      // Ignore error
     }
   };
 
@@ -290,7 +351,12 @@ export default function DashboardClient() {
       if (data.demographics) setDemoForm(data.demographics);
       if (data.geographies) setGeoForm(data.geographies);
       if (data.whatPerforms) setWhatPerforms(data.whatPerforms);
-      if (data.sponsorResults) setSponsorResults(data.sponsorResults);
+      if (data.sponsorResults) {
+        setSponsorResults(data.sponsorResults);
+        data.sponsorResults.forEach((s: { quoteFont?: string }) => {
+          if (s.quoteFont) loadGoogleFont(s.quoteFont);
+        });
+      }
       if (data.tools) setToolsList(data.tools);
       if (data.blog) setBlogList(data.blog);
 
@@ -345,6 +411,9 @@ export default function DashboardClient() {
                 </h1>
                 <span className="text-xs bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-bold">
                   Auth Active
+                </span>
+                <span className="text-xs bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1.5">
+                  <Database className="w-3.5 h-3.5 text-emerald-400" /> {dbStatus}
                 </span>
               </div>
               <p className="text-sm text-brand-muted dark:text-emerald-200/70 font-medium mt-0.5">
@@ -469,6 +538,17 @@ export default function DashboardClient() {
             </button>
 
             <button
+              onClick={() => setActiveTab("users")}
+              className={`flex items-center gap-3.5 px-5 py-3.5 rounded-xl text-left font-bold text-sm transition-all shadow-sm ${
+                activeTab === "users"
+                  ? "bg-emerald-600 text-white shadow-emerald-600/20"
+                  : "bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] text-brand-muted dark:text-emerald-200/70 hover:text-white hover:bg-emerald-50 dark:hover:bg-[#102922]"
+              }`}
+            >
+              <Users className="w-4 h-4" /> Admins &amp; Permissions ({adminUsers.filter(u => u.status === "Active").length})
+            </button>
+
+            <button
               onClick={() => setActiveTab("backup")}
               className={`flex items-center gap-3.5 px-5 py-3.5 rounded-xl text-left font-bold text-sm transition-all shadow-sm ${
                 activeTab === "backup"
@@ -502,6 +582,7 @@ export default function DashboardClient() {
                       {activeTab === "what-performs" && "Manage What Performs Cards"}
                       {activeTab === "tools" && "Manage AI Tool Vault"}
                       {activeTab === "blog" && "Manage Script-to-Blog Hub"}
+                      {activeTab === "users" && "Manage Administrators & Access Permissions"}
                       {activeTab === "backup" && "System Backup & Data Operations"}
                     </h2>
                   </div>
@@ -649,7 +730,7 @@ export default function DashboardClient() {
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
-                            <div className="grid grid-cols-2 gap-4 pr-10">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pr-10">
                               <div>
                                 <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Partner Brand Name</label>
                                 <input 
@@ -679,7 +760,32 @@ export default function DashboardClient() {
                             </div>
 
                             <div>
-                              <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Testimonial Quote</label>
+                              <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80">
+                                  Testimonial Quote
+                                </label>
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-[11px] font-bold text-brand-muted dark:text-emerald-200/60 uppercase">
+                                    Quote Font:
+                                  </span>
+                                  <select
+                                    value={item.quoteFont || "Caveat"}
+                                    onChange={(e) => {
+                                      const next = [...sponsorResults];
+                                      next[idx] = { ...next[idx], quoteFont: e.target.value };
+                                      setSponsorResults(next);
+                                      loadGoogleFont(e.target.value);
+                                    }}
+                                    className="border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer"
+                                  >
+                                    {QUOTE_FONT_OPTIONS.map((opt) => (
+                                      <option key={opt.value} value={opt.value}>
+                                        {opt.label}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+                              </div>
                               <textarea 
                                 rows={2}
                                 value={item.quote} 
@@ -688,11 +794,12 @@ export default function DashboardClient() {
                                   next[idx].quote = e.target.value;
                                   setSponsorResults(next);
                                 }}
+                                style={{ fontFamily: `'${item.quoteFont || "Caveat"}', cursive, sans-serif` }}
                                 className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm" 
                               />
                             </div>
 
-                            <div className="grid grid-cols-4 gap-3">
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                               <div>
                                 <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">Stat 1 Label</label>
                                 <input 
@@ -740,6 +847,82 @@ export default function DashboardClient() {
                                   onChange={(e) => {
                                     const next = [...sponsorResults];
                                     next[idx].stat2Value = e.target.value;
+                                    setSponsorResults(next);
+                                  }}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs" 
+                                />
+                              </div>
+                            </div>
+
+                            <div className="pt-2 border-t border-brand-border dark:border-[#16382e] space-y-3">
+                              <div className="text-xs font-bold text-emerald-500 uppercase tracking-wider">
+                                Extended Case Study Details (Modal View)
+                              </div>
+
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                  <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">
+                                    Featured YouTube Video URL
+                                  </label>
+                                  <input 
+                                    type="text" 
+                                    placeholder="https://youtube.com/watch?v=..."
+                                    value={item.ytUrl || ""} 
+                                    onChange={(e) => {
+                                      const next = [...sponsorResults];
+                                      next[idx] = { ...next[idx], ytUrl: e.target.value };
+                                      setSponsorResults(next);
+                                    }}
+                                    className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs" 
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">
+                                    Publish Date / Period
+                                  </label>
+                                  <input 
+                                    type="text" 
+                                    placeholder="e.g. Q2 2026"
+                                    value={item.publishDate || ""} 
+                                    onChange={(e) => {
+                                      const next = [...sponsorResults];
+                                      next[idx] = { ...next[idx], publishDate: e.target.value };
+                                      setSponsorResults(next);
+                                    }}
+                                    className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs" 
+                                  />
+                                </div>
+                              </div>
+
+                              <div>
+                                <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">
+                                  Campaign Overview &amp; Narrative
+                                </label>
+                                <textarea 
+                                  rows={2}
+                                  placeholder="Full campaign narrative and target audience fit..."
+                                  value={item.description || ""} 
+                                  onChange={(e) => {
+                                    const next = [...sponsorResults];
+                                    next[idx] = { ...next[idx], description: e.target.value };
+                                    setSponsorResults(next);
+                                  }}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs" 
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">
+                                  Deliverables Provided
+                                </label>
+                                <input 
+                                  type="text" 
+                                  placeholder="e.g. 10-min YouTube video, workflow JSON download, newsletter link"
+                                  value={item.deliverables || ""} 
+                                  onChange={(e) => {
+                                    const next = [...sponsorResults];
+                                    next[idx] = { ...next[idx], deliverables: e.target.value };
                                     setSponsorResults(next);
                                   }}
                                   className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs" 
@@ -797,7 +980,7 @@ export default function DashboardClient() {
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
-                            <div className="grid grid-cols-2 gap-4 pr-10">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pr-10">
                               <div>
                                 <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Title / Tool Name</label>
                                 <input 
@@ -826,7 +1009,7 @@ export default function DashboardClient() {
                               </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                               <div>
                                 <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">YouTube Video Link</label>
                                 <input 
@@ -853,11 +1036,11 @@ export default function DashboardClient() {
                                       next[idx] = { ...next[idx], thumbnail: e.target.value };
                                       setWhatPerforms(next);
                                     }}
-                                    className="flex-1 border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs sm:text-sm" 
+                                    className="flex-1 min-w-0 border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs sm:text-sm" 
                                   />
                                   <label 
                                     htmlFor={`perform-thumb-input-${item.id}`}
-                                    className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold px-3.5 py-2 rounded-xl cursor-pointer text-xs flex items-center gap-1.5 border border-emerald-500/30 shrink-0"
+                                    className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold px-3 py-2 rounded-xl cursor-pointer text-xs flex items-center gap-1.5 border border-emerald-500/30 shrink-0 whitespace-nowrap"
                                   >
                                     {uploadingField === `perform-thumb-${item.id}` ? "Saving..." : "Upload"}
                                     <input 
@@ -880,7 +1063,7 @@ export default function DashboardClient() {
                               </div>
                             </div>
 
-                            <div className="grid grid-cols-3 gap-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                               <div>
                                 <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">Views Count</label>
                                 <input 
@@ -972,7 +1155,7 @@ export default function DashboardClient() {
                               <Trash2 className="w-4 h-4" />
                             </button>
 
-                            <div className="grid grid-cols-3 gap-4 pr-10">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pr-10">
                               <div>
                                 <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Tool Name</label>
                                 <input 
@@ -1028,7 +1211,7 @@ export default function DashboardClient() {
                               />
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                               <div>
                                 <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">Try Link URL</label>
                                 <input 
@@ -1106,7 +1289,7 @@ export default function DashboardClient() {
                               <Trash2 className="w-4 h-4" />
                             </button>
 
-                            <div className="grid grid-cols-2 gap-4 pr-10">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pr-10">
                               <div>
                                 <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Article Title</label>
                                 <input 
@@ -1149,7 +1332,7 @@ export default function DashboardClient() {
                               />
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                               <div>
                                 <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">YouTube Video Link</label>
                                 <input 
@@ -1188,6 +1371,196 @@ export default function DashboardClient() {
                           className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-md text-sm"
                         >
                           <Save className="w-4 h-4" /> Save Blog Articles
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* TAB: ADMIN USERS & PERMISSIONS */}
+                  {activeTab === "users" && (
+                    <div className="space-y-6 pt-1">
+                      <div className="flex justify-between items-start sm:items-center flex-wrap gap-3">
+                        <div>
+                          <h3 className="font-heading font-bold text-sm text-brand-text dark:text-emerald-400 uppercase tracking-wider flex items-center gap-2">
+                            <Users className="w-4 h-4 text-emerald-500" /> Active System Administrators
+                          </h3>
+                          <p className="text-xs text-brand-muted dark:text-emerald-200/70 mt-0.5">
+                            Manage system admin credentials, assign access permissions, and copy security recovery PINs.
+                          </p>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newAdmin: AdminUser = {
+                              id: `admin-${Date.now()}`,
+                              name: "New Administrator",
+                              email: `admin${adminUsers.length + 1}@artificialquotient.com`,
+                              password: "password123",
+                              role: "Editor",
+                              permissions: ["case-studies", "what-performs", "tools", "blog"],
+                              recoveryKey: `AQ-SEC-${Math.floor(1000 + Math.random() * 9000)}`,
+                              status: "Active",
+                              lastLogin: new Date().toISOString(),
+                            };
+                            setAdminUsers([...adminUsers, newAdmin]);
+                          }}
+                          className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold px-4 py-2 rounded-xl text-xs sm:text-sm flex items-center gap-1.5 border border-emerald-500/30 shadow-sm hover:bg-emerald-500/20 transition-all shrink-0"
+                        >
+                          <Plus className="w-4 h-4" /> Add Admin User
+                        </button>
+                      </div>
+
+                      <div className="space-y-4">
+                        {adminUsers.map((user, idx) => (
+                          <div key={user.id} className="p-4 sm:p-5 rounded-2xl border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] space-y-3.5 relative">
+                            {adminUsers.length > 1 && (
+                              <button
+                                type="button"
+                                onClick={() => setAdminUsers(adminUsers.filter((u) => u.id !== user.id))}
+                                className="absolute top-4 right-4 text-red-500 hover:text-red-600 p-1.5 bg-red-500/10 rounded-lg transition-colors"
+                                title="Remove administrator"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            )}
+
+                            {/* Row 1: Name & Email */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 pr-10">
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">
+                                  Admin Full Name
+                                </label>
+                                <input 
+                                  type="text" 
+                                  value={user.name} 
+                                  onChange={(e) => {
+                                    const next = [...adminUsers];
+                                    next[idx].name = e.target.value;
+                                    setAdminUsers(next);
+                                  }}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm font-bold" 
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">
+                                  Email Address
+                                </label>
+                                <input 
+                                  type="email" 
+                                  value={user.email} 
+                                  onChange={(e) => {
+                                    const next = [...adminUsers];
+                                    next[idx].email = e.target.value;
+                                    setAdminUsers(next);
+                                  }}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm" 
+                                />
+                              </div>
+                            </div>
+
+                            {/* Row 2: Password & Status */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">
+                                  Access Password
+                                </label>
+                                <input 
+                                  type="text" 
+                                  value={user.password} 
+                                  onChange={(e) => {
+                                    const next = [...adminUsers];
+                                    next[idx].password = e.target.value;
+                                    setAdminUsers(next);
+                                  }}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm font-mono" 
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">
+                                  Account Status
+                                </label>
+                                <select
+                                  value={user.status}
+                                  onChange={(e) => {
+                                    const next = [...adminUsers];
+                                    next[idx].status = e.target.value as "Active" | "Inactive";
+                                    setAdminUsers(next);
+                                  }}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm font-semibold cursor-pointer"
+                                >
+                                  <option value="Active">Active</option>
+                                  <option value="Inactive">Inactive (Disabled)</option>
+                                </select>
+                              </div>
+                            </div>
+
+                            {/* Row 3: Role & Recovery PIN */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">
+                                  Role &amp; Permissions
+                                </label>
+                                <select
+                                  value={user.role}
+                                  onChange={(e) => {
+                                    const next = [...adminUsers];
+                                    const newRole = e.target.value as "Super Admin" | "Editor" | "Viewer";
+                                    next[idx].role = newRole;
+                                    if (newRole === "Super Admin") {
+                                      next[idx].permissions = ["stats", "case-studies", "what-performs", "tools", "blog", "backup", "users"];
+                                    } else if (newRole === "Editor") {
+                                      next[idx].permissions = ["case-studies", "what-performs", "tools", "blog"];
+                                    } else {
+                                      next[idx].permissions = ["stats"];
+                                    }
+                                    setAdminUsers(next);
+                                  }}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm font-semibold cursor-pointer truncate"
+                                >
+                                  <option value="Super Admin">Super Admin (Full Access)</option>
+                                  <option value="Editor">Editor (Content Management)</option>
+                                  <option value="Viewer">Viewer (Read-Only Preview)</option>
+                                </select>
+                              </div>
+
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">
+                                  Password Recovery Key
+                                </label>
+                                <div className="flex items-center gap-2">
+                                  <input 
+                                    type="text" 
+                                    readOnly
+                                    value={user.recoveryKey} 
+                                    className="w-0 flex-1 border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs font-mono font-bold" 
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      navigator.clipboard.writeText(user.recoveryKey);
+                                      alert(`Recovery Key copied: ${user.recoveryKey}`);
+                                    }}
+                                    className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold px-3 py-2 rounded-xl text-xs border border-emerald-500/30 shrink-0 whitespace-nowrap"
+                                  >
+                                    Copy PIN
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="flex justify-end pt-5 border-t border-brand-border dark:border-[#16382e]">
+                        <button 
+                          type="button" 
+                          onClick={handleSaveUsers} 
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-md text-sm"
+                        >
+                          <Save className="w-4 h-4" /> Save &amp; Publish Admin Users
                         </button>
                       </div>
                     </div>
@@ -1299,7 +1672,12 @@ export default function DashboardClient() {
                               <span className="font-bold text-sm text-brand-text dark:text-white">{item.partnerName}</span>
                               <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500">{item.campaignType}</span>
                             </div>
-                            <p className="font-handwritten text-sm text-brand-muted dark:text-emerald-200/80 italic">&quot;{item.quote}&quot;</p>
+                            <p 
+                              style={{ fontFamily: item.quoteFont ? `'${item.quoteFont}', cursive, sans-serif` : undefined }}
+                              className="font-handwritten text-sm text-brand-muted dark:text-emerald-200/80 italic"
+                            >
+                              &quot;{item.quote}&quot;
+                            </p>
                             <div className="flex justify-between text-xs font-bold border-t border-brand-border dark:border-[#16382e] pt-2">
                               <span>{item.stat1Label}: <span className="text-emerald-500">{item.stat1Value}</span></span>
                               <span>{item.stat2Label}: <span className="text-emerald-500">{item.stat2Value}</span></span>
@@ -1377,6 +1755,48 @@ export default function DashboardClient() {
                           <p className="text-xs sm:text-sm text-brand-muted dark:text-emerald-200/70 leading-relaxed">{post.excerpt}</p>
                         </div>
                       ))}
+                    </div>
+                  )}
+
+                  {/* PREVIEW TAB: ADMIN USERS */}
+                  {activeTab === "users" && (
+                    <div className="space-y-5">
+                      <div className="flex items-center justify-between flex-wrap gap-2">
+                        <div className="text-sm font-bold text-brand-text dark:text-white">Active System Admins ({adminUsers.filter(u => u.status === "Active").length})</div>
+                        <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500">
+                          {adminUsers.length} Total Registered
+                        </span>
+                      </div>
+                      <div className="space-y-3">
+                        {adminUsers.map((u) => (
+                          <div key={u.id} className="p-4 rounded-xl border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div className="flex items-center gap-3 min-w-0">
+                              <div className="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center text-sm border border-emerald-500/30 shrink-0">
+                                {u.name.charAt(0)}
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <div className="font-bold text-sm text-brand-text dark:text-white flex items-center gap-2 flex-wrap">
+                                  <span className="truncate">{u.name}</span>
+                                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${
+                                    u.status === "Active" ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" : "bg-red-500/20 text-red-400 border border-red-500/30"
+                                  }`}>
+                                    {u.status}
+                                  </span>
+                                </div>
+                                <div className="text-xs text-brand-muted dark:text-emerald-200/70 truncate">{u.email}</div>
+                              </div>
+                            </div>
+                            <div className="shrink-0 flex sm:flex-col items-center sm:items-end justify-between gap-1 border-t sm:border-t-0 pt-2 sm:pt-0 border-brand-border dark:border-[#16382e]">
+                              <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 shrink-0">
+                                {u.role}
+                              </span>
+                              <span className="text-[10px] text-brand-muted dark:text-emerald-200/50 font-mono shrink-0">
+                                PIN: {u.recoveryKey}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
 

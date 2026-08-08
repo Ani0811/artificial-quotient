@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Lock, ArrowLeft, ShieldAlert, KeyRound, Eye, EyeOff, RotateCcw, CheckCircle2 } from "lucide-react";
+import { Lock, ArrowLeft, ShieldAlert, KeyRound, Eye, EyeOff, RotateCcw, CheckCircle2, Mail } from "lucide-react";
 import Link from "next/link";
 
 export default function AdminLogin() {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -13,6 +14,7 @@ export default function AdminLogin() {
 
   // Forgot Password state
   const [isForgotMode, setIsForgotMode] = useState(false);
+  const [recoveryEmail, setRecoveryEmail] = useState("");
   const [recoveryKey, setRecoveryKey] = useState("");
   const [newPassword, setNewPassword] = useState("");
 
@@ -27,7 +29,7 @@ export default function AdminLogin() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ email, password }),
       });
 
       if (res.ok) {
@@ -55,13 +57,13 @@ export default function AdminLogin() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ recoveryKey, newPassword }),
+        body: JSON.stringify({ email: recoveryEmail, recoveryKey, newPassword }),
       });
 
       const data = await res.json();
 
       if (res.ok && data.success) {
-        setSuccess("Password updated successfully! Redirecting to admin dashboard...");
+        setSuccess("Password updated successfully! Authenticated and redirecting...");
         setTimeout(() => {
           window.location.href = "/admin";
         }, 1200);
@@ -105,14 +107,32 @@ export default function AdminLogin() {
             Artificial<span className="text-brand-blue">Quotient</span>
           </h1>
           <p className="text-brand-muted dark:text-zinc-400 text-sm mt-2 text-center">
-            {isForgotMode ? "Admin Password Recovery" : "Security Gateway \u2022 Authorized Personnel Only"}
+            {isForgotMode ? "Robust Password Recovery System" : "Security Gateway \u2022 Authorized Personnel Only"}
           </p>
         </div>
 
         {!isForgotMode ? (
           /* Standard Login Form */
-          <form onSubmit={handleLogin} className="space-y-6">
-            <div className="space-y-2">
+          <form onSubmit={handleLogin} className="space-y-5">
+            <div className="space-y-1.5">
+              <label className="block text-sm font-medium text-brand-text dark:text-zinc-200">
+                Admin Email Address (Optional)
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-brand-muted dark:text-zinc-500">
+                  <Mail className="w-4 h-4" />
+                </div>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-brand-border/80 dark:border-zinc-700 bg-white/50 dark:bg-zinc-950/50 focus:outline-none focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue dark:focus:border-brand-blue text-brand-text dark:text-white transition-all text-sm"
+                  placeholder="admin@artificialquotient.com"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <label className="block text-sm font-medium text-brand-text dark:text-zinc-200">
                   Access Password
@@ -181,34 +201,47 @@ export default function AdminLogin() {
           </form>
         ) : (
           /* Reset Password Form */
-          <form onSubmit={handleResetPassword} className="space-y-5">
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-brand-text dark:text-zinc-200">
-                Security Recovery Key / Admin Email
+          <form onSubmit={handleResetPassword} className="space-y-4">
+            <div className="space-y-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-brand-muted dark:text-zinc-400">
+                Admin Email Address
+              </label>
+              <input
+                type="email"
+                value={recoveryEmail}
+                onChange={(e) => setRecoveryEmail(e.target.value)}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-brand-border/80 dark:border-zinc-700 bg-white/50 dark:bg-zinc-950/50 focus:outline-none focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue dark:focus:border-brand-blue text-brand-text dark:text-white transition-all text-xs sm:text-sm"
+                placeholder="admin@artificialquotient.com"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-brand-muted dark:text-zinc-400">
+                Security Recovery PIN / Key *
               </label>
               <input
                 type="text"
                 value={recoveryKey}
                 onChange={(e) => setRecoveryKey(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-brand-border/80 dark:border-zinc-700 bg-white/50 dark:bg-zinc-950/50 focus:outline-none focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue dark:focus:border-brand-blue text-brand-text dark:text-white transition-all text-sm"
-                placeholder="Enter security recovery key or admin email"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-brand-border/80 dark:border-zinc-700 bg-white/50 dark:bg-zinc-950/50 focus:outline-none focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue dark:focus:border-brand-blue text-brand-text dark:text-white transition-all text-xs sm:text-sm font-mono"
+                placeholder="e.g. AQ-SEC-9842"
                 required
               />
               <p className="text-[11px] text-brand-muted dark:text-zinc-500">
-                Enter one of the recovery keys configured in your <code className="bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">ADMIN_RECOVERY_KEYS</code> environment variable.
+                Enter your admin account recovery key or system master security key.
               </p>
             </div>
 
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-brand-text dark:text-zinc-200">
-                New Access Password
+            <div className="space-y-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-brand-muted dark:text-zinc-400">
+                New Access Password *
               </label>
               <input
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-brand-border/80 dark:border-zinc-700 bg-white/50 dark:bg-zinc-950/50 focus:outline-none focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue dark:focus:border-brand-blue text-brand-text dark:text-white transition-all text-sm"
-                placeholder="Enter new password"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-brand-border/80 dark:border-zinc-700 bg-white/50 dark:bg-zinc-950/50 focus:outline-none focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue dark:focus:border-brand-blue text-brand-text dark:text-white transition-all text-xs sm:text-sm"
+                placeholder="Enter new password (min. 4 chars)"
                 required
               />
             </div>
@@ -244,7 +277,7 @@ export default function AdminLogin() {
               ) : (
                 <>
                   <RotateCcw className="w-4 h-4" />
-                  Reset &amp; Login
+                  Reset Password &amp; Login
                 </>
               )}
             </button>

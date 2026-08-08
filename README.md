@@ -13,7 +13,7 @@ Artificial Quotient is a high-converting, modern web application and sponsorship
 - **Theming**: `next-themes` (Full Light & Dark Mode Support)
 - **Authentication**: HTTP-Only Cookie Session (`admin_session`) & In-Memory Recovery Manager
 - **Media Handling**: Server-Side Local Storage (`/public/uploads`) via API Upload Routes
-- **Data Persistence**: Local JSON Store (`src/data/site-data.json`) & Automated Snapshots (`src/data/backups/`)
+- **Data Persistence**: Direct MySQL (`AQ-Dashboard`) & Knex.js Query Builder with JSON Fallback & Automated Snapshots (`src/data/backups/`)
 
 ---
 
@@ -128,6 +128,45 @@ Artificial Quotient is a high-converting, modern web application and sponsorship
   - 404 Error Page (`/not-found`)
   - Script-to-Blog Article Post (`/blog/[slug]`)
 - Integrated official channel favicon assets (`public/favicon.ico` & `src/app/icon.jpeg`).
+
+---
+
+### 📅 Day 5 — Direct MySQL Database Integration, Knex.js Query Builder, Modular Schema Architecture, Admin User Management & UI Polish
+
+#### 1. Direct MySQL Engine & Auto-Initialization
+- **MySQL Integration**: Replaced JSON-only persistence with direct MySQL database persistence (`AQ-Dashboard`) using `mysql2/promise` and `knex`.
+- **Automatic Schema Initializer**: Configured automatic `CREATE DATABASE IF NOT EXISTS \`AQ-Dashboard\`` and table initializers for all 6 core entities (`site_config`, `sponsor_case_studies`, `what_performs_cards`, `tool_items`, `blog_articles`, `admin_users`).
+- **Data Seeding**: Built automated initial data seeding routines from JSON backups into MySQL tables.
+
+#### 2. Knex.js Query Builder Migration & Anti-Injection Security
+- **Programmatic Queries**: Replaced raw string concatenation with **Knex.js** query builder methods (`select()`, `insert()`, `truncate()`, `onConflict().merge()`) to guarantee 100% protection against SQL injection vulnerabilities without the overhead of heavy ORMs.
+- **Server External Packages**: Configured Next.js `serverExternalPackages: ["knex"]` in `next.config.mjs` to bypass bundling optional unused database drivers (`tedious`, `pg`, `sqlite3`, `oracledb`).
+
+#### 3. Modular Schema Architecture (`src/schema/`)
+- **Organized Domain Schemas**: Created dedicated schema modules under `src/schema/` separating domain models into distinct, maintainable files:
+  - `src/schema/site-config.ts`
+  - `src/schema/what-performs.ts` (with YouTube metrics, views, clicks)
+  - `src/schema/sponsor-case-studies.ts`
+  - `src/schema/tool-items.ts`
+  - `src/schema/blog-articles.ts`
+  - `src/schema/admin-users.ts`
+  - `src/schema/index.ts` (Central barrel export)
+- **Raw SQL Reference Files**: Included pure `.sql` scripts (`src/schema/sql/`) and raw parameterized TypeScript helper modules (`src/schema/raw/`) alongside Knex modules for easy reference and MySQL Workbench execution.
+
+#### 4. Interactive Sponsor Case Studies Modal & Extended Campaign Analytics
+- **Case Study Detail Modal**: Clicking any Case Study card opens a responsive, scrollable modal displaying campaign video embeds, custom quote font styling, ROI multipliers, campaign overviews, deliverables, and publish dates.
+- **Font Customization**: Supported Google Font dynamic loading for custom campaign quote typography (`Caveat`, `Dancing Script`, etc.).
+
+#### 5. Admin Users & Permissions Management Tab
+- **Admins & Permissions Tab**: Added a dedicated management panel in `DashboardClient.tsx` displaying active administrator count, user management tables, status toggles (`Active` / `Inactive`), role permissions (`Super Admin`, `Editor`, `Viewer`), and master security recovery key generator.
+- **Responsive Split-View Layout**: Redesigned form grids to 2-column responsive layouts (`grid-cols-1 md:grid-cols-2`) for 100% viewport responsiveness in Split View mode.
+
+#### 6. Forgot Password PIN Security System
+- **Security PIN Recovery Keys**: Enhanced the Forgot Password flow to require security PIN keys (e.g. `AQ-SEC-9842`) tied to active admin accounts, replacing legacy static recovery keys.
+
+#### 7. Scroll To Top & UX Polish
+- **Floating Scroll-To-Top Button**: Built a glassmorphic `ScrollToTop` floating component (`src/components/scroll-to-top.tsx`) with scroll position detection (`window.scrollY > 300`) and smooth scroll restoration.
+- **Hover Styling Correction**: Fixed visual button hover states in `rate-card.tsx` so text remains visible (`hover:text-white`) against blue background fills.
 
 ---
 

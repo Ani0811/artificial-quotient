@@ -69,7 +69,7 @@ export default function RateCard() {
             
             <a 
               href="mailto:artificialquotient01@gmail.com?subject=Sponsorship%20Inquiry%20-%20Integration"
-              className="block text-center w-full bg-white dark:bg-zinc-900 border border-brand-border dark:border-zinc-700 text-brand-text dark:text-white hover:border-brand-blue hover:text-brand-blue dark:hover:text-brand-blue group-hover:bg-brand-blue group-hover:text-white group-hover:border-brand-blue dark:group-hover:bg-brand-blue font-bold py-3 rounded-lg transition-all duration-200 shadow-sm"
+              className="block text-center w-full bg-white dark:bg-zinc-900 border border-brand-border dark:border-zinc-700 text-brand-text dark:text-white group-hover:bg-brand-blue group-hover:text-white group-hover:border-brand-blue dark:group-hover:bg-brand-blue hover:bg-brand-blue-hover hover:text-white dark:hover:bg-brand-blue-hover font-bold py-3 rounded-lg transition-all duration-200 shadow-sm"
             >
               Book Integration
             </a>
