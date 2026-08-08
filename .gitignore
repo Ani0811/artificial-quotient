@@ -39,3 +39,7 @@ next-env.d.ts
 # scratch
 /scratch
 
+# backups
+/src/data/backups/
+
+

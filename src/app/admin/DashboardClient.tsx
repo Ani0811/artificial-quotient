@@ -4,7 +4,7 @@ import {
   Save, BarChart, Database, FileText, LogOut, Check, ExternalLink, 
   UploadCloud, Eye, Edit3, Sparkles, Award, Plus, Trash2, ShieldCheck, Users
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { QUOTE_FONT_OPTIONS, loadGoogleFont } from "@/components/font-provider";
 
@@ -81,6 +81,21 @@ function getYoutubeId(url?: string) {
 export default function DashboardClient() {
   const [activeTab, setActiveTab] = useState<"stats" | "case-studies" | "what-performs" | "tools" | "blog" | "users" | "backup">("stats");
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const topRef = useRef<HTMLDivElement>(null);
+  const bannerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (savedSuccess) {
+      setTimeout(() => {
+        if (bannerRef.current) {
+          bannerRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+        } else if (topRef.current) {
+          topRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+        window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+      }, 50);
+    }
+  }, [savedSuccess]);
   const [layoutMode, setLayoutMode] = useState<"split" | "edit" | "preview">("split");
   const [loading, setLoading] = useState(true);
   const [dbStatus, setDbStatus] = useState<string>("Connected to MySQL: AQ-Dashboard");
@@ -392,7 +407,7 @@ export default function DashboardClient() {
   }
 
   return (
-    <div className="w-full py-10 px-6 sm:px-8 bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-emerald-50 min-h-[calc(100vh-4rem)] transition-colors duration-200 relative overflow-hidden">
+    <div ref={topRef} id="admin-portal-top" className="w-full py-10 px-6 sm:px-8 bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-emerald-50 min-h-[calc(100vh-4rem)] transition-colors duration-200 relative overflow-hidden">
       {/* Ambient background glow */}
       <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-emerald-500/10 dark:bg-emerald-500/15 blur-[120px] rounded-full pointer-events-none"></div>
 
@@ -564,7 +579,7 @@ export default function DashboardClient() {
           <div className="md:col-span-9 lg:col-span-9 flex flex-col gap-6">
             
             {savedSuccess && (
-              <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 px-5 py-3.5 rounded-xl text-sm font-bold flex items-center gap-2.5 animate-fade-in shadow-sm">
+              <div ref={bannerRef} className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 px-5 py-3.5 rounded-xl text-sm font-bold flex items-center gap-2.5 animate-fade-in shadow-sm">
                 <Check className="w-5 h-5 text-emerald-500" /> Changes saved &amp; published live on site!
               </div>
             )}

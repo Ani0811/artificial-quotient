@@ -166,6 +166,7 @@ Artificial Quotient is a high-converting, modern web application and sponsorship
 
 #### 7. Scroll To Top & UX Polish
 - **Floating Scroll-To-Top Button**: Built a glassmorphic `ScrollToTop` floating component (`src/components/scroll-to-top.tsx`) with scroll position detection (`window.scrollY > 300`) and smooth scroll restoration.
+- **Dashboard Auto-Scroll on Save**: Integrated a `useEffect` handler and React `bannerRef` to the admin dashboard that triggers an automated smooth center-scroll to the green success status banner whenever updates are saved.
 - **Hover Styling Correction**: Fixed visual button hover states in `rate-card.tsx` so text remains visible (`hover:text-white`) against blue background fills.
 
 ---
