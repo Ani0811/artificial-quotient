@@ -86,11 +86,8 @@ export async function initDatabase(): Promise<boolean> {
     await createWhatPerformsTable();
     await createToolItemsTable();
 
-    // 2. Check if tables are empty and seed from JSON if needed
-    const usersCount = await k("admin_users").count("id as cnt").first();
-    if (Number(usersCount?.cnt || 0) === 0) {
-      await seedAdminUsersFromJSON();
-    }
+    // 2. Always sync/seed admin users and site data from JSON if needed
+    await seedAdminUsersFromJSON();
 
     const configCount = await k("site_config").count("id as cnt").first();
     if (Number(configCount?.cnt || 0) === 0) {
@@ -116,8 +113,8 @@ export async function seedAdminUsersFromJSON(): Promise<void> {
       await k("admin_users")
         .insert({
           id: u.id,
-          name: u.name,
-          email: u.email,
+          name: u.name ? u.name.trim() : "",
+          email: u.email ? u.email.trim() : "",
           password: u.password,
           role: u.role,
           permissions_json: JSON.stringify(u.permissions || []),

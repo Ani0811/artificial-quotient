@@ -44,8 +44,8 @@ export async function syncAdminUsersToDb(users: AdminUser[]) {
   if (users.length > 0) {
     const rows = users.map((u) => ({
       id: u.id || `admin-${Date.now()}`,
-      name: u.name,
-      email: u.email,
+      name: u.name ? u.name.trim() : "",
+      email: u.email ? u.email.trim() : "",
       password: u.password,
       role: u.role || "Editor",
       permissions_json: JSON.stringify(u.permissions || []),
