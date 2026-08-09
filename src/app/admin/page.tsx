@@ -6,22 +6,17 @@ import { getAdminUsers } from "@/lib/auth-store";
 export default async function AdminDashboardPage() {
   const cookieStore = await cookies();
   const session = cookieStore.get("admin_session");
+  const userIdCookie = cookieStore.get("admin_user_id");
 
-  if (!session || session.value !== "authenticated") {
+  if (!session || session.value !== "authenticated" || !userIdCookie?.value) {
     redirect("/admin/login?notice=not-admin");
   }
 
-  const userIdCookie = cookieStore.get("admin_user_id");
   const users = await getAdminUsers();
-  
-  let currentUser = null;
-  if (userIdCookie?.value) {
-    currentUser = users.find(u => u.id === userIdCookie.value) || null;
-  }
+  const currentUser = users.find((u) => u.id === userIdCookie.value && u.status === "Active");
   
   if (!currentUser) {
-    // Fallback to Primary Admin
-    currentUser = users.find(u => u.id === "admin-1") || users[0];
+    redirect("/admin/login?notice=not-admin");
   }
 
   return <DashboardClient currentUser={currentUser} />;

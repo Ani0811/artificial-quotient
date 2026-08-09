@@ -19,16 +19,16 @@
     "lastLogin": "2026-08-08T09:00:00.000Z"
   },
   {
-    "id": "admin-1786285869839",
-    "name": "Vasudev Sharma",
+    "id": "admin-1786286891836",
+    "name": "Vasudev Sharma ",
     "email": "vasudevsharma3223@gmail.com",
-    "password": "VasudevRocks",
+    "password": "VasuRocks",
     "role": "Viewer",
     "permissions": [
       "stats"
     ],
-    "recoveryKey": "AQ-SEC-5282",
+    "recoveryKey": "AQ-SEC-8475",
     "status": "Active",
-    "lastLogin": "2026-08-09T14:31:09.839Z"
+    "lastLogin": "2026-08-09T14:48:11.836Z"
   }
 ]
