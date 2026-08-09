@@ -14,9 +14,9 @@ export async function POST(request: Request) {
   try {
     const { email, recoveryKey, newPassword } = await request.json();
 
-    if (!recoveryKey || !newPassword) {
+    if (!email || !recoveryKey || !newPassword) {
       return NextResponse.json(
-        { success: false, message: "Security recovery key and new password are required." },
+        { success: false, message: "Admin Email Address, Security Recovery Key, and New Password are required." },
         { status: 400 }
       );
     }
@@ -31,45 +31,43 @@ export async function POST(request: Request) {
     const adminUsers = await getAdminUsers();
     const envKeys = getEnvRecoveryKeys();
 
+    const normalizedEmail = email.trim().toLowerCase();
     const normalizedKey = recoveryKey.trim().toLowerCase();
 
-    // Check if recovery key matches an admin user
-    let matchedUserIndex = -1;
+    // 1. Find user strictly by email
+    const targetUser = adminUsers.find(
+      (u) => u.email.toLowerCase() === normalizedEmail
+    );
 
-    if (email) {
-      const normalizedEmail = email.trim().toLowerCase();
-      matchedUserIndex = adminUsers.findIndex(
-        (u) =>
-          u.email.toLowerCase() === normalizedEmail &&
-          u.recoveryKey.trim().toLowerCase() === normalizedKey
+    if (!targetUser) {
+      return NextResponse.json(
+        { success: false, message: "No admin account found matching this email address." },
+        { status: 404 }
       );
     }
 
-    if (matchedUserIndex === -1) {
-      matchedUserIndex = adminUsers.findIndex(
-        (u) => u.recoveryKey.trim().toLowerCase() === normalizedKey
+    if (targetUser.status !== "Active") {
+      return NextResponse.json(
+        { success: false, message: "This admin account is inactive. Please contact a System Administrator." },
+        { status: 403 }
       );
     }
 
+    // 2. Verify recovery key against target user or env master key
+    const isUserKeyMatch = targetUser.recoveryKey.trim().toLowerCase() === normalizedKey;
     const isEnvKeyValid = envKeys.some((k) => k.toLowerCase() === normalizedKey);
 
-    if (matchedUserIndex === -1 && !isEnvKeyValid) {
+    if (!isUserKeyMatch && !isEnvKeyValid) {
       return NextResponse.json(
-        { success: false, message: "Invalid Security Recovery Key or Admin Email." },
+        { success: false, message: "Invalid Security Recovery Key for this admin email address." },
         { status: 401 }
       );
     }
 
-    // Update password
-    if (matchedUserIndex !== -1) {
-      const user = adminUsers[matchedUserIndex];
-      await updateAdminUserPassword(user.id, newPassword);
-    } else {
-      // Fallback: If no user matches but env key matched, we update master password
-      setAdminPassword(newPassword);
-    }
+    // 3. Update password safely for this specific user
+    await updateAdminUserPassword(targetUser.id, newPassword);
 
-    // Automatically authenticate user
+    // 4. Authenticate user strictly under their own account identity
     const cookieStore = await cookies();
     cookieStore.set("admin_session", "authenticated", {
       httpOnly: true,
@@ -79,8 +77,7 @@ export async function POST(request: Request) {
       path: "/",
     });
     
-    const userId = matchedUserIndex !== -1 ? adminUsers[matchedUserIndex].id : "admin-1";
-    cookieStore.set("admin_user_id", userId, {
+    cookieStore.set("admin_user_id", targetUser.id, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
@@ -90,7 +87,8 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      message: "Password reset successfully! Authenticated and redirecting...",
+      user: targetUser,
+      message: `Password reset successfully for ${targetUser.email}! Authenticated as ${targetUser.role}.`,
     });
   } catch {
     return NextResponse.json(

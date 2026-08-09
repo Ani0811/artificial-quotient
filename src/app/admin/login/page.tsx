@@ -16,6 +16,7 @@ function AdminLoginForm() {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
 
   // Forgot Password state
   const [isForgotMode, setIsForgotMode] = useState(false);
@@ -221,7 +222,7 @@ function AdminLoginForm() {
           <form onSubmit={handleResetPassword} className="space-y-4">
             <div className="space-y-1.5">
               <label className="block text-xs font-semibold uppercase tracking-wider text-brand-muted dark:text-zinc-400">
-                Admin Email Address
+                Admin Email Address *
               </label>
               <input
                 type="email"
@@ -229,6 +230,7 @@ function AdminLoginForm() {
                 onChange={(e) => setRecoveryEmail(e.target.value)}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-brand-border/80 dark:border-zinc-700 bg-white/50 dark:bg-zinc-950/50 focus:outline-none focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue dark:focus:border-brand-blue text-brand-text dark:text-white transition-all text-xs sm:text-sm"
                 placeholder="admin@artificialquotient.com"
+                required
               />
             </div>
 
@@ -253,14 +255,23 @@ function AdminLoginForm() {
               <label className="block text-xs font-semibold uppercase tracking-wider text-brand-muted dark:text-zinc-400">
                 New Access Password *
               </label>
-              <input
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-brand-border/80 dark:border-zinc-700 bg-white/50 dark:bg-zinc-950/50 focus:outline-none focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue dark:focus:border-brand-blue text-brand-text dark:text-white transition-all text-xs sm:text-sm"
-                placeholder="Enter new password (min. 4 chars)"
-                required
-              />
+              <div className="relative">
+                <input
+                  type={showNewPassword ? "text" : "password"}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="w-full pl-3.5 pr-10 py-2.5 rounded-xl border border-brand-border/80 dark:border-zinc-700 bg-white/50 dark:bg-zinc-950/50 focus:outline-none focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue dark:focus:border-brand-blue text-brand-text dark:text-white transition-all text-xs sm:text-sm font-mono"
+                  placeholder="Enter new password (min. 4 chars)"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-brand-muted dark:text-zinc-500 hover:text-brand-text dark:hover:text-white transition-colors"
+                >
+                  {showNewPassword ? <EyeOff className="w-4 h-4 text-emerald-500" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
 
             {error && (

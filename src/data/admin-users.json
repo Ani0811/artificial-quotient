@@ -23,11 +23,9 @@
     "name": "Vasudev Sharma ",
     "email": "vasudevsharma3223@gmail.com",
     "password": "VasuRocks",
-    "role": "Editor",
+    "role": "Viewer",
     "permissions": [
-      "case-studies",
-      "what-performs",
-      "tools"
+      "stats"
     ],
     "recoveryKey": "AQ-SEC-8475",
     "status": "Active",
