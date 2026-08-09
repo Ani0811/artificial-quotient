@@ -119,11 +119,11 @@ function AdminLoginForm() {
         {isNotAdmin && !isForgotMode && (
           <div className="bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-300 rounded-2xl p-4 mb-6 space-y-1 text-left shadow-sm">
             <div className="flex items-center gap-2 font-bold text-sm text-amber-800 dark:text-amber-400">
-              <UserX className="w-4.5 h-4.5 text-amber-500 shrink-0" />
-              <span>You Are Not an Administrator</span>
+              <Lock className="w-4.5 h-4.5 text-amber-500 shrink-0" />
+              <span>Administrator Authentication Required</span>
             </div>
             <p className="text-xs leading-relaxed opacity-90">
-              Access to the Admin Portal is restricted to authorized users. Permission must be granted to your email account by an existing System Administrator in the Admin Dashboard.
+              Please sign in with your administrator credentials to access the Admin Portal. If you do not have an active account, permission must be granted by a System Administrator.
             </p>
           </div>
         )}
