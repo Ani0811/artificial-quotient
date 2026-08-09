@@ -28,7 +28,7 @@ export async function POST(request: Request) {
         const user = adminUsers[targetUserIndex];
         if (user.status !== "Active") {
           return NextResponse.json(
-            { success: false, message: "This admin account has been deactivated." },
+            { success: false, message: "Access Denied: This account is inactive. Permission must be granted by an active System Administrator." },
             { status: 403 }
           );
         }
@@ -95,7 +95,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json(
-      { success: false, message: "Invalid administrator credentials." },
+      { success: false, message: "Invalid administrator credentials. Permission to access the Admin Portal must be granted by an existing System Administrator." },
       { status: 401 }
     );
   } catch {

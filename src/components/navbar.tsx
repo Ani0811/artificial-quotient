@@ -45,25 +45,22 @@ export default function Navbar({ isAdmin = false }: NavbarProps) {
         {/* Right Actions */}
         <div className="flex items-center gap-3">
           <ThemeToggle />
-          {isAdmin ? (
-            <Link
-              href="/admin"
-              className="text-brand-text dark:text-white hover:text-emerald-500 px-3.5 py-2 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors border border-brand-border dark:border-zinc-800 bg-brand-card dark:bg-zinc-900 shadow-sm"
+          <Link
+            href={isAdmin ? "/admin" : "/admin/login?notice=not-admin"}
+            className="text-brand-text dark:text-white hover:text-emerald-500 px-3.5 py-2 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors border border-brand-border dark:border-zinc-800 bg-brand-card dark:bg-zinc-900 shadow-sm"
+          >
+            <Lock className="w-3.5 h-3.5 text-emerald-500" />
+            <span>Admin Portal</span>
+          </Link>
+          {!isLoginPage && (
+            <a
+              href="https://forms.gle/4uTUZkEi5o3iqYrs5"
+              target="_blank"
+              rel="noreferrer"
+              className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all shadow-sm hidden sm:inline-flex"
             >
-              <Lock className="w-3.5 h-3.5 text-emerald-500" />
-              Admin Portal
-            </Link>
-          ) : (
-            !isLoginPage && (
-              <a
-                href="https://forms.gle/4uTUZkEi5o3iqYrs5"
-                target="_blank"
-                rel="noreferrer"
-                className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all shadow-sm"
-              >
-                Become a Sponsor
-              </a>
-            )
+              Become a Sponsor
+            </a>
           )}
         </div>
       </div>

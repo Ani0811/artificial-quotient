@@ -8,7 +8,7 @@ export default async function AdminDashboardPage() {
   const session = cookieStore.get("admin_session");
 
   if (!session || session.value !== "authenticated") {
-    redirect("/admin/login");
+    redirect("/admin/login?notice=not-admin");
   }
 
   const userIdCookie = cookieStore.get("admin_user_id");

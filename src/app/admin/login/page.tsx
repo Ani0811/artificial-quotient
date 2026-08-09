@@ -1,10 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { Lock, ArrowLeft, ShieldAlert, KeyRound, Eye, EyeOff, RotateCcw, CheckCircle2, Mail } from "lucide-react";
+import { useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import { Lock, ArrowLeft, ShieldAlert, KeyRound, Eye, EyeOff, RotateCcw, CheckCircle2, Mail, UserX } from "lucide-react";
 import Link from "next/link";
 
-export default function AdminLogin() {
+function AdminLoginForm() {
+  const searchParams = useSearchParams();
+  const notice = searchParams.get("notice");
+  const isNotAdmin = notice === "not-admin";
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -110,6 +115,18 @@ export default function AdminLogin() {
             {isForgotMode ? "Robust Password Recovery System" : "Security Gateway \u2022 Authorized Personnel Only"}
           </p>
         </div>
+
+        {isNotAdmin && !isForgotMode && (
+          <div className="bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-300 rounded-2xl p-4 mb-6 space-y-1 text-left shadow-sm">
+            <div className="flex items-center gap-2 font-bold text-sm text-amber-800 dark:text-amber-400">
+              <UserX className="w-4.5 h-4.5 text-amber-500 shrink-0" />
+              <span>You Are Not an Administrator</span>
+            </div>
+            <p className="text-xs leading-relaxed opacity-90">
+              Access to the Admin Portal is restricted to authorized users. Permission must be granted to your email account by an existing System Administrator in the Admin Dashboard.
+            </p>
+          </div>
+        )}
 
         {!isForgotMode ? (
           /* Standard Login Form */
@@ -297,5 +314,17 @@ export default function AdminLogin() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function AdminLogin() {
+  return (
+    <Suspense fallback={
+      <div className="w-full min-h-[calc(100vh-4rem)] flex items-center justify-center bg-brand-bg dark:bg-zinc-950">
+        <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    }>
+      <AdminLoginForm />
+    </Suspense>
   );
 }
