@@ -193,6 +193,11 @@ Artificial Quotient is a high-converting, modern web application and sponsorship
 - Refactored `api/auth/reset-password` to perform safe, targeted SQL `UPDATE` operations by user `id` rather than truncating and reinserting the table.
 - Exposed pure raw SQL parameterized update queries (`UPDATE admin_users SET password = ?, last_login = ? WHERE id = ?;`) inside `src/schema/raw/raw-admin-users.ts`.
 
+#### 5. Non-Admin Access Notification & Universal Navbar Gateway
+- **Universal Admin Portal Link**: Updated `src/components/navbar.tsx` so the **Admin Portal** link is always accessible to non-admin visitors.
+- **Non-Admin Notice Banner**: Non-admin visitors clicking the Admin Portal link land on `/admin/login?notice=not-admin` featuring an explicit alert banner informing them that they are not an administrator and that permission must be granted by an existing System Administrator.
+- **Explicit API Responses**: Updated `/api/auth/login` to return informative error messages explaining that administrator permissions must be granted by an active System Administrator.
+
 ---
 
 ## 📂 Project Structure
