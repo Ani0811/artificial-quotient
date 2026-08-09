@@ -21,16 +21,6 @@ export default async function AdminDashboardPage() {
   
   if (!currentUser) {
     currentUser = users.find((u) => u.id === "admin-1" && u.status === "Active") || users.find((u) => u.status === "Active") || null;
-    
-    if (currentUser) {
-      cookieStore.set("admin_user_id", currentUser.id, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 60 * 60 * 24 * 7,
-        path: "/",
-      });
-    }
   }
 
   if (!currentUser) {
