@@ -38,7 +38,9 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const cookieStore = await cookies();
-  const isAdmin = cookieStore.get("admin_session")?.value === "authenticated";
+  const session = cookieStore.get("admin_session");
+  const userIdCookie = cookieStore.get("admin_user_id");
+  const isAdmin = session?.value === "authenticated" && Boolean(userIdCookie?.value);
 
   return (
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
