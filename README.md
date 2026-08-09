@@ -203,6 +203,14 @@ Artificial Quotient is a high-converting, modern web application and sponsorship
 - **Enforced Active Identity Check**: Requiring both `admin_session` and `admin_user_id` cookies to match an active user in MySQL/JSON; unauthenticated or unassigned users are strictly redirected to the login gateway.
 - **Next.js App Router Compliance**: Resolved unhandled runtime cookie error by keeping cookie mutations strictly within API Route Handlers rather than mutating cookie states during page component rendering.
 
+#### 7. Automatic DB Synchronization, Reset Security & Brand Redesign
+- **Automatic JSON-to-MySQL Synchronization**: Restructured `initDatabase` inside `src/lib/db.ts` to automatically merge and sync newly added administrators from `admin-users.json` into the MySQL `admin_users` table on startup.
+- **Whitespace Sanitization**: Integrated automated string trimming (`.trim()`) for names and emails on seeding and user edits to prevent authentication issues caused by trailing whitespace.
+- **Reset Password Privilege Hardening**: Secured `/api/auth/reset-password` by making `email` and `recoveryKey` mandatory and verifying them strictly against the target user account, eliminating potential Super Admin privilege escalation.
+- **Form Password Toggle**: Added a Show/Hide Password eye toggle button inside the New Access Password field on the reset page.
+- **Viewer Role Lockdowns**: Fully disabled all interactive input fields, buttons, and upload forms inside `DashboardClient.tsx` for Viewer accounts. Restricted backend API routes (`/api/admin/data`, `/api/admin/users`) to reject edits from Viewer sessions with `403 Forbidden` responses.
+- **Official Brand Email Template Overhaul**: Redesigned `src/emails/contact-template.ts` with a premium dark-emerald aesthetic, integrated the official channel logo, added standard trademark formatting (`Artificial Quotient™`), and included a formal legal notice footer.
+
 ---
 
 ## 📂 Project Structure
