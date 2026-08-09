@@ -31,8 +31,25 @@ export async function GET() {
   }
 }
 
+import { cookies } from "next/headers";
+import { getAdminUsers } from "@/lib/auth-store";
+
 export async function POST(req: Request) {
   try {
+    const cookieStore = await cookies();
+    const userId = cookieStore.get("admin_user_id")?.value;
+    if (userId) {
+      const existingUsers = await getAdminUsers();
+      const currentUser = existingUsers.find((u) => u.id === userId && u.status === "Active");
+      const canEdit = currentUser?.role === "Super Admin" || (currentUser?.role !== "Viewer" && currentUser?.permissions?.includes("users"));
+      if (!canEdit) {
+        return NextResponse.json(
+          { success: false, message: "Forbidden: You do not have permission to manage admin users." },
+          { status: 403 }
+        );
+      }
+    }
+
     const { users } = await req.json();
     if (!Array.isArray(users)) {
       return NextResponse.json({ success: false, message: "Invalid users list" }, { status: 400 });

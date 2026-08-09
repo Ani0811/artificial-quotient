@@ -18,13 +18,10 @@ export default async function AdminDashboardPage() {
   if (userIdCookie?.value) {
     currentUser = users.find((u) => u.id === userIdCookie.value && u.status === "Active") || null;
   }
-  
-  if (!currentUser) {
-    currentUser = users.find((u) => u.id === "admin-1" && u.status === "Active") || users.find((u) => u.status === "Active") || null;
-  }
 
+  // Strictly require matching active user account identity
   if (!currentUser) {
-    redirect("/admin/login?notice=not-admin");
+    redirect("/admin/login?notice=reauth");
   }
 
   return <DashboardClient currentUser={currentUser} />;

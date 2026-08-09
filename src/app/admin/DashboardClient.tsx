@@ -70,12 +70,20 @@ function getYoutubeId(url?: string) {
 
 export default function DashboardClient({ currentUser }: { currentUser?: AdminUser }) {
   const isViewer = currentUser?.role === "Viewer";
-  const canEditUsers = currentUser?.role === "Super Admin" || currentUser?.permissions?.includes("users");
-  const canEditBackup = currentUser?.role === "Super Admin" || currentUser?.permissions?.includes("backup");
+  const canEditUsers = currentUser?.role !== "Viewer" && (currentUser?.role === "Super Admin" || currentUser?.permissions?.includes("users"));
+  const canEditBackup = currentUser?.role !== "Viewer" && (currentUser?.role === "Super Admin" || currentUser?.permissions?.includes("backup"));
   const [activeTab, setActiveTab] = useState<"stats" | "case-studies" | "what-performs" | "tools" | "users" | "backup">("stats");
   const [savedSuccess, setSavedSuccess] = useState(false);
   const topRef = useRef<HTMLDivElement>(null);
   const bannerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (activeTab === "users" && !canEditUsers) {
+      setActiveTab("stats");
+    } else if (activeTab === "backup" && !canEditBackup) {
+      setActiveTab("stats");
+    }
+  }, [activeTab, canEditUsers, canEditBackup]);
 
   useEffect(() => {
     if (savedSuccess) {
@@ -264,6 +272,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
   };
 
   const handleSaveUsers = async () => {
+    if (isViewer || !canEditUsers) return;
     try {
       const res = await fetch("/api/admin/users", {
         method: "POST",
@@ -281,6 +290,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
   };
 
   const handleSaveAll = async () => {
+    if (isViewer) return;
     const payload = {
       stats: statsForm,
       rates: ratesForm,
@@ -572,6 +582,13 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                     </h2>
                   </div>
 
+                  {isViewer && (
+                    <div className="bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-300 px-4 py-3 rounded-xl text-xs font-bold flex items-center gap-2.5 mb-6 shadow-sm">
+                      <ShieldCheck className="w-4.5 h-4.5 text-amber-500 shrink-0" />
+                      <span>Read-Only Viewer Mode: Form fields and action buttons are disabled for your account.</span>
+                    </div>
+                  )}
+
                   {/* TAB 1: STATS & PRICING */}
                   {activeTab === "stats" && (
                     <form className="space-y-6">
@@ -583,15 +600,17 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                             <input 
                               type="text" 
                               value={statsForm.subscribers} 
+                              disabled={isViewer}
                               onChange={(e) => setStatsForm({ ...statsForm, subscribers: e.target.value })}
-                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-2" 
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-2 disabled:opacity-50 disabled:cursor-not-allowed" 
                             />
                             <label className="block text-[11px] font-bold text-brand-muted dark:text-emerald-200/60 mb-1">Subscribers Subtext</label>
                             <input 
                               type="text" 
                               value={statsForm.subscribersSub} 
+                              disabled={isViewer}
                               onChange={(e) => setStatsForm({ ...statsForm, subscribersSub: e.target.value })}
-                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500" 
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed" 
                             />
                           </div>
                           <div>
@@ -599,15 +618,17 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                             <input 
                               type="text" 
                               value={statsForm.monthlyViews} 
+                              disabled={isViewer}
                               onChange={(e) => setStatsForm({ ...statsForm, monthlyViews: e.target.value })}
-                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-2" 
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-2 disabled:opacity-50 disabled:cursor-not-allowed" 
                             />
                             <label className="block text-[11px] font-bold text-brand-muted dark:text-emerald-200/60 mb-1">View Count Subtext</label>
                             <input 
                               type="text" 
                               value={statsForm.monthlyViewsSub} 
+                              disabled={isViewer}
                               onChange={(e) => setStatsForm({ ...statsForm, monthlyViewsSub: e.target.value })}
-                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500" 
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed" 
                             />
                           </div>
                           <div>
@@ -615,15 +636,17 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                             <input 
                               type="text" 
                               value={statsForm.newSubs} 
+                              disabled={isViewer}
                               onChange={(e) => setStatsForm({ ...statsForm, newSubs: e.target.value })}
-                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-2" 
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-2 disabled:opacity-50 disabled:cursor-not-allowed" 
                             />
                             <label className="block text-[11px] font-bold text-brand-muted dark:text-emerald-200/60 mb-1">New Subs Subtext</label>
                             <input 
                               type="text" 
                               value={statsForm.newSubsSub} 
+                              disabled={isViewer}
                               onChange={(e) => setStatsForm({ ...statsForm, newSubsSub: e.target.value })}
-                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500" 
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed" 
                             />
                           </div>
                           <div>
@@ -631,15 +654,17 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                             <input 
                               type="text" 
                               value={statsForm.videosCount} 
+                              disabled={isViewer}
                               onChange={(e) => setStatsForm({ ...statsForm, videosCount: e.target.value })}
-                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-2" 
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-2 disabled:opacity-50 disabled:cursor-not-allowed" 
                             />
                             <label className="block text-[11px] font-bold text-brand-muted dark:text-emerald-200/60 mb-1">Videos Subtext</label>
                             <input 
                               type="text" 
                               value={statsForm.videosCountSub} 
+                              disabled={isViewer}
                               onChange={(e) => setStatsForm({ ...statsForm, videosCountSub: e.target.value })}
-                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500" 
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed" 
                             />
                           </div>
                         </div>
@@ -653,8 +678,9 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                             <input 
                               type="text" 
                               value={ratesForm.dedicatedRate} 
+                              disabled={isViewer}
                               onChange={(e) => setRatesForm({ ...ratesForm, dedicatedRate: e.target.value })}
-                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" 
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed" 
                             />
                           </div>
                           <div>
@@ -662,8 +688,9 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                             <input 
                               type="text" 
                               value={ratesForm.integrationRate} 
+                              disabled={isViewer}
                               onChange={(e) => setRatesForm({ ...ratesForm, integrationRate: e.target.value })}
-                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" 
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed" 
                             />
                           </div>
                         </div>
@@ -689,6 +716,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                         <h3 className="font-heading font-bold text-sm text-brand-text dark:text-emerald-400 uppercase tracking-wider">Partner Case Studies</h3>
                         <button
                           type="button"
+                          disabled={isViewer}
                           onClick={() => setSponsorResults([...sponsorResults, {
                             id: Date.now().toString(),
                             partnerName: "New Sponsor",
@@ -699,7 +727,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                             stat2Label: "ROI",
                             stat2Value: "2.5x"
                           }])}
-                          className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold px-4 py-2 rounded-xl text-xs sm:text-sm flex items-center gap-1.5 border border-emerald-500/30"
+                          className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold px-4 py-2 rounded-xl text-xs sm:text-sm flex items-center gap-1.5 border border-emerald-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <Plus className="w-4 h-4" /> Add Case Study
                         </button>
@@ -710,8 +738,9 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                           <div key={item.id} className="p-5 rounded-2xl border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] space-y-4 relative">
                             <button
                               type="button"
+                              disabled={isViewer}
                               onClick={() => setSponsorResults(sponsorResults.filter(s => s.id !== item.id))}
-                              className="absolute top-4 right-4 text-red-500 hover:text-red-600 p-1.5 bg-red-500/10 rounded-lg transition-colors"
+                              className="absolute top-4 right-4 text-red-500 hover:text-red-600 p-1.5 bg-red-500/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                               title="Delete case study"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -1493,9 +1522,9 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                               Upload a previously exported JSON backup file to instantly restore your entire website configuration.
                             </p>
                           </div>
-                          <label className="w-full bg-brand-card dark:bg-[#102922] border border-emerald-500/40 text-emerald-600 dark:text-emerald-300 font-bold text-xs sm:text-sm py-3 rounded-xl hover:bg-emerald-500/20 transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer">
+                          <label className={`w-full bg-brand-card dark:bg-[#102922] border border-emerald-500/40 text-emerald-600 dark:text-emerald-300 font-bold text-xs sm:text-sm py-3 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 ${isViewer ? "opacity-50 cursor-not-allowed pointer-events-none" : "hover:bg-emerald-500/20 cursor-pointer"}`}>
                             <UploadCloud className="w-4 h-4" /> Select Backup File
-                            <input type="file" accept=".json" onChange={handleRestoreBackup} className="hidden" />
+                            <input type="file" accept=".json" disabled={isViewer} onChange={handleRestoreBackup} className="hidden" />
                           </label>
                         </div>
                       </div>

@@ -56,8 +56,24 @@ export async function GET() {
   }
 }
 
+import { cookies } from "next/headers";
+import { getAdminUsers } from "@/lib/auth-store";
+
 export async function POST(request: Request) {
   try {
+    const cookieStore = await cookies();
+    const userId = cookieStore.get("admin_user_id")?.value;
+    if (userId) {
+      const users = await getAdminUsers();
+      const currentUser = users.find((u) => u.id === userId && u.status === "Active");
+      if (currentUser?.role === "Viewer") {
+        return NextResponse.json(
+          { success: false, message: "Forbidden: Viewer accounts have read-only access." },
+          { status: 403 }
+        );
+      }
+    }
+
     const data = await request.json();
     await initDatabase();
 
