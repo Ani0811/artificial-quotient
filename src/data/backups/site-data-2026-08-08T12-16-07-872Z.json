@@ -47,7 +47,7 @@
       "type": "Integration",
       "thumb": "⚡",
       "thumbnail": "/uploads/1786190129096_Screenshot__2_.png",
-      "ytUrl": "https://youtu.be/J20fOvc63qU?si=MyeTXSsC8SQWdtkN",
+      "ytUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
       "highlight": "Solid ROI"
     },
     {
@@ -107,6 +107,18 @@
       "discount": "20% OFF 1st Year",
       "desc": "The ultimate visual automation platform for building advanced workflows without code.",
       "tryUrl": "https://make.com"
+    }
+  ],
+  "blog": [
+    {
+      "id": "1",
+      "title": "How to Automate Short Form Videos with Make.com & AI",
+      "category": "Tutorials & Workflows",
+      "excerpt": "Learn step-by-step how to build fully automated video generation workflows using Make.com and AI tools.",
+      "ytUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "author": "Artificial Quotient",
+      "cover": "",
+      "content": "Learn step-by-step how to build fully automated video generation workflows using Make.com and AI tools."
     }
   ]
 }

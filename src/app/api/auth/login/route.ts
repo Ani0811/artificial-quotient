@@ -46,6 +46,13 @@ export async function POST(request: Request) {
             maxAge: 60 * 60 * 24 * 7,
             path: "/",
           });
+          cookieStore.set("admin_user_id", user.id, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+            maxAge: 60 * 60 * 24 * 7,
+            path: "/",
+          });
 
           return NextResponse.json({ success: true, user: adminUsers[targetUserIndex] });
         }
@@ -58,7 +65,9 @@ export async function POST(request: Request) {
     );
 
     if (password === masterPassword || matchingUser) {
+      let userId = "admin-1"; // Fallback to primary admin
       if (matchingUser) {
+        userId = matchingUser.id;
         const idx = adminUsers.findIndex((u) => u.id === matchingUser.id);
         if (idx !== -1) {
           adminUsers[idx].lastLogin = new Date().toISOString();
@@ -68,6 +77,13 @@ export async function POST(request: Request) {
 
       const cookieStore = await cookies();
       cookieStore.set("admin_session", "authenticated", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 60 * 60 * 24 * 7,
+        path: "/",
+      });
+      cookieStore.set("admin_user_id", userId, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",

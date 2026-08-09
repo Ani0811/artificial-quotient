@@ -13,7 +13,7 @@ VALUES
     'admin@artificialquotient.com', 
     'admin123', 
     'Super Admin', 
-    '["stats", "case-studies", "what-performs", "tools", "blog", "backup", "users"]', 
+    '["stats", "case-studies", "what-performs", "tools", "backup", "users"]', 
     'AQ-SEC-9842', 
     'Active', 
     '2026-08-08 14:30:00'
@@ -24,7 +24,7 @@ VALUES
     'partnerships@artificialquotient.com', 
     'partner123', 
     'Editor', 
-    '["case-studies", "what-performs", "tools", "blog"]', 
+    '["case-studies", "what-performs", "tools"]', 
     'AQ-SEC-4173', 
     'Active', 
     '2026-08-07 11:15:00'
@@ -205,30 +205,4 @@ ON DUPLICATE KEY UPDATE
   discount=VALUES(discount),
   description=VALUES(description),
   try_url=VALUES(try_url),
-  display_order=VALUES(display_order);
-
-
--- 6. Seed Blog Articles
-INSERT INTO blog_articles
-  (id, title, category, excerpt, yt_url, author, cover, content, display_order)
-VALUES 
-  (
-    '1', 
-    'How to Automate Short Form Videos with Make.com & AI', 
-    'Tutorials & Workflows', 
-    'Learn step-by-step how to build fully automated video generation workflows using Make.com and AI tools.', 
-    'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 
-    'Artificial Quotient', 
-    '', 
-    'Learn step-by-step how to build fully automated video generation workflows using Make.com and AI tools.', 
-    0
-  )
-ON DUPLICATE KEY UPDATE
-  title=VALUES(title),
-  category=VALUES(category),
-  excerpt=VALUES(excerpt),
-  yt_url=VALUES(yt_url),
-  author=VALUES(author),
-  cover=VALUES(cover),
-  content=VALUES(content),
   display_order=VALUES(display_order);

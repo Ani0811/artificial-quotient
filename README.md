@@ -171,6 +171,30 @@ Artificial Quotient is a high-converting, modern web application and sponsorship
 
 ---
 
+### 📅 Day 6 — Blog Purge, User Identity Cookies, Role-Based Access Control (RBAC), Self-Service Recovery & Password Management
+
+#### 1. Complete Removal of Blog Section
+- Completely purged the legacy `/blog` subpage, components (`src/app/blog/`), DB schema tables (`blog_articles`), seed data, and navigation links from **Navbar** and **Footer**.
+
+#### 2. User Identity Session Cookies & Granular RBAC
+- **Session Identity Tracking**: Updated `/api/auth/login` and `/api/auth/reset-password` to issue an `admin_user_id` HTTP-only cookie alongside `admin_session`.
+- **Server Context Propagation**: Refactored `src/app/admin/page.tsx` to read `admin_user_id` and pass the authenticated `currentUser` object to `DashboardClient.tsx`.
+- **Role & Permission Enforcements**:
+  - Restricts visibility of administrative tabs (**Admins & Permissions**, **Backup & System**) based on user role (`Super Admin`, `Editor`, `Viewer`) and assigned permissions array.
+  - Read-Only Mode for Viewers: Automatically disables all **Save & Publish** buttons (`disabled={isViewer}`) for `Viewer` accounts with clear visual indicators.
+
+#### 3. Self-Service Recovery & Custom Password Management
+- **Editable Recovery Keys**: Made the **Password Recovery Key** field in the Admin Users tab editable so admins can set and rotate their fallback security keys directly from the UI.
+- **Custom Passwords**: Enabled setting any custom password for any administrator. Removed fixed default passwords (`"password123"`) when creating new admin accounts.
+- **Password Visibility Toggle**: Integrated an interactive Show/Hide Password eye toggle button (`Eye` / `EyeOff` from `lucide-react`) directly inside password inputs.
+
+#### 4. Strengthened MySQL Password Updates & Clean Schema Abstraction
+- Created a modular `updateAdminUserPassword` helper function in `src/lib/auth-store.ts` and `src/schema/admin-users.ts`.
+- Refactored `api/auth/reset-password` to perform safe, targeted SQL `UPDATE` operations by user `id` rather than truncating and reinserting the table.
+- Exposed pure raw SQL parameterized update queries (`UPDATE admin_users SET password = ?, last_login = ? WHERE id = ?;`) inside `src/schema/raw/raw-admin-users.ts`.
+
+---
+
 ## 📂 Project Structure
 
 ```
@@ -194,7 +218,6 @@ artificial-quotient/
 │   │   ├── stats/             # Audience Stats Subpage
 │   │   ├── case-studies/      # Case Studies Subpage
 │   │   ├── tools/             # Tool Vault
-│   │   ├── blog/              # Blog & Articles
 │   │   ├── globals.css        # Global CSS & Dot Matrix Utilities
 │   │   ├── layout.tsx         # Root Layout, Async Cookies & Ambient Glows
 │   │   ├── loading.tsx        # Global Loading Screen & Animated Logo
@@ -213,8 +236,10 @@ artificial-quotient/
 │   ├── data/
 │   │   ├── site-data.json     # Primary Dynamic Data Store
 │   │   └── backups/           # Server-Side Rolling Snapshot Backups
+│   ├── schema/                # Knex Schema Modules & Raw SQL Queries
 │   └── lib/
-│       └── auth-store.ts      # Admin Password State Manager
+│       ├── auth-store.ts      # Admin Password & Role State Manager
+│       └── db.ts              # Knex MySQL Database Connection Initializer
 ├── tailwind.config.ts
 ├── README.md
 └── package.json

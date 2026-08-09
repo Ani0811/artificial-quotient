@@ -8,9 +8,7 @@ import {
   getWhatPerforms, 
   syncWhatPerforms, 
   getToolItems, 
-  syncToolItems, 
-  getBlogArticles, 
-  syncBlogArticles 
+  syncToolItems 
 } from "@/schema";
 import fs from "fs/promises";
 import path from "path";
@@ -29,7 +27,6 @@ export async function GET() {
       const sponsorResults = await getSponsorCaseStudies();
       const whatPerforms = await getWhatPerforms();
       const tools = await getToolItems();
-      const blog = await getBlogArticles();
 
       return NextResponse.json({
         stats: siteConfigData.stats,
@@ -39,7 +36,6 @@ export async function GET() {
         sponsorResults,
         whatPerforms,
         tools,
-        blog,
         dbStatus: "Connected to MySQL (AQ-Dashboard) via Knex",
       });
     }
@@ -78,10 +74,6 @@ export async function POST(request: Request) {
 
     if (data.tools && Array.isArray(data.tools)) {
       await syncToolItems(data.tools);
-    }
-
-    if (data.blog && Array.isArray(data.blog)) {
-      await syncBlogArticles(data.blog);
     }
 
     // Also write JSON file backup snapshot

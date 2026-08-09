@@ -66,9 +66,6 @@ export default function Footer() {
             <Link href="/tools" className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors">
               AI Tool Directory
             </Link>
-            <Link href="/blog" className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors">
-              Script-to-Blog Hub
-            </Link>
           </div>
 
           {/* Sponsoring Column */}

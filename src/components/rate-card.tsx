@@ -97,7 +97,7 @@ export default function RateCard() {
               </li>
               <li className="flex items-start gap-3">
                 <CheckCircle2 className="w-5 h-5 text-brand-blue flex-shrink-0 mt-0.5" />
-                <span>Dedicated blog post in our Hub</span>
+                <span>Custom workflow &amp; resource links</span>
               </li>
               <li className="flex items-start gap-3">
                 <CheckCircle2 className="w-5 h-5 text-brand-blue flex-shrink-0 mt-0.5" />

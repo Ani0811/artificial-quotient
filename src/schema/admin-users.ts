@@ -56,3 +56,13 @@ export async function syncAdminUsersToDb(users: AdminUser[]) {
     await k("admin_users").insert(rows);
   }
 }
+
+export async function updateAdminUserPassword(id: string, newPassword: string, lastLogin: Date = new Date()) {
+  const k = getKnex();
+  await k("admin_users")
+    .where("id", id)
+    .update({
+      password: newPassword,
+      last_login: lastLogin,
+    });
+}

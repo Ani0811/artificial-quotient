@@ -2,7 +2,7 @@
 
 import { 
   Save, BarChart, Database, FileText, LogOut, Check, ExternalLink, 
-  UploadCloud, Eye, Edit3, Sparkles, Award, Plus, Trash2, ShieldCheck, Users
+  UploadCloud, Eye, EyeOff, Edit3, Sparkles, Award, Plus, Trash2, ShieldCheck, Users
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
@@ -17,16 +17,6 @@ interface ToolItem {
   tryUrl: string;
   tutorialUrl: string;
   logo: string;
-}
-
-interface BlogItem {
-  id: string;
-  title: string;
-  category: string;
-  excerpt: string;
-  ytUrl: string;
-  author: string;
-  cover: string;
 }
 
 interface PerformItem {
@@ -78,8 +68,11 @@ function getYoutubeId(url?: string) {
   return (match && match[2].length === 11) ? match[2] : null;
 }
 
-export default function DashboardClient() {
-  const [activeTab, setActiveTab] = useState<"stats" | "case-studies" | "what-performs" | "tools" | "blog" | "users" | "backup">("stats");
+export default function DashboardClient({ currentUser }: { currentUser?: AdminUser }) {
+  const isViewer = currentUser?.role === "Viewer";
+  const canEditUsers = currentUser?.role === "Super Admin" || currentUser?.permissions?.includes("users");
+  const canEditBackup = currentUser?.role === "Super Admin" || currentUser?.permissions?.includes("backup");
+  const [activeTab, setActiveTab] = useState<"stats" | "case-studies" | "what-performs" | "tools" | "users" | "backup">("stats");
   const [savedSuccess, setSavedSuccess] = useState(false);
   const topRef = useRef<HTMLDivElement>(null);
   const bannerRef = useRef<HTMLDivElement>(null);
@@ -100,6 +93,7 @@ export default function DashboardClient() {
   const [loading, setLoading] = useState(true);
   const [dbStatus, setDbStatus] = useState<string>("Connected to MySQL: AQ-Dashboard");
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
+  const [showPasswordMap, setShowPasswordMap] = useState<Record<string, boolean>>({});
   const [statsForm, setStatsForm] = useState({
     subscribers: "10,100+",
     subscribersSub: "+12.4% this month",
@@ -204,18 +198,6 @@ export default function DashboardClient() {
     }
   ]);
 
-  const [blogList, setBlogList] = useState<BlogItem[]>([
-    {
-      id: "1",
-      title: "How to Automate Short Form Videos with Make.com & AI",
-      category: "Tutorials & Workflows",
-      excerpt: "Learn step-by-step how to build fully automated video generation workflows using Make.com and AI tools.",
-      ytUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-      author: "Artificial Quotient",
-      cover: "",
-    }
-  ]);
-
   const [uploadingField, setUploadingField] = useState<string | null>(null);
 
   // Fetch initial site data from API on mount
@@ -237,7 +219,6 @@ export default function DashboardClient() {
             });
           }
           if (data.tools && data.tools.length > 0) setToolsList(data.tools);
-          if (data.blog && data.blog.length > 0) setBlogList(data.blog);
           if (data.dbStatus) setDbStatus(data.dbStatus);
         }
 
@@ -308,7 +289,6 @@ export default function DashboardClient() {
       whatPerforms,
       sponsorResults,
       tools: toolsList,
-      blog: blogList,
     };
 
     try {
@@ -336,7 +316,6 @@ export default function DashboardClient() {
       whatPerforms,
       sponsorResults,
       tools: toolsList,
-      blog: blogList,
     };
 
     const jsonStr = JSON.stringify(payload, null, 2);
@@ -373,7 +352,6 @@ export default function DashboardClient() {
         });
       }
       if (data.tools) setToolsList(data.tools);
-      if (data.blog) setBlogList(data.blog);
 
       // Persist restored backup
       const res = await fetch("/api/admin/data", {
@@ -541,38 +519,31 @@ export default function DashboardClient() {
               <Database className="w-4 h-4" /> AI Tool Vault
             </button>
 
-            <button
-              onClick={() => setActiveTab("blog")}
-              className={`flex items-center gap-3.5 px-5 py-3.5 rounded-xl text-left font-bold text-sm transition-all shadow-sm ${
-                activeTab === "blog"
-                  ? "bg-emerald-600 text-white shadow-emerald-600/20"
-                  : "bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] text-brand-muted dark:text-emerald-200/70 hover:text-white hover:bg-emerald-50 dark:hover:bg-[#102922]"
-              }`}
-            >
-              <FileText className="w-4 h-4" /> Script-to-Blog Hub
-            </button>
+            {canEditUsers && (
+              <button
+                onClick={() => setActiveTab("users")}
+                className={`flex items-center gap-3.5 px-5 py-3.5 rounded-xl text-left font-bold text-sm transition-all shadow-sm ${
+                  activeTab === "users"
+                    ? "bg-emerald-600 text-white shadow-emerald-600/20"
+                    : "bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] text-brand-muted dark:text-emerald-200/70 hover:text-white hover:bg-emerald-50 dark:hover:bg-[#102922]"
+                }`}
+              >
+                <Users className="w-4 h-4" /> Admins &amp; Permissions ({adminUsers.filter(u => u.status === "Active").length})
+              </button>
+            )}
 
-            <button
-              onClick={() => setActiveTab("users")}
-              className={`flex items-center gap-3.5 px-5 py-3.5 rounded-xl text-left font-bold text-sm transition-all shadow-sm ${
-                activeTab === "users"
-                  ? "bg-emerald-600 text-white shadow-emerald-600/20"
-                  : "bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] text-brand-muted dark:text-emerald-200/70 hover:text-white hover:bg-emerald-50 dark:hover:bg-[#102922]"
-              }`}
-            >
-              <Users className="w-4 h-4" /> Admins &amp; Permissions ({adminUsers.filter(u => u.status === "Active").length})
-            </button>
-
-            <button
-              onClick={() => setActiveTab("backup")}
-              className={`flex items-center gap-3.5 px-5 py-3.5 rounded-xl text-left font-bold text-sm transition-all shadow-sm ${
-                activeTab === "backup"
-                  ? "bg-emerald-600 text-white shadow-emerald-600/20"
-                  : "bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] text-brand-muted dark:text-emerald-200/70 hover:text-white hover:bg-emerald-50 dark:hover:bg-[#102922]"
-              }`}
-            >
-              <ShieldCheck className="w-4 h-4" /> Backup &amp; System
-            </button>
+            {canEditBackup && (
+              <button
+                onClick={() => setActiveTab("backup")}
+                className={`flex items-center gap-3.5 px-5 py-3.5 rounded-xl text-left font-bold text-sm transition-all shadow-sm ${
+                  activeTab === "backup"
+                    ? "bg-emerald-600 text-white shadow-emerald-600/20"
+                    : "bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] text-brand-muted dark:text-emerald-200/70 hover:text-white hover:bg-emerald-50 dark:hover:bg-[#102922]"
+                }`}
+              >
+                <ShieldCheck className="w-4 h-4" /> Backup &amp; System
+              </button>
+            )}
           </div>
 
           {/* Main Workspace */}
@@ -596,7 +567,6 @@ export default function DashboardClient() {
                       {activeTab === "case-studies" && "Manage Sponsor Case Studies"}
                       {activeTab === "what-performs" && "Manage What Performs Cards"}
                       {activeTab === "tools" && "Manage AI Tool Vault"}
-                      {activeTab === "blog" && "Manage Script-to-Blog Hub"}
                       {activeTab === "users" && "Manage Administrators & Access Permissions"}
                       {activeTab === "backup" && "System Backup & Data Operations"}
                     </h2>
@@ -703,7 +673,8 @@ export default function DashboardClient() {
                         <button 
                           type="button" 
                           onClick={handleSaveAll} 
-                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-md text-sm"
+                          disabled={isViewer}
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-md text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <Save className="w-4 h-4" /> Save &amp; Publish Stats
                         </button>
@@ -952,7 +923,8 @@ export default function DashboardClient() {
                         <button 
                           type="button" 
                           onClick={handleSaveAll} 
-                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-md text-sm"
+                          disabled={isViewer}
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-md text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <Save className="w-4 h-4" /> Save Sponsor Results
                         </button>
@@ -1127,7 +1099,8 @@ export default function DashboardClient() {
                         <button 
                           type="button" 
                           onClick={handleSaveAll} 
-                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-md text-sm"
+                          disabled={isViewer}
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-md text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <Save className="w-4 h-4" /> Save What Performs
                         </button>
@@ -1262,130 +1235,10 @@ export default function DashboardClient() {
                         <button 
                           type="button" 
                           onClick={handleSaveAll} 
-                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-md text-sm"
+                          disabled={isViewer}
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-md text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <Save className="w-4 h-4" /> Save Tool Directory
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* TAB 5: SCRIPT-TO-BLOG HUB */}
-                  {activeTab === "blog" && (
-                    <div className="space-y-6">
-                      <div className="flex justify-between items-center">
-                        <h3 className="font-heading font-bold text-sm text-brand-text dark:text-emerald-400 uppercase tracking-wider">Script-to-Blog Articles</h3>
-                        <button
-                          type="button"
-                          onClick={() => setBlogList([...blogList, {
-                            id: Date.now().toString(),
-                            title: "New Tutorial Guide",
-                            category: "Tutorials & Workflows",
-                            excerpt: "Guide excerpt...",
-                            ytUrl: "https://youtube.com",
-                            author: "Artificial Quotient",
-                            cover: ""
-                          }])}
-                          className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold px-4 py-2 rounded-xl text-xs sm:text-sm flex items-center gap-1.5 border border-emerald-500/30"
-                        >
-                          <Plus className="w-4 h-4" /> Publish Article
-                        </button>
-                      </div>
-
-                      <div className="space-y-5">
-                        {blogList.map((post, idx) => (
-                          <div key={post.id} className="p-5 rounded-2xl border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] space-y-4 relative">
-                            <button
-                              type="button"
-                              onClick={() => setBlogList(blogList.filter(b => b.id !== post.id))}
-                              className="absolute top-4 right-4 text-red-500 hover:text-red-600 p-1.5 bg-red-500/10 rounded-lg transition-colors"
-                              title="Delete article"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pr-10">
-                              <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Article Title</label>
-                                <input 
-                                  type="text" 
-                                  value={post.title} 
-                                  onChange={(e) => {
-                                    const next = [...blogList];
-                                    next[idx].title = e.target.value;
-                                    setBlogList(next);
-                                  }}
-                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm" 
-                                />
-                              </div>
-                              <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Category</label>
-                                <input 
-                                  type="text" 
-                                  value={post.category} 
-                                  onChange={(e) => {
-                                    const next = [...blogList];
-                                    next[idx].category = e.target.value;
-                                    setBlogList(next);
-                                  }}
-                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm" 
-                                />
-                              </div>
-                            </div>
-
-                            <div>
-                              <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Excerpt</label>
-                              <textarea 
-                                rows={2}
-                                value={post.excerpt} 
-                                onChange={(e) => {
-                                  const next = [...blogList];
-                                  next[idx].excerpt = e.target.value;
-                                  setBlogList(next);
-                                }}
-                                className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm" 
-                              />
-                            </div>
-
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                              <div>
-                                <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">YouTube Video Link</label>
-                                <input 
-                                  type="text" 
-                                  value={post.ytUrl} 
-                                  onChange={(e) => {
-                                    const next = [...blogList];
-                                    next[idx].ytUrl = e.target.value;
-                                    setBlogList(next);
-                                  }}
-                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs" 
-                                />
-                              </div>
-                              <div>
-                                <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">Author</label>
-                                <input 
-                                  type="text" 
-                                  value={post.author} 
-                                  onChange={(e) => {
-                                    const next = [...blogList];
-                                    next[idx].author = e.target.value;
-                                    setBlogList(next);
-                                  }}
-                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs" 
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-
-                      <div className="flex justify-end pt-5 border-t border-brand-border dark:border-[#16382e]">
-                        <button 
-                          type="button" 
-                          onClick={handleSaveAll} 
-                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-md text-sm"
-                        >
-                          <Save className="w-4 h-4" /> Save Blog Articles
                         </button>
                       </div>
                     </div>
@@ -1411,9 +1264,9 @@ export default function DashboardClient() {
                               id: `admin-${Date.now()}`,
                               name: "New Administrator",
                               email: `admin${adminUsers.length + 1}@artificialquotient.com`,
-                              password: "password123",
+                              password: "",
                               role: "Editor",
-                              permissions: ["case-studies", "what-performs", "tools", "blog"],
+                              permissions: ["case-studies", "what-performs", "tools"],
                               recoveryKey: `AQ-SEC-${Math.floor(1000 + Math.random() * 9000)}`,
                               status: "Active",
                               lastLogin: new Date().toISOString(),
@@ -1428,23 +1281,21 @@ export default function DashboardClient() {
 
                       <div className="space-y-4">
                         {adminUsers.map((user, idx) => (
-                          <div key={user.id} className="p-4 sm:p-5 rounded-2xl border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] space-y-3.5 relative">
-                            {adminUsers.length > 1 && (
-                              <button
-                                type="button"
-                                onClick={() => setAdminUsers(adminUsers.filter((u) => u.id !== user.id))}
-                                className="absolute top-4 right-4 text-red-500 hover:text-red-600 p-1.5 bg-red-500/10 rounded-lg transition-colors"
-                                title="Remove administrator"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            )}
+                          <div key={user.id} className="p-5 rounded-2xl border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] space-y-4 relative">
+                            <button
+                              type="button"
+                              onClick={() => setAdminUsers(adminUsers.filter(u => u.id !== user.id))}
+                              className="absolute top-4 right-4 text-red-500 hover:text-red-600 p-1.5 bg-red-500/10 rounded-lg transition-colors"
+                              title="Remove Admin User"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
 
                             {/* Row 1: Name & Email */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 pr-10">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pr-10">
                               <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">
-                                  Admin Full Name
+                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">
+                                  Admin Name
                                 </label>
                                 <input 
                                   type="text" 
@@ -1454,12 +1305,11 @@ export default function DashboardClient() {
                                     next[idx].name = e.target.value;
                                     setAdminUsers(next);
                                   }}
-                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm font-bold" 
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm font-semibold" 
                                 />
                               </div>
-
                               <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">
+                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">
                                   Email Address
                                 </label>
                                 <input 
@@ -1470,31 +1320,47 @@ export default function DashboardClient() {
                                     next[idx].email = e.target.value;
                                     setAdminUsers(next);
                                   }}
-                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm" 
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm font-semibold" 
                                 />
                               </div>
                             </div>
 
-                            {/* Row 2: Password & Status */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                            {/* Row 2: Password & Account Status */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                               <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">
-                                  Access Password
+                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">
+                                  Password
                                 </label>
-                                <input 
-                                  type="text" 
-                                  value={user.password} 
-                                  onChange={(e) => {
-                                    const next = [...adminUsers];
-                                    next[idx].password = e.target.value;
-                                    setAdminUsers(next);
-                                  }}
-                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm font-mono" 
-                                />
+                                <div className="relative flex items-center">
+                                  <input 
+                                    type={showPasswordMap[user.id] ? "text" : "password"} 
+                                    value={user.password} 
+                                    placeholder="Enter custom password..."
+                                    onChange={(e) => {
+                                      const next = [...adminUsers];
+                                      next[idx].password = e.target.value;
+                                      setAdminUsers(next);
+                                    }}
+                                    disabled={isViewer}
+                                    className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl pl-3.5 pr-10 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed" 
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => setShowPasswordMap(prev => ({ ...prev, [user.id]: !prev[user.id] }))}
+                                    className="absolute right-3 text-brand-muted dark:text-emerald-200/60 hover:text-brand-text dark:hover:text-white transition-colors"
+                                    title={showPasswordMap[user.id] ? "Hide password" : "Show password"}
+                                  >
+                                    {showPasswordMap[user.id] ? (
+                                      <EyeOff className="w-4 h-4 text-emerald-400" />
+                                    ) : (
+                                      <Eye className="w-4 h-4" />
+                                    )}
+                                  </button>
+                                </div>
                               </div>
 
                               <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">
+                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">
                                   Account Status
                                 </label>
                                 <select
@@ -1513,9 +1379,9 @@ export default function DashboardClient() {
                             </div>
 
                             {/* Row 3: Role & Recovery PIN */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                               <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">
+                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">
                                   Role &amp; Permissions
                                 </label>
                                 <select
@@ -1525,9 +1391,9 @@ export default function DashboardClient() {
                                     const newRole = e.target.value as "Super Admin" | "Editor" | "Viewer";
                                     next[idx].role = newRole;
                                     if (newRole === "Super Admin") {
-                                      next[idx].permissions = ["stats", "case-studies", "what-performs", "tools", "blog", "backup", "users"];
+                                      next[idx].permissions = ["stats", "case-studies", "what-performs", "tools", "backup", "users"];
                                     } else if (newRole === "Editor") {
-                                      next[idx].permissions = ["case-studies", "what-performs", "tools", "blog"];
+                                      next[idx].permissions = ["case-studies", "what-performs", "tools"];
                                     } else {
                                       next[idx].permissions = ["stats"];
                                     }
@@ -1542,15 +1408,20 @@ export default function DashboardClient() {
                               </div>
 
                               <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">
+                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">
                                   Password Recovery Key
                                 </label>
                                 <div className="flex items-center gap-2">
                                   <input 
                                     type="text" 
-                                    readOnly
                                     value={user.recoveryKey} 
-                                    className="w-0 flex-1 border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs font-mono font-bold" 
+                                    onChange={(e) => {
+                                      const next = [...adminUsers];
+                                      next[idx].recoveryKey = e.target.value;
+                                      setAdminUsers(next);
+                                    }}
+                                    disabled={isViewer}
+                                    className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm font-mono font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500" 
                                   />
                                   <button
                                     type="button"
@@ -1558,9 +1429,9 @@ export default function DashboardClient() {
                                       navigator.clipboard.writeText(user.recoveryKey);
                                       alert(`Recovery Key copied: ${user.recoveryKey}`);
                                     }}
-                                    className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold px-3 py-2 rounded-xl text-xs border border-emerald-500/30 shrink-0 whitespace-nowrap"
+                                    className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold px-3 py-2 rounded-xl text-xs border border-emerald-500/30 shrink-0"
                                   >
-                                    Copy PIN
+                                    Copy
                                   </button>
                                 </div>
                               </div>
@@ -1573,7 +1444,8 @@ export default function DashboardClient() {
                         <button 
                           type="button" 
                           onClick={handleSaveUsers} 
-                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-md text-sm"
+                          disabled={isViewer}
+                          className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 px-6 rounded-xl transition-all shadow-md shadow-emerald-500/20 flex items-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <Save className="w-4 h-4" /> Save &amp; Publish Admin Users
                         </button>
@@ -1600,7 +1472,7 @@ export default function DashboardClient() {
                               <UploadCloud className="w-5 h-5 rotate-180" /> Export JSON Backup
                             </div>
                             <p className="text-xs sm:text-sm text-brand-muted dark:text-emerald-200/70 leading-relaxed">
-                              Download a complete offline copy of your channel stats, pricing, tools, case studies, and blog articles.
+                              Download a complete offline copy of your channel stats, pricing, tools, and case studies.
                             </p>
                           </div>
                           <button
@@ -1754,20 +1626,6 @@ export default function DashboardClient() {
                           </div>
                           <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mb-2 block">{tool.category}</span>
                           <p className="text-xs sm:text-sm text-brand-muted dark:text-emerald-200/70 mb-3 leading-relaxed">{tool.desc}</p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* PREVIEW TAB 5: BLOG HUB */}
-                  {activeTab === "blog" && (
-                    <div className="space-y-4">
-                      <div className="text-sm font-bold text-brand-text dark:text-white mb-2">Script-to-Blog Hub Articles</div>
-                      {blogList.map(post => (
-                        <div key={post.id} className="bg-brand-bg dark:bg-[#061612] rounded-xl border border-brand-border dark:border-[#16382e] p-5 shadow-sm">
-                          <h4 className="font-heading font-bold text-base text-brand-text dark:text-white mb-1">{post.title}</h4>
-                          <span className="text-xs text-emerald-500 font-bold mb-2 block">{post.category}</span>
-                          <p className="text-xs sm:text-sm text-brand-muted dark:text-emerald-200/70 leading-relaxed">{post.excerpt}</p>
                         </div>
                       ))}
                     </div>

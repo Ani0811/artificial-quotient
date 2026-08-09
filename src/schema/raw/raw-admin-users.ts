@@ -44,3 +44,11 @@ export async function syncRawAdminUsers(users: AdminUser[]) {
     }
   }
 }
+
+export async function updateRawAdminUserPassword(id: string, newPassword: string, lastLogin: Date = new Date()) {
+  const k = getKnex();
+  await k.raw(
+    "UPDATE admin_users SET password = ?, last_login = ? WHERE id = ?;",
+    [newPassword, lastLogin, id]
+  );
+}

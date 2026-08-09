@@ -37,9 +37,6 @@ export default function Navbar({ isAdmin = false }: NavbarProps) {
           <Link href="/tools" className="text-sm font-medium text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white transition-colors">
             Tool Vault
           </Link>
-          <Link href="/blog" className="text-sm font-medium text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white transition-colors">
-            Blog
-          </Link>
           <Link href="/contact" className="text-sm font-medium text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white transition-colors">
             Contact
           </Link>

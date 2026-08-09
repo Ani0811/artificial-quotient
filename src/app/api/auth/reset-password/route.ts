@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { setAdminPassword, getAdminUsers, saveAdminUsers } from "@/lib/auth-store";
+import { setAdminPassword, getAdminUsers, updateAdminUserPassword } from "@/lib/auth-store";
 
 export const dynamic = "force-dynamic";
 
@@ -62,12 +62,12 @@ export async function POST(request: Request) {
 
     // Update password
     if (matchedUserIndex !== -1) {
-      adminUsers[matchedUserIndex].password = newPassword;
-      adminUsers[matchedUserIndex].lastLogin = new Date().toISOString();
-      await saveAdminUsers(adminUsers);
+      const user = adminUsers[matchedUserIndex];
+      await updateAdminUserPassword(user.id, newPassword);
+    } else {
+      // Fallback: If no user matches but env key matched, we update master password
+      setAdminPassword(newPassword);
     }
-
-    setAdminPassword(newPassword);
 
     // Automatically authenticate user
     const cookieStore = await cookies();
@@ -76,6 +76,15 @@ export async function POST(request: Request) {
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       maxAge: 60 * 60 * 24 * 7, // 1 week
+      path: "/",
+    });
+    
+    const userId = matchedUserIndex !== -1 ? adminUsers[matchedUserIndex].id : "admin-1";
+    cookieStore.set("admin_user_id", userId, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 60 * 60 * 24 * 7,
       path: "/",
     });
 

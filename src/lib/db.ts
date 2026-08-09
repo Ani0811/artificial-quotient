@@ -66,11 +66,9 @@ import {
   createSponsorCaseStudiesTable, 
   createWhatPerformsTable, 
   createToolItemsTable, 
-  createBlogArticlesTable,
   syncWhatPerforms,
   syncSponsorCaseStudies,
   syncToolItems,
-  syncBlogArticles,
   upsertSiteConfig
 } from "@/schema";
 
@@ -87,7 +85,6 @@ export async function initDatabase(): Promise<boolean> {
     await createSponsorCaseStudiesTable();
     await createWhatPerformsTable();
     await createToolItemsTable();
-    await createBlogArticlesTable();
 
     // 2. Check if tables are empty and seed from JSON if needed
     const usersCount = await k("admin_users").count("id as cnt").first();
@@ -146,7 +143,6 @@ export async function seedSiteDataFromJSON(): Promise<void> {
     await syncSponsorCaseStudies(data.sponsorResults);
     await syncWhatPerforms(data.whatPerforms);
     await syncToolItems(data.tools);
-    await syncBlogArticles(data.blog);
   } catch (e) {
     console.error("Error seeding site data:", e);
   }

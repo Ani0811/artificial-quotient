@@ -108,5 +108,17 @@
       "desc": "The ultimate visual automation platform for building advanced workflows without code.",
       "tryUrl": "https://make.com"
     }
+  ],
+  "blog": [
+    {
+      "id": "1",
+      "title": "How to Automate Short Form Videos with Make.com & AI",
+      "category": "Tutorials & Workflows",
+      "excerpt": "Learn step-by-step how to build fully automated video generation workflows using Make.com and AI tools.",
+      "ytUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "author": "Artificial Quotient",
+      "cover": "",
+      "content": "Learn step-by-step how to build fully automated video generation workflows using Make.com and AI tools."
+    }
   ]
 }

@@ -1,6 +1,11 @@
 import fs from "fs/promises";
 import path from "path";
-import { getKnex, initDatabase } from "./db";
+import { initDatabase } from "./db";
+import {
+  getAdminUsersFromDb,
+  syncAdminUsersToDb,
+  updateAdminUserPassword as updateAdminUserPasswordDb,
+} from "@/schema/admin-users";
 
 export interface AdminUser {
   id: string;
@@ -29,21 +34,9 @@ export function setAdminPassword(newPassword: string): void {
 export async function getAdminUsers(): Promise<AdminUser[]> {
   try {
     await initDatabase();
-    const k = getKnex();
-    const rows = await k("admin_users").select("*").orderBy("created_at", "asc");
-
-    if (rows && rows.length > 0) {
-      return rows.map((u: any) => ({
-        id: u.id,
-        name: u.name,
-        email: u.email,
-        password: u.password,
-        role: u.role,
-        permissions: u.permissions_json ? JSON.parse(u.permissions_json) : [],
-        recoveryKey: u.recovery_key,
-        status: u.status,
-        lastLogin: u.last_login ? new Date(u.last_login).toISOString() : undefined,
-      }));
+    const dbUsers = await getAdminUsersFromDb();
+    if (dbUsers && dbUsers.length > 0) {
+      return dbUsers;
     }
   } catch (err) {
     console.error("MySQL query failed in getAdminUsers:", err);
@@ -60,7 +53,7 @@ export async function getAdminUsers(): Promise<AdminUser[]> {
         email: "admin@artificialquotient.com",
         password: currentAdminPassword,
         role: "Super Admin",
-        permissions: ["stats", "case-studies", "what-performs", "tools", "blog", "backup", "users"],
+        permissions: ["stats", "case-studies", "what-performs", "tools", "backup", "users"],
         recoveryKey: "AQ-SEC-9842",
         status: "Active",
         lastLogin: new Date().toISOString(),
@@ -72,27 +65,36 @@ export async function getAdminUsers(): Promise<AdminUser[]> {
 export async function saveAdminUsers(users: AdminUser[]): Promise<void> {
   try {
     await initDatabase();
-    const k = getKnex();
-    await k("admin_users").truncate();
-    
-    if (users.length > 0) {
-      const rows = users.map((u) => ({
-        id: u.id,
-        name: u.name,
-        email: u.email,
-        password: u.password,
-        role: u.role,
-        permissions_json: JSON.stringify(u.permissions || []),
-        recovery_key: u.recoveryKey,
-        status: u.status || "Active",
-        last_login: u.lastLogin ? new Date(u.lastLogin) : new Date(),
-      }));
-      await k("admin_users").insert(rows);
-    }
+    await syncAdminUsersToDb(users);
   } catch (err) {
     console.error("MySQL save failed in saveAdminUsers:", err);
   }
 
   const formatted = JSON.stringify(users, null, 2);
   await fs.writeFile(usersFilePath, formatted, "utf8");
+}
+
+export async function updateAdminUserPassword(id: string, newPassword: string): Promise<void> {
+  const lastLogin = new Date();
+  
+  try {
+    await initDatabase();
+    await updateAdminUserPasswordDb(id, newPassword, lastLogin);
+  } catch (err) {
+    console.error("MySQL update failed in updateAdminUserPassword:", err);
+  }
+
+  try {
+    const fileContents = await fs.readFile(usersFilePath, "utf8");
+    const users: AdminUser[] = JSON.parse(fileContents);
+    const idx = users.findIndex(u => u.id === id);
+    if (idx !== -1) {
+      users[idx].password = newPassword;
+      users[idx].lastLogin = lastLogin.toISOString();
+      const formatted = JSON.stringify(users, null, 2);
+      await fs.writeFile(usersFilePath, formatted, "utf8");
+    }
+  } catch (err) {
+    console.error("JSON update failed in updateAdminUserPassword:", err);
+  }
 }
