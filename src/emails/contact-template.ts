@@ -12,7 +12,7 @@ export interface ContactEmailParams {
 export function generateContactEmailText(params: ContactEmailParams): string {
   const { name, email, inquiryType, subject, message } = params;
   return `
-NEW INQUIRY — ARTIFICIAL QUOTIENT
+NEW INQUIRY — ARTIFICIAL QUOTIENT™
 ==================================================
 
 From: ${name} (${email})
@@ -26,17 +26,18 @@ ${message}
 
 ==================================================
 Reply directly to ${name}: mailto:${email}
-Sent via Artificial Quotient Platform.
+© ${new Date().getFullYear()} Artificial Quotient™. All rights reserved.
   `.trim();
 }
 
 /**
- * Generates an ultra-premium, modern responsive HTML email template matching Artificial Quotient's emerald brand identity.
+ * Generates an ultra-premium, modern responsive HTML email template featuring the official brand logo and trademark styling.
  */
 export function generateContactEmailHtml(params: ContactEmailParams): string {
   const { name, email, inquiryType, subject, message } = params;
   const initial = name ? name.trim().charAt(0).toUpperCase() : "A";
   const replySubject = encodeURIComponent(`Re: ${subject || inquiryType || "Artificial Quotient Inquiry"}`);
+  const logoUrl = "https://raw.githubusercontent.com/Ani0811/artificial-quotient/main/public/logo/logo.jpeg";
 
   return `
 <!DOCTYPE html>
@@ -44,7 +45,7 @@ export function generateContactEmailHtml(params: ContactEmailParams): string {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>New Sponsorship Inquiry — Artificial Quotient</title>
+  <title>New Sponsorship Inquiry — Artificial Quotient™</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #061612; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #ecfdf5;">
   
@@ -61,19 +62,31 @@ export function generateContactEmailHtml(params: ContactEmailParams): string {
             <td style="height: 4px; background: linear-gradient(90deg, #10b981 0%, #14b8a6 50%, #06b6d4 100%);"></td>
           </tr>
 
-          <!-- Brand Header -->
+          <!-- Brand Header with Official Logo & Trademark -->
           <tr>
-            <td style="padding: 28px 32px 24px 32px; border-bottom: 1px solid #16382e;">
+            <td style="padding: 24px 32px; border-bottom: 1px solid #16382e;">
               <table width="100%" border="0" cellspacing="0" cellpadding="0">
                 <tr>
                   <td align="left" valign="middle">
-                    <div style="font-size: 22px; font-weight: 800; color: #ffffff; tracking: -0.03em; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-                      Artificial<span style="color: #10b981;">Quotient</span>
-                    </div>
+                    <table border="0" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td valign="middle" style="padding-right: 12px;">
+                          <img src="${logoUrl}" alt="Artificial Quotient Logo" width="40" height="40" style="width: 40px; height: 40px; border-radius: 10px; border: 1px solid rgba(16, 185, 129, 0.4); display: block; object-fit: cover;" />
+                        </td>
+                        <td valign="middle">
+                          <div style="font-size: 20px; font-weight: 800; color: #ffffff; letter-spacing: -0.02em; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.2;">
+                            Artificial<span style="color: #10b981;">Quotient</span><sup style="font-size: 10px; color: #10b981; font-weight: 800; margin-left: 2px;">™</sup>
+                          </div>
+                          <div style="font-size: 11px; color: #6ee7b7; font-weight: 600; letter-spacing: 0.02em;">
+                            Official Sponsorship Portal
+                          </div>
+                        </td>
+                      </tr>
+                    </table>
                   </td>
                   <td align="right" valign="middle">
                     <span style="display: inline-block; padding: 6px 14px; background-color: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); color: #6ee7b7; font-size: 11px; font-weight: 700; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.06em;">
-                      ✨ New Inquiry
+                      ⚡ Incoming Inquiry
                     </span>
                   </td>
                 </tr>
@@ -153,14 +166,15 @@ export function generateContactEmailHtml(params: ContactEmailParams): string {
             </td>
           </tr>
 
-          <!-- Footer -->
+          <!-- Footer with Trademark & Legal Notice -->
           <tr>
-            <td style="padding: 20px 32px; background-color: #061612; border-top: 1px solid #16382e; text-align: center;">
-              <div style="font-size: 12px; color: #6ee7b7; font-weight: 600; margin-bottom: 4px;">
-                Sent via <strong style="color: #ffffff;">Artificial Quotient Sponsorship Portal</strong>
+            <td style="padding: 24px 32px; background-color: #061612; border-top: 1px solid #16382e; text-align: center;">
+              <div style="font-size: 12px; color: #6ee7b7; font-weight: 600; margin-bottom: 6px;">
+                © ${new Date().getFullYear()} <strong style="color: #ffffff;">Artificial Quotient™</strong>. All rights reserved.
               </div>
-              <div style="font-size: 11px; color: #34d399; opacity: 0.7;">
-                🔒 Transmitted via Secure Automated Mail Gateway
+              <div style="font-size: 11px; color: #34d399; opacity: 0.75; line-height: 1.5;">
+                Artificial Quotient™ is a trademark of Artificial Quotient Media Hub.<br />
+                🔒 Transmitted via SSL Encrypted Automated Gateway
               </div>
             </td>
           </tr>
