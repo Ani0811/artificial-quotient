@@ -201,6 +201,7 @@ Artificial Quotient is a high-converting, modern web application and sponsorship
 #### 6. Strict User Identity Verification & Security Hardening
 - **Eliminated Super Admin Fallback**: Removed legacy fallback in `src/app/admin/page.tsx` that previously defaulted unassigned sessions to Primary Admin (`admin-1`).
 - **Enforced Active Identity Check**: Requiring both `admin_session` and `admin_user_id` cookies to match an active user in MySQL/JSON; unauthenticated or unassigned users are strictly redirected to the login gateway.
+- **Next.js App Router Compliance**: Resolved unhandled runtime cookie error by keeping cookie mutations strictly within API Route Handlers rather than mutating cookie states during page component rendering.
 
 ---
 
