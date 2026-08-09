@@ -403,14 +403,14 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                   Admin Management Portal
                 </h1>
                 <span className="text-xs bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-bold">
-                  Auth Active
+                  {currentUser?.name || "Auth Active"} ({currentUser?.role || "Admin"})
                 </span>
                 <span className="text-xs bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1.5">
                   <Database className="w-3.5 h-3.5 text-emerald-400" /> {dbStatus}
                 </span>
               </div>
               <p className="text-sm text-brand-muted dark:text-emerald-200/70 font-medium mt-0.5">
-                System Control &bull; Artificial Quotient Platform
+                Logged in as <span className="text-emerald-600 dark:text-emerald-400 font-bold">{currentUser?.email || "Administrator"}</span> &bull; {currentUser?.role || "Admin"} Access
               </p>
             </div>
           </div>
