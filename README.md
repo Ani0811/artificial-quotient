@@ -198,6 +198,10 @@ Artificial Quotient is a high-converting, modern web application and sponsorship
 - **Non-Admin Notice Banner**: Non-admin visitors clicking the Admin Portal link land on `/admin/login?notice=not-admin` featuring an explicit alert banner informing them that they are not an administrator and that permission must be granted by an existing System Administrator.
 - **Explicit API Responses**: Updated `/api/auth/login` to return informative error messages explaining that administrator permissions must be granted by an active System Administrator.
 
+#### 6. Strict User Identity Verification & Security Hardening
+- **Eliminated Super Admin Fallback**: Removed legacy fallback in `src/app/admin/page.tsx` that previously defaulted unassigned sessions to Primary Admin (`admin-1`).
+- **Enforced Active Identity Check**: Requiring both `admin_session` and `admin_user_id` cookies to match an active user in MySQL/JSON; unauthenticated or unassigned users are strictly redirected to the login gateway.
+
 ---
 
 ## 📂 Project Structure
