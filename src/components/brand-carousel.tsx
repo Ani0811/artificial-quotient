@@ -62,26 +62,31 @@ const BRANDS: Brand[] = [
   },
 ];
 
+// Duplicate items 4x to allow infinite seamless marquee scrolling
+const INFINITE_BRANDS = [...BRANDS, ...BRANDS, ...BRANDS, ...BRANDS];
+
 export default function BrandCarousel() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
 
-  // Auto-scroll loop
+  // 60FPS Smooth Continuous Infinite Scroll Animation
   useEffect(() => {
-    if (isPaused) return;
+    let animationFrameId: number;
 
-    const interval = setInterval(() => {
-      if (scrollRef.current) {
-        const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-        if (scrollLeft + clientWidth >= scrollWidth - 10) {
-          scrollRef.current.scrollTo({ left: 0, behavior: "smooth" });
-        } else {
-          scrollRef.current.scrollBy({ left: 320, behavior: "smooth" });
+    const smoothScroll = () => {
+      if (scrollRef.current && !isPaused) {
+        scrollRef.current.scrollLeft += 0.85;
+
+        // Infinite loop seamless reset
+        if (scrollRef.current.scrollLeft >= scrollRef.current.scrollWidth / 2) {
+          scrollRef.current.scrollLeft = 0;
         }
       }
-    }, 3500);
+      animationFrameId = requestAnimationFrame(smoothScroll);
+    };
 
-    return () => clearInterval(interval);
+    animationFrameId = requestAnimationFrame(smoothScroll);
+    return () => cancelAnimationFrame(animationFrameId);
   }, [isPaused]);
 
   const scroll = (direction: "left" | "right") => {
@@ -117,14 +122,14 @@ export default function BrandCarousel() {
           <div className="flex items-center justify-center gap-2">
             <button
               onClick={() => scroll("left")}
-              className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-900 border border-brand-border dark:border-zinc-800 text-brand-text dark:text-white flex items-center justify-center hover:bg-emerald-500 hover:text-white dark:hover:bg-emerald-500 dark:hover:border-emerald-500 transition-all shadow-sm"
+              className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-900 border border-brand-border dark:border-zinc-800 text-brand-text dark:text-white flex items-center justify-center hover:bg-emerald-500 hover:text-white dark:hover:bg-emerald-500 dark:hover:border-emerald-500 transition-all shadow-sm active:scale-95"
               aria-label="Previous Brands"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button
               onClick={() => scroll("right")}
-              className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-900 border border-brand-border dark:border-zinc-800 text-brand-text dark:text-white flex items-center justify-center hover:bg-emerald-500 hover:text-white dark:hover:bg-emerald-500 dark:hover:border-emerald-500 transition-all shadow-sm"
+              className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-900 border border-brand-border dark:border-zinc-800 text-brand-text dark:text-white flex items-center justify-center hover:bg-emerald-500 hover:text-white dark:hover:bg-emerald-500 dark:hover:border-emerald-500 transition-all shadow-sm active:scale-95"
               aria-label="Next Brands"
             >
               <ChevronRight className="w-5 h-5" />
@@ -132,50 +137,56 @@ export default function BrandCarousel() {
           </div>
         </div>
 
-        {/* Scrollable Brands Carousel */}
-        <div
-          ref={scrollRef}
-          onMouseEnter={() => setIsPaused(true)}
-          onMouseLeave={() => setIsPaused(false)}
-          className="flex gap-6 overflow-x-auto scrollbar-none pb-4 snap-x snap-mandatory"
-          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-        >
-          {BRANDS.map((brand) => (
-            <div
-              key={brand.id}
-              className="snap-start shrink-0 w-[290px] sm:w-[320px] bg-white dark:bg-zinc-900/90 rounded-2xl p-6 border border-brand-border dark:border-zinc-800/80 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col justify-between hover:border-emerald-500/40 relative overflow-hidden"
-            >
-              {/* Top Gradient Line on Hover */}
-              <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${brand.accentColor} opacity-70 group-hover:opacity-100 transition-opacity`}></div>
+        {/* Continuous Animated Marquee Carousel */}
+        <div className="relative group/container overflow-hidden rounded-2xl">
+          {/* Left & Right Gradient Mask Fades */}
+          <div className="absolute top-0 bottom-0 left-0 w-12 bg-gradient-to-r from-brand-bg dark:from-zinc-950 to-transparent z-20 pointer-events-none"></div>
+          <div className="absolute top-0 bottom-0 right-0 w-12 bg-gradient-to-l from-brand-bg dark:from-zinc-950 to-transparent z-20 pointer-events-none"></div>
 
-              <div>
-                <div className="flex justify-between items-center mb-4">
-                  <span className="font-heading font-extrabold text-xl text-brand-text dark:text-white tracking-tight flex items-center gap-2">
-                    {brand.logoText}
+          <div
+            ref={scrollRef}
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+            className="flex gap-6 overflow-x-auto scrollbar-none py-2 select-none"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
+            {INFINITE_BRANDS.map((brand, idx) => (
+              <div
+                key={`${brand.id}-${idx}`}
+                className="shrink-0 w-[290px] sm:w-[320px] bg-white dark:bg-zinc-900/90 rounded-2xl p-6 border border-brand-border dark:border-zinc-800/80 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col justify-between hover:border-emerald-500/40 relative overflow-hidden"
+              >
+                {/* Top Gradient Line on Hover */}
+                <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${brand.accentColor} opacity-70 group-hover:opacity-100 transition-opacity`}></div>
+
+                <div>
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="font-heading font-extrabold text-xl text-brand-text dark:text-white tracking-tight flex items-center gap-2">
+                      {brand.logoText}
+                    </span>
+                    <span className="text-[10px] uppercase tracking-wider font-bold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                      Sponsor
+                    </span>
+                  </div>
+
+                  <span className="text-xs font-semibold text-brand-muted dark:text-emerald-400/90 mb-2 block">
+                    {brand.category}
                   </span>
-                  <span className="text-[10px] uppercase tracking-wider font-bold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                    Sponsor
-                  </span>
+
+                  <p className="text-xs text-brand-muted dark:text-zinc-400 leading-relaxed mb-6 font-medium">
+                    {brand.tagline}
+                  </p>
                 </div>
 
-                <span className="text-xs font-semibold text-brand-muted dark:text-emerald-400/90 mb-2 block">
-                  {brand.category}
-                </span>
-
-                <p className="text-xs text-brand-muted dark:text-zinc-400 leading-relaxed mb-6 font-medium">
-                  {brand.tagline}
-                </p>
+                <div className="flex items-center justify-between pt-4 border-t border-brand-border/60 dark:border-zinc-800/80 text-xs font-bold text-emerald-600 dark:text-emerald-400 group-hover:translate-x-0.5 transition-transform">
+                  <Link href="/#case-studies" className="hover:underline flex items-center gap-1">
+                    <span>View Breakdown</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </Link>
+                  <Sparkles className="w-4 h-4 text-emerald-500/40 group-hover:text-emerald-500 transition-colors" />
+                </div>
               </div>
-
-              <div className="flex items-center justify-between pt-4 border-t border-brand-border/60 dark:border-zinc-800/80 text-xs font-bold text-emerald-600 dark:text-emerald-400 group-hover:translate-x-0.5 transition-transform">
-                <Link href="/#case-studies" className="hover:underline flex items-center gap-1">
-                  <span>View Breakdown</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </Link>
-                <Sparkles className="w-4 h-4 text-emerald-500/40 group-hover:text-emerald-500 transition-colors" />
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
       </div>
