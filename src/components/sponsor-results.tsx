@@ -103,7 +103,7 @@ export default function SponsorResults() {
                 <div className="flex justify-between items-start mb-6">
                   <div className="bg-brand-bg dark:bg-zinc-950 px-4 py-2 rounded-lg border border-brand-border dark:border-zinc-800 font-bold text-lg text-brand-text dark:text-white transition-all duration-300 group-hover:border-emerald-500/40 group-hover:bg-emerald-500/5 dark:group-hover:bg-emerald-500/10 group-hover:text-emerald-500 dark:group-hover:text-emerald-400 flex items-center gap-2">
                     {item.logoUrl ? (
-                      <img src={item.logoUrl} alt={item.partnerName} className="w-5 h-5 object-contain rounded" />
+                      <img src={item.logoUrl} alt={item.partnerName} loading="lazy" decoding="async" className="w-5 h-5 object-contain rounded" />
                     ) : null}
                     <span>{item.partnerName}</span>
                   </div>
@@ -172,7 +172,7 @@ export default function SponsorResults() {
 
                 <h2 className="font-heading text-xl sm:text-2xl font-extrabold text-brand-text dark:text-white flex items-center gap-2.5">
                   {selectedCaseStudy.logoUrl && (
-                    <img src={selectedCaseStudy.logoUrl} alt="" className="w-7 h-7 object-contain rounded shrink-0" />
+                    <img src={selectedCaseStudy.logoUrl} alt="" decoding="async" className="w-7 h-7 object-contain rounded shrink-0" />
                   )}
                   <span className="truncate">{selectedCaseStudy.partnerName} Case Study</span>
                 </h2>

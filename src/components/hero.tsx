@@ -45,7 +45,7 @@ export default function Hero() {
           {/* Ambient Card Background Glow */}
           <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/30 via-teal-500/20 to-blue-500/30 rounded-3xl blur-xl opacity-75 group-hover:opacity-100 transition duration-500 pointer-events-none"></div>
 
-          <div className="bg-zinc-950/95 dark:bg-zinc-950/90 backdrop-blur-2xl rounded-3xl p-8 shadow-2xl text-white transform md:rotate-2 group-hover:rotate-0 transition-all duration-500 relative z-10 border border-zinc-800/80 group-hover:border-emerald-500/40 overflow-hidden">
+          <div className="bg-zinc-950/95 dark:bg-zinc-950/90 backdrop-blur-2xl rounded-3xl p-6 sm:p-8 shadow-2xl text-white transform md:rotate-2 group-hover:rotate-0 transition-all duration-500 relative z-10 border border-zinc-800/80 group-hover:border-emerald-500/40 overflow-hidden">
             
             {/* Top Decorative Line */}
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-400 to-blue-500"></div>
@@ -58,6 +58,7 @@ export default function Hero() {
                     <img 
                       src="/logo/logo.jpeg" 
                       alt="Artificial Quotient Official Logo" 
+                      decoding="async"
                       className="w-full h-full object-cover"
                     />
                   </div>
