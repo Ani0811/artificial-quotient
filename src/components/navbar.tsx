@@ -78,51 +78,93 @@ export default function Navbar({ isAdmin = false }: NavbarProps) {
         </div>
       </div>
 
-      {/* Mobile Menu Panel */}
-      <div
-        className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out border-brand-border dark:border-zinc-800 ${
-          isOpen ? "max-h-64 border-t bg-brand-bg dark:bg-zinc-950 px-4 py-3" : "max-h-0"
-        }`}
-      >
-        <div className="flex flex-col gap-3">
-          <Link
-            href="/#brands"
-            onClick={() => setIsOpen(false)}
-            className="text-sm font-medium text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white py-1.5 transition-colors"
-          >
-            Brands
-          </Link>
-          <Link
-            href="/#stats"
-            onClick={() => setIsOpen(false)}
-            className="text-sm font-medium text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white py-1.5 transition-colors"
-          >
-            Stats
-          </Link>
-          <Link
-            href="/#case-studies"
-            onClick={() => setIsOpen(false)}
-            className="text-sm font-medium text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white py-1.5 transition-colors"
-          >
-            Case Studies
-          </Link>
-          <Link
-            href="/contact"
-            onClick={() => setIsOpen(false)}
-            className="text-sm font-medium text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white py-1.5 transition-colors"
-          >
-            Contact
-          </Link>
-          <Link
-            href={isAdmin ? "/admin" : "/admin/login?notice=not-admin"}
-            onClick={() => setIsOpen(false)}
-            className="text-sm font-bold text-emerald-500 py-1.5 flex items-center gap-1.5 transition-colors xs:hidden"
-          >
-            <Lock className="w-4 h-4" />
-            <span>Admin Portal</span>
-          </Link>
+      {/* Mobile Fullscreen Menu Overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 w-full h-screen z-50 flex flex-col justify-between p-6 md:hidden"
+          style={{ backgroundColor: "#061612" }}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <Link href="/" onClick={() => setIsOpen(false)} className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full overflow-hidden border border-emerald-500/30 flex items-center justify-center bg-zinc-900">
+                <img src="/logo/logo.jpeg" alt="Artificial Quotient Logo" className="w-full h-full object-cover" />
+              </div>
+              <span className="font-heading font-bold text-lg tracking-tight text-white">
+                Artificial<span className="text-emerald-500">Quotient</span>
+              </span>
+            </Link>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="p-2 rounded-xl border border-zinc-800 bg-zinc-900 text-white hover:bg-zinc-800 transition-colors"
+              aria-label="Close Mobile Menu"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Navigation Links */}
+          <div className="flex flex-col gap-6 my-auto py-8">
+            <Link
+              href="/#brands"
+              onClick={() => setIsOpen(false)}
+              className="font-heading text-3xl font-bold text-zinc-400 hover:text-white transition-colors flex items-center justify-between group"
+            >
+              <span>Brands</span>
+              <span className="text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity">&rarr;</span>
+            </Link>
+            <Link
+              href="/#stats"
+              onClick={() => setIsOpen(false)}
+              className="font-heading text-3xl font-bold text-zinc-400 hover:text-white transition-colors flex items-center justify-between group"
+            >
+              <span>Stats</span>
+              <span className="text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity">&rarr;</span>
+            </Link>
+            <Link
+              href="/#case-studies"
+              onClick={() => setIsOpen(false)}
+              className="font-heading text-3xl font-bold text-zinc-400 hover:text-white transition-colors flex items-center justify-between group"
+            >
+              <span>Case Studies</span>
+              <span className="text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity">&rarr;</span>
+            </Link>
+            <Link
+              href="/contact"
+              onClick={() => setIsOpen(false)}
+              className="font-heading text-3xl font-bold text-zinc-400 hover:text-white transition-colors flex items-center justify-between group"
+            >
+              <span>Contact</span>
+              <span className="text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity">&rarr;</span>
+            </Link>
+            <Link
+              href={isAdmin ? "/admin" : "/admin/login?notice=not-admin"}
+              onClick={() => setIsOpen(false)}
+              className="font-heading text-xl font-bold text-emerald-400 hover:text-emerald-300 transition-colors flex items-center gap-2 pt-4 border-t border-zinc-800"
+            >
+              <Lock className="w-5 h-5" />
+              <span>Admin Portal</span>
+            </Link>
+          </div>
+
+          {/* Footer Call to Action / Socials */}
+          <div className="space-y-4">
+            {!isLoginPage && (
+              <a
+                href="https://forms.gle/4uTUZkEi5o3iqYrs5"
+                target="_blank"
+                rel="noreferrer"
+                className="block w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-center py-4 rounded-2xl transition-all shadow-lg shadow-emerald-500/25"
+              >
+                Become a Sponsor
+              </a>
+            )}
+            <p className="text-xs text-zinc-500 text-center">
+              © 2026 Artificial Quotient. All rights reserved.
+            </p>
+          </div>
         </div>
-      </div>
+      )}
     </nav>
   );
 }
