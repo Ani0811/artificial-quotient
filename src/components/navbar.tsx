@@ -28,14 +28,14 @@ export default function Navbar({ isAdmin = false }: NavbarProps) {
         
         {/* Nav Links */}
         <div className="hidden md:flex items-center gap-8">
+          <Link href="/#brands" className="text-sm font-medium text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white transition-colors">
+            Brands
+          </Link>
           <Link href="/#stats" className="text-sm font-medium text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white transition-colors">
             Stats
           </Link>
           <Link href="/#case-studies" className="text-sm font-medium text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white transition-colors">
             Case Studies
-          </Link>
-          <Link href="/tools" className="text-sm font-medium text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white transition-colors">
-            Tool Vault
           </Link>
           <Link href="/contact" className="text-sm font-medium text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white transition-colors">
             Contact

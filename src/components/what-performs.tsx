@@ -80,7 +80,7 @@ export default function WhatPerforms() {
             const thumbImg = study.thumbnail || (ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : null);
 
             return (
-              <div key={study.id} className="bg-brand-card dark:bg-zinc-900 rounded-xl border border-brand-border dark:border-zinc-800 overflow-hidden hover:shadow-lg transition-all group shadow-sm flex flex-col justify-between">
+              <div key={study.id} className="bg-brand-card dark:bg-zinc-900 rounded-xl border border-brand-border dark:border-zinc-800 overflow-hidden transition-all group flex flex-col justify-between">
                 <div>
                   <div className="aspect-video bg-gray-100 dark:bg-zinc-800 flex items-center justify-center text-5xl relative overflow-hidden">
                     {thumbImg ? (
@@ -94,9 +94,9 @@ export default function WhatPerforms() {
                         href={study.ytUrl} 
                         target="_blank" 
                         rel="noreferrer" 
-                        className="absolute inset-0 bg-black/30 group-hover:bg-black/45 transition-colors flex items-center justify-center cursor-pointer"
+                        className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center cursor-pointer"
                       >
-                        <PlayCircle className="w-14 h-14 text-white drop-shadow-md transform group-hover:scale-110 transition-transform duration-200" />
+                        <PlayCircle className="w-14 h-14 text-white drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)] transform group-hover:scale-110 transition-transform duration-200" />
                       </a>
                     ) : (
                       <div className="absolute inset-0 bg-brand-dark/0 group-hover:bg-brand-dark/20 transition-colors flex items-center justify-center">
@@ -104,27 +104,15 @@ export default function WhatPerforms() {
                       </div>
                     )}
 
-                    <div className="absolute top-3 left-3 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm text-xs font-bold px-2 py-1 rounded text-brand-text dark:text-white shadow-sm border border-brand-border/20">
+                    <div className="absolute top-3 left-3 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm text-xs font-bold px-2 py-1 rounded text-brand-text dark:text-white border border-brand-border/20">
                       {study.type}
                     </div>
                   </div>
 
-                  <div className="p-6">
-                    <h3 className="font-heading text-xl font-bold mb-4 text-brand-text dark:text-white group-hover:text-emerald-500 transition-colors">
+                  <div className="p-4 sm:p-5">
+                    <h3 className="font-heading text-xl font-bold text-brand-text dark:text-white group-hover:text-emerald-500 transition-colors">
                       {study.title}
                     </h3>
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-brand-bg dark:bg-zinc-950 rounded-lg p-3 border border-brand-border dark:border-zinc-800">
-                        <p className="text-xs text-brand-muted dark:text-zinc-400 font-medium mb-1 flex items-center gap-1"><PlayCircle className="w-3 h-3"/> Views</p>
-                        <p className="font-bold text-lg text-brand-text dark:text-white">{study.views}</p>
-                      </div>
-                      <div className="bg-brand-bg dark:bg-zinc-950 rounded-lg p-3 border border-brand-border dark:border-zinc-800 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-8 h-8 bg-emerald-500/10 rounded-bl-full"></div>
-                        <p className="text-xs text-brand-muted dark:text-zinc-400 font-medium mb-1 flex items-center gap-1"><MousePointerClick className="w-3 h-3"/> Clicks</p>
-                        <p className="font-bold text-lg text-emerald-500">{study.clicks}</p>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>

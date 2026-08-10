@@ -213,6 +213,31 @@ Artificial Quotient is a high-converting, modern web application and sponsorship
 
 ---
 
+### 📅 Day 7 — Visual Refinements, Marky Agent Case Study, Sponsor Brand Carousel, Custom 2-Step Verification (2FA) & Premium Email Gateway
+
+#### 1. Thumbnail & Card Visual Refinements
+- **Flat Card Aesthetic**: Removed unwanted shadow classes (`shadow-sm`, `hover:shadow-lg`, `drop-shadow-md`) and extra container padding from the **What Performs on the Channel** cards for a clean, modern flat aesthetic.
+- **100% YouTube Brightness**: Removed default dark background overlays (`bg-black/30` -> `bg-black/0`) from video thumbnails to match YouTube's exact bright visual appearance.
+
+#### 2. Missing Case Study & Sponsor Brand Carousel
+- **Marky Agent Case Study**: Added missing **Marky Agent** dedicated video case study (`680+ Signups Generated | 3.8x Est. ROI Multiplier`) to MySQL DB and JSON fallback. Updated layout grid to 3 columns (`lg:grid-cols-3`).
+- **Sponsor Brands Carousel (`/#brands`)**: Created a dedicated `BrandCarousel` component below the Hero header with interactive controls, auto-scrolling ticker, and partner badges (`Revid.AI`, `Flashloop AI`, `Marky Agent`, `Make.com`).
+- **Navbar & Footer Redirects**: Added a **Brands** link in the Navbar and a **Sponsor Brands** link in the Footer redirecting to `/#brands` with smooth scrolling.
+
+#### 3. Custom 2-Step Verification (2FA / OTP) From Scratch
+- **Zero 3rd-Party Integrations**: Built an in-house **2-Step Verification (2FA)** system from scratch without relying on external auth providers (Auth0, Clerk, or Twilio).
+- **In-Memory OTP Store (`src/lib/otp-store.ts`)**: Implemented a server-side memory map for generating 6-digit One-Time Passwords with a 5-minute expiration window.
+- **Verification Endpoint (`/api/auth/verify-2fa`)**: Added a dedicated verification route that checks the OTP code, clears it upon consumption, and issues authenticated session cookies.
+- **Interactive 2FA Login Flow (`/admin/login`)**: Updated the login page to transition into a 6-digit OTP verification state upon valid password entry.
+
+#### 4. Premium Dark Security Email Gateway with Embedded Logo
+- **Nodemailer Service (`src/lib/email-service.ts`)**: Integrated `nodemailer` with custom SMTP settings and `tls: { rejectUnauthorized: false }` for self-signed certificate compatibility.
+- **Inline CID Logo Attachment**: Attached `/public/logo/logo.jpeg` as an inline CID attachment (`cid:aqlogo@artificialquotient`) for 100% reliable rendering across all email clients (Gmail, Outlook, Apple Mail).
+- **Dark Theme HTML Email**: Designed a dark-theme email template featuring a gradient top bar, `🔒 SECURITY GATEWAY` badge, large cyan monospaced 6-digit code (`#38bdf8`), 5-minute expiration indicator, and security alert notice.
+- **Smart Fallback Destination**: Updated fallback login authentication to send OTP codes to `CONTACT_RECEIVER_EMAIL` when logging in without an explicit email address.
+
+---
+
 ## 📂 Project Structure
 
 ```
@@ -257,7 +282,9 @@ artificial-quotient/
 │   ├── schema/                # Knex Schema Modules & Raw SQL Queries
 │   └── lib/
 │       ├── auth-store.ts      # Admin Password & Role State Manager
-│       └── db.ts              # Knex MySQL Database Connection Initializer
+│       ├── db.ts              # Knex MySQL Database Connection Initializer
+│       ├── email-service.ts   # Nodemailer Service & Inline CID Logo Template
+│       └── otp-store.ts       # 2FA One-Time Password In-Memory Store
 ├── tailwind.config.ts
 ├── README.md
 └── package.json

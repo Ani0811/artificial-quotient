@@ -10,6 +10,10 @@ function AdminLoginForm() {
   const notice = searchParams.get("notice");
   const isNotAdmin = notice === "not-admin";
 
+  const [step, setStep] = useState<"credentials" | "2fa">("credentials");
+  const [userId, setUserId] = useState("");
+  const [twoFactorCode, setTwoFactorCode] = useState("");
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -38,11 +42,45 @@ function AdminLoginForm() {
         body: JSON.stringify({ email, password }),
       });
 
-      if (res.ok) {
+      const data = await res.json();
+
+      if (res.ok && data.require2FA) {
+        setUserId(data.userId);
+        setStep("2fa");
+        setSuccess(data.message || "Verification code sent to email.");
+      } else if (res.ok) {
         window.location.href = "/admin";
       } else {
-        const data = await res.json();
         setError(data.message || "Invalid administrator credentials");
+      }
+    } catch {
+      setError("An unexpected network error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerify2FA = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const res = await fetch("/api/auth/verify-2fa", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId, code: twoFactorCode }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        window.location.href = "/admin";
+      } else {
+        setError(data.message || "Invalid verification code.");
       }
     } catch {
       setError("An unexpected network error occurred. Please try again.");
@@ -130,6 +168,82 @@ function AdminLoginForm() {
         )}
 
         {!isForgotMode ? (
+          step === "2fa" ? (
+            /* 2FA Verification Form */
+            <form onSubmit={handleVerify2FA} className="space-y-5">
+              <div className="space-y-1.5">
+                <label className="block text-sm font-medium text-brand-text dark:text-zinc-200">
+                  Verification Code
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-brand-muted dark:text-zinc-500">
+                    <ShieldAlert className="w-4 h-4" />
+                  </div>
+                  <input
+                    type="text"
+                    value={twoFactorCode}
+                    onChange={(e) => setTwoFactorCode(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-brand-border/80 dark:border-zinc-700 bg-white/50 dark:bg-zinc-950/50 focus:outline-none focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue dark:focus:border-brand-blue text-brand-text dark:text-white transition-all text-sm font-mono tracking-widest text-center"
+                    placeholder="123456"
+                    maxLength={6}
+                    required
+                  />
+                </div>
+                <p className="text-xs text-brand-muted dark:text-zinc-500 text-center mt-2">
+                  Please enter the 6-digit code sent to your email.
+                </p>
+              </div>
+
+              {success && (
+                <div className="bg-green-50/50 dark:bg-green-950/20 border border-green-200 dark:border-green-900/30 rounded-xl p-3.5 flex items-start gap-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-green-500 dark:text-green-400 shrink-0 mt-0.5" />
+                  <p className="text-green-600 dark:text-green-400 text-xs font-medium leading-relaxed">
+                    {success}
+                  </p>
+                </div>
+              )}
+
+              {error && (
+                <div className="bg-red-50/50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 rounded-xl p-3.5 flex items-start gap-2.5">
+                  <ShieldAlert className="w-4 h-4 text-red-500 dark:text-red-400 shrink-0 mt-0.5" />
+                  <p className="text-red-600 dark:text-red-400 text-xs font-medium leading-relaxed">
+                    {error}
+                  </p>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-brand-blue hover:bg-brand-blue-hover text-white font-bold py-3 rounded-xl transition-all shadow-md hover:shadow-brand-blue/20 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center gap-2 text-sm"
+              >
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                    Verifying...
+                  </span>
+                ) : (
+                  <>
+                    <Lock className="w-4 h-4" />
+                    Verify &amp; Login
+                  </>
+                )}
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => {
+                  setStep("credentials");
+                  setTwoFactorCode("");
+                  setError("");
+                  setSuccess("");
+                }}
+                className="w-full text-center text-xs text-brand-muted hover:text-brand-text dark:text-zinc-400 dark:hover:text-white pt-2 transition-colors block"
+              >
+                &larr; Back to Login
+              </button>
+            </form>
+          ) : (
           /* Standard Login Form */
           <form onSubmit={handleLogin} className="space-y-5">
             <div className="space-y-1.5">
@@ -217,6 +331,7 @@ function AdminLoginForm() {
               )}
             </button>
           </form>
+          )
         ) : (
           /* Reset Password Form */
           <form onSubmit={handleResetPassword} className="space-y-4">

@@ -89,7 +89,7 @@ export default function SponsorResults() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {results.map((item, idx) => (
             <div 
               key={item.id || idx} 
@@ -111,12 +111,14 @@ export default function SponsorResults() {
                     {item.campaignType}
                   </span>
                 </div>
-                <p 
-                  style={{ fontFamily: item.quoteFont ? `'${item.quoteFont}', cursive, sans-serif` : undefined }}
-                  className="font-handwritten text-2xl text-brand-text dark:text-zinc-200 mb-6 transition-colors duration-300 group-hover:text-brand-text dark:group-hover:text-white"
-                >
-                  &quot;{item.quote}&quot;
-                </p>
+                {item.quote && (
+                  <p 
+                    style={{ fontFamily: item.quoteFont ? `'${item.quoteFont}', cursive, sans-serif` : undefined }}
+                    className="font-handwritten text-2xl text-brand-text dark:text-zinc-200 mb-6 transition-colors duration-300 group-hover:text-brand-text dark:group-hover:text-white"
+                  >
+                    &quot;{item.quote}&quot;
+                  </p>
+                )}
               </div>
               
               <div>
@@ -213,14 +215,16 @@ export default function SponsorResults() {
             ) : null}
 
             {/* Testimonial Quote */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-brand-bg dark:bg-[#061612] border border-brand-border dark:border-[#16382e]">
-              <p 
-                style={{ fontFamily: selectedCaseStudy.quoteFont ? `'${selectedCaseStudy.quoteFont}', cursive, sans-serif` : undefined }}
-                className="font-handwritten text-lg sm:text-xl text-brand-text dark:text-emerald-100 italic leading-relaxed"
-              >
-                &quot;{selectedCaseStudy.quote}&quot;
-              </p>
-            </div>
+            {selectedCaseStudy.quote && (
+              <div className="p-4 sm:p-5 rounded-2xl bg-brand-bg dark:bg-[#061612] border border-brand-border dark:border-[#16382e]">
+                <p 
+                  style={{ fontFamily: selectedCaseStudy.quoteFont ? `'${selectedCaseStudy.quoteFont}', cursive, sans-serif` : undefined }}
+                  className="font-handwritten text-lg sm:text-xl text-brand-text dark:text-emerald-100 italic leading-relaxed"
+                >
+                  &quot;{selectedCaseStudy.quote}&quot;
+                </p>
+              </div>
+            )}
 
             {/* Stat Badges Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">

@@ -1,8 +1,8 @@
 [
   {
     "id": "admin-1",
-    "name": "Primary Admin",
-    "email": "admin@artificialquotient.com",
+    "name": "Anirudha Basu Thakur",
+    "email": "anirudha.basuthakur@gmail.com",
     "password": "admin123",
     "role": "Super Admin",
     "permissions": [
@@ -16,7 +16,7 @@
     ],
     "recoveryKey": "AQ-SEC-9842",
     "status": "Active",
-    "lastLogin": "2026-08-09T15:39:26.474Z"
+    "lastLogin": "2026-08-10T14:24:41.562Z"
   },
   {
     "id": "admin-1786286891836",

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { getAdminPassword, getAdminUsers, saveAdminUsers } from "@/lib/auth-store";
+import { getAdminPassword, getAdminUsers } from "@/lib/auth-store";
+import { generateOTP } from "@/lib/otp-store";
+import { send2FACodeEmail } from "@/lib/email-service";
 
 export const dynamic = "force-dynamic";
 
@@ -34,71 +35,68 @@ export async function POST(request: Request) {
         }
 
         if (user.password === password || password === masterPassword) {
-          // Update last login
-          adminUsers[targetUserIndex].lastLogin = new Date().toISOString();
-          await saveAdminUsers(adminUsers);
+          // Generate OTP
+          const code = generateOTP(user.id);
+          
+          // Send Email
+          const emailSent = await send2FACodeEmail(user.email, code);
+          if (!emailSent) {
+            return NextResponse.json(
+              { success: false, message: "Failed to send verification code. Please check email configuration." },
+              { status: 500 }
+            );
+          }
 
-          const cookieStore = await cookies();
-          cookieStore.set("admin_session", "authenticated", {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
-            maxAge: 60 * 60 * 24 * 7,
-            path: "/",
+          return NextResponse.json({ 
+            success: true, 
+            require2FA: true, 
+            userId: user.id, 
+            message: "Verification code sent to email." 
           });
-          cookieStore.set("admin_user_id", user.id, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
-            maxAge: 60 * 60 * 24 * 7,
-            path: "/",
-          });
-
-          return NextResponse.json({ success: true, user: adminUsers[targetUserIndex] });
         }
       }
     }
 
-    // Try matching password against any active user or master password
+    // Try matching password against any active user or master password (fallback for non-email login)
     const matchingUser = adminUsers.find(
       (u) => u.status === "Active" && u.password === password
     );
 
     if (password === masterPassword || matchingUser) {
       let userId = "admin-1"; // Fallback to primary admin
+      let userEmail = process.env.CONTACT_RECEIVER_EMAIL || "admin@artificialquotient.com";
+      
       if (matchingUser) {
         userId = matchingUser.id;
-        const idx = adminUsers.findIndex((u) => u.id === matchingUser.id);
-        if (idx !== -1) {
-          adminUsers[idx].lastLogin = new Date().toISOString();
-          await saveAdminUsers(adminUsers);
-        }
+        userEmail = matchingUser.email;
       }
 
-      const cookieStore = await cookies();
-      cookieStore.set("admin_session", "authenticated", {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 60 * 60 * 24 * 7,
-        path: "/",
-      });
-      cookieStore.set("admin_user_id", userId, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 60 * 60 * 24 * 7,
-        path: "/",
-      });
+      // Generate OTP
+      const code = generateOTP(userId);
+      
+      // Send Email
+      const emailSent = await send2FACodeEmail(userEmail, code);
+      if (!emailSent) {
+        return NextResponse.json(
+          { success: false, message: "Failed to send verification code. Please check email configuration." },
+          { status: 500 }
+        );
+      }
 
-      return NextResponse.json({ success: true });
+      return NextResponse.json({ 
+        success: true, 
+        require2FA: true, 
+        userId: userId, 
+        message: "Verification code sent to email." 
+      });
     }
 
     return NextResponse.json(
       { success: false, message: "Invalid administrator credentials. Permission to access the Admin Portal must be granted by an existing System Administrator." },
       { status: 401 }
     );
-  } catch {
+  } catch (error) {
+    console.error("Login Error:", error);
     return NextResponse.json(
       { success: false, message: "Internal server error occurred." },
       { status: 500 }

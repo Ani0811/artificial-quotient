@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import Hero from "@/components/hero";
+import BrandCarousel from "@/components/brand-carousel";
 import {
   AudienceSnapshotSkeleton,
   WhatPerformsSkeleton,
@@ -59,6 +60,9 @@ export default function Home() {
   return (
     <div className="flex flex-col">
       <Hero />
+      <div id="brands" className="scroll-mt-16">
+        <BrandCarousel />
+      </div>
       <div id="stats" className="scroll-mt-16">
         <AudienceSnapshot />
       </div>

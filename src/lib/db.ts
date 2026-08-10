@@ -4,12 +4,15 @@ import fs from "fs/promises";
 import path from "path";
 
 // MySQL Connection Pool Configuration
+const rawHost = process.env.MYSQL_HOST || "127.0.0.1";
+const host = rawHost === "localhost" ? "127.0.0.1" : rawHost;
+
 const poolConfig = {
-  host: process.env.MYSQL_HOST || "localhost",
+  host: host,
   port: Number(process.env.MYSQL_PORT) || 3306,
   user: process.env.MYSQL_USER || "root",
   password: process.env.MYSQL_PASSWORD || "",
-  database: process.env.MYSQL_DATABASE || "AQ-Dashboard",
+  database: process.env.MYSQL_DATABASE || "AQ_Dashboard",
 };
 
 let db: Knex | null = null;
@@ -52,9 +55,13 @@ export async function ensureDatabaseExists(): Promise<void> {
       port: poolConfig.port,
       user: poolConfig.user,
       password: poolConfig.password,
-    });
-    await rootConn.query(`CREATE DATABASE IF NOT EXISTS \`${poolConfig.database}\``);
-    await rootConn.end();
+      connectTimeout: 2000,
+    }).catch(() => null);
+
+    if (!rootConn) return;
+
+    await rootConn.query(`CREATE DATABASE IF NOT EXISTS \`${poolConfig.database}\``).catch(() => {});
+    await rootConn.end().catch(() => {});
   } catch {
     // Ignore error
   }

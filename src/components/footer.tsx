@@ -57,14 +57,14 @@ export default function Footer() {
             <h3 className="font-heading font-bold text-sm text-brand-text dark:text-white uppercase tracking-wider">
               Explore
             </h3>
+            <Link href="/#brands" className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors">
+              Sponsor Brands
+            </Link>
             <Link href="/#stats" className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors">
               Channel Stats
             </Link>
             <Link href="/#case-studies" className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors">
               Case Studies
-            </Link>
-            <Link href="/tools" className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors">
-              AI Tool Directory
             </Link>
           </div>
 
