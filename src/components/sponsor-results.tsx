@@ -74,7 +74,7 @@ export default function SponsorResults() {
   if (results.length === 0) return null;
 
   return (
-    <section className="w-full py-20 px-4 border-t border-brand-border dark:border-zinc-800 transition-colors">
+    <section className="w-full py-12 sm:py-16 px-4 border-t border-brand-border dark:border-zinc-800 transition-colors">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col gap-2 mb-12 text-center md:text-left">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-semibold text-xs w-fit mx-auto md:mx-0">
@@ -89,12 +89,12 @@ export default function SponsorResults() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {results.map((item, idx) => (
             <div 
               key={item.id || idx} 
               onClick={() => setSelectedCaseStudy(item)}
-              className="group relative bg-white dark:bg-zinc-900 rounded-2xl p-8 border border-brand-border dark:border-zinc-800 shadow-sm flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-500/5 hover:border-emerald-500/40 dark:hover:border-emerald-500/40 overflow-hidden cursor-pointer"
+              className="group relative bg-white dark:bg-zinc-900 rounded-2xl p-5 sm:p-8 border border-brand-border dark:border-zinc-800 shadow-sm flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-500/5 hover:border-emerald-500/40 dark:hover:border-emerald-500/40 overflow-hidden cursor-pointer"
             >
               {/* Ambient top border glow line */}
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>

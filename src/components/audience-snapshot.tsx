@@ -158,7 +158,7 @@ export default function AudienceSnapshot() {
   ];
 
   return (
-    <section className="w-full py-20 px-4 border-t border-brand-border dark:border-[#14352b] transition-colors">
+    <section className="w-full py-12 sm:py-16 px-4 border-t border-brand-border dark:border-[#14352b] transition-colors">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col gap-2 mb-12 text-center md:text-left">
           <h2 className="font-heading text-3xl md:text-4xl font-bold text-brand-text dark:text-white">
@@ -170,13 +170,13 @@ export default function AudienceSnapshot() {
         </div>
 
         {/* Dynamic Stat Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-12">
           {channelMetrics.map((metric, i) => {
             const Icon = metric.icon;
             return (
               <div
                 key={i}
-                className="bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] rounded-2xl p-6 shadow-sm hover:shadow-lg dark:hover:border-emerald-500/40 transition-all duration-300 hover:-translate-y-1"
+                className="bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-lg dark:hover:border-emerald-500/40 transition-all duration-300 hover:-translate-y-1"
               >
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-300/60">
@@ -197,9 +197,9 @@ export default function AudienceSnapshot() {
           })}
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
           {/* Demographics Card */}
-          <div className="group relative bg-brand-bg dark:bg-[#0c201a] rounded-2xl p-8 border border-brand-border dark:border-[#16382e] shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-500/5 hover:border-emerald-500/40 dark:hover:border-emerald-500/40 overflow-hidden">
+          <div className="group relative bg-brand-bg dark:bg-[#0c201a] rounded-2xl p-5 sm:p-8 border border-brand-border dark:border-[#16382e] shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-500/5 hover:border-emerald-500/40 dark:hover:border-emerald-500/40 overflow-hidden">
             {/* Ambient top border glow line */}
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
@@ -245,8 +245,8 @@ export default function AudienceSnapshot() {
           </div>
 
           {/* Top Geographies & Intent Card */}
-          <div className="flex flex-col gap-8">
-            <div className="group relative bg-brand-bg dark:bg-[#0c201a] rounded-2xl p-8 border border-brand-border dark:border-[#16382e] shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-500/5 hover:border-emerald-500/40 dark:hover:border-emerald-500/40 overflow-hidden">
+          <div className="flex flex-col gap-6 sm:gap-8">
+            <div className="group relative bg-brand-bg dark:bg-[#0c201a] rounded-2xl p-5 sm:p-8 border border-brand-border dark:border-[#16382e] shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-500/5 hover:border-emerald-500/40 dark:hover:border-emerald-500/40 overflow-hidden">
               {/* Ambient top border glow line */}
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
@@ -255,47 +255,47 @@ export default function AudienceSnapshot() {
                 Top Geographies
               </h3>
               
-              <div className="grid grid-cols-2 gap-4">
-                <div className="group/item flex items-center justify-between p-3.5 bg-white dark:bg-[#102922] rounded-xl border border-brand-border dark:border-[#16382e] shadow-sm text-brand-text dark:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:border-emerald-500/40 hover:bg-emerald-500/5 dark:hover:bg-[#14332a] hover:shadow-md cursor-pointer">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                <div className="group/item flex items-center justify-between p-2.5 sm:p-3.5 bg-white dark:bg-[#102922] rounded-xl border border-brand-border dark:border-[#16382e] shadow-sm text-brand-text dark:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:border-emerald-500/40 hover:bg-emerald-500/5 dark:hover:bg-[#14332a] hover:shadow-md cursor-pointer">
                   <span className="flex items-center gap-2.5 font-medium">
                     <span className="transition-transform duration-200 group-hover/item:scale-125 inline-block">
                       <USAFlag />
                     </span>
-                    <span className="font-semibold">USA</span>
+                    <span className="font-semibold text-xs sm:text-sm">USA</span>
                   </span>
-                  <span className="font-bold text-emerald-500 transition-transform duration-200 group-hover/item:scale-110">{geographies.usa || "0%"}</span>
+                  <span className="font-bold text-emerald-500 text-xs sm:text-sm transition-transform duration-200 group-hover/item:scale-110">{geographies.usa || "0%"}</span>
                 </div>
-                <div className="group/item flex items-center justify-between p-3.5 bg-white dark:bg-[#102922] rounded-xl border border-brand-border dark:border-[#16382e] shadow-sm text-brand-text dark:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:border-emerald-500/40 hover:bg-emerald-500/5 dark:hover:bg-[#14332a] hover:shadow-md cursor-pointer">
+                <div className="group/item flex items-center justify-between p-2.5 sm:p-3.5 bg-white dark:bg-[#102922] rounded-xl border border-brand-border dark:border-[#16382e] shadow-sm text-brand-text dark:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:border-emerald-500/40 hover:bg-emerald-500/5 dark:hover:bg-[#14332a] hover:shadow-md cursor-pointer">
                   <span className="flex items-center gap-2.5 font-medium">
                     <span className="transition-transform duration-200 group-hover/item:scale-125 inline-block">
                       <IndiaFlag />
                     </span>
-                    <span className="font-semibold">India</span>
+                    <span className="font-semibold text-xs sm:text-sm">India</span>
                   </span>
-                  <span className="font-bold text-emerald-500 transition-transform duration-200 group-hover/item:scale-110">{geographies.india || "0%"}</span>
+                  <span className="font-bold text-emerald-500 text-xs sm:text-sm transition-transform duration-200 group-hover/item:scale-110">{geographies.india || "0%"}</span>
                 </div>
-                <div className="group/item flex items-center justify-between p-3.5 bg-white dark:bg-[#102922] rounded-xl border border-brand-border dark:border-[#16382e] shadow-sm text-brand-text dark:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:border-emerald-500/40 hover:bg-emerald-500/5 dark:hover:bg-[#14332a] hover:shadow-md cursor-pointer">
+                <div className="group/item flex items-center justify-between p-2.5 sm:p-3.5 bg-white dark:bg-[#102922] rounded-xl border border-brand-border dark:border-[#16382e] shadow-sm text-brand-text dark:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:border-emerald-500/40 hover:bg-emerald-500/5 dark:hover:bg-[#14332a] hover:shadow-md cursor-pointer">
                   <span className="flex items-center gap-2.5 font-medium">
                     <span className="transition-transform duration-200 group-hover/item:scale-125 inline-block">
                       <UKFlag />
                     </span>
-                    <span className="font-semibold">UK</span>
+                    <span className="font-semibold text-xs sm:text-sm">UK</span>
                   </span>
-                  <span className="font-bold text-emerald-500 transition-transform duration-200 group-hover/item:scale-110">{geographies.uk || "0%"}</span>
+                  <span className="font-bold text-emerald-500 text-xs sm:text-sm transition-transform duration-200 group-hover/item:scale-110">{geographies.uk || "0%"}</span>
                 </div>
-                <div className="group/item flex items-center justify-between p-3.5 bg-white dark:bg-[#102922] rounded-xl border border-brand-border dark:border-[#16382e] shadow-sm text-brand-text dark:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:border-emerald-500/40 hover:bg-emerald-500/5 dark:hover:bg-[#14332a] hover:shadow-md cursor-pointer">
+                <div className="group/item flex items-center justify-between p-2.5 sm:p-3.5 bg-white dark:bg-[#102922] rounded-xl border border-brand-border dark:border-[#16382e] shadow-sm text-brand-text dark:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:border-emerald-500/40 hover:bg-emerald-500/5 dark:hover:bg-[#14332a] hover:shadow-md cursor-pointer">
                   <span className="flex items-center gap-2.5 font-medium">
                     <span className="transition-transform duration-200 group-hover/item:scale-125 inline-block">
                       <GermanyFlag />
                     </span>
-                    <span className="font-semibold">Germany</span>
+                    <span className="font-semibold text-xs sm:text-sm">Germany</span>
                   </span>
-                  <span className="font-bold text-emerald-500 transition-transform duration-200 group-hover/item:scale-110">{geographies.germany || "0%"}</span>
+                  <span className="font-bold text-emerald-500 text-xs sm:text-sm transition-transform duration-200 group-hover/item:scale-110">{geographies.germany || "0%"}</span>
                 </div>
               </div>
             </div>
 
-            <div className="group relative bg-brand-bg dark:bg-[#0c201a] rounded-2xl p-6 shadow-sm overflow-hidden border border-brand-border dark:border-[#16382e] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-500/5 hover:border-emerald-500/40 dark:hover:border-emerald-500/40">
+            <div className="group relative bg-brand-bg dark:bg-[#0c201a] rounded-2xl p-5 sm:p-6 shadow-sm overflow-hidden border border-brand-border dark:border-[#16382e] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-500/5 hover:border-emerald-500/40 dark:hover:border-emerald-500/40">
               {/* Ambient top border glow line */}
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 

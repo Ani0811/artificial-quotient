@@ -47,10 +47,10 @@ export default function WhatPerforms() {
 
   if (loading) {
     return (
-      <section className="w-full py-20 px-4 border-t border-brand-border dark:border-zinc-800 transition-colors">
+      <section className="w-full py-12 sm:py-16 px-4 border-t border-brand-border dark:border-zinc-800 transition-colors">
         <div className="max-w-6xl mx-auto space-y-8 animate-pulse">
           <div className="h-8 bg-emerald-500/10 rounded-lg w-64"></div>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-4 sm:gap-6">
             <div className="h-56 bg-brand-card dark:bg-zinc-900 border border-brand-border dark:border-zinc-800 rounded-xl"></div>
             <div className="h-56 bg-brand-card dark:bg-zinc-900 border border-brand-border dark:border-zinc-800 rounded-xl"></div>
             <div className="h-56 bg-brand-card dark:bg-zinc-900 border border-brand-border dark:border-zinc-800 rounded-xl"></div>
@@ -63,7 +63,7 @@ export default function WhatPerforms() {
   if (items.length === 0) return null;
 
   return (
-    <section className="w-full py-20 px-4 border-t border-brand-border dark:border-zinc-800 transition-colors">
+    <section className="w-full py-12 sm:py-16 px-4 border-t border-brand-border dark:border-zinc-800 transition-colors">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col gap-2 mb-12 text-center md:text-left">
           <h2 className="font-heading text-3xl md:text-4xl font-bold text-brand-text dark:text-white">
@@ -74,7 +74,7 @@ export default function WhatPerforms() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-3 gap-4 sm:gap-6">
           {items.map((study) => {
             const ytId = getYoutubeId(study.ytUrl);
             const thumbImg = study.thumbnail || (ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : null);
