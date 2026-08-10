@@ -395,169 +395,201 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
   }
 
   return (
-    <div ref={topRef} id="admin-portal-top" className="w-full py-10 px-6 sm:px-8 bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-emerald-50 min-h-[calc(100vh-4rem)] transition-colors duration-200 relative overflow-hidden">
+    <div ref={topRef} id="admin-portal-top" className="w-full py-4 sm:py-10 px-3 sm:px-6 lg:px-8 bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-emerald-50 min-h-[calc(100vh-4rem)] transition-colors duration-200 relative overflow-hidden">
       {/* Ambient background glow */}
       <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-emerald-500/10 dark:bg-emerald-500/15 blur-[120px] rounded-full pointer-events-none"></div>
 
-      <div className="max-w-[1700px] mx-auto relative z-10 space-y-8">
+      <div className="max-w-[1700px] mx-auto relative z-10 space-y-4 sm:space-y-8">
         
-        {/* Redesigned Clean Admin Header */}
-        <div className="bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] backdrop-blur-xl rounded-2xl p-6 shadow-md flex flex-wrap items-center justify-between gap-5">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-emerald-500/10 dark:bg-emerald-500/20 rounded-xl overflow-hidden shrink-0 border border-emerald-500/30 flex items-center justify-center shadow-sm">
-              <img src="/logo/logo.jpeg" alt="Artificial Quotient Logo" className="w-full h-full object-cover" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2.5">
-                <h1 className="font-heading text-2xl font-bold text-brand-text dark:text-white tracking-tight">
+        {/* Admin Header */}
+        <div className="bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] backdrop-blur-xl rounded-2xl p-4 sm:p-6 shadow-md">
+          {/* Top row: logo + title + actions */}
+          <div className="flex items-start sm:items-center justify-between gap-3 flex-wrap">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-500/10 dark:bg-emerald-500/20 rounded-xl overflow-hidden shrink-0 border border-emerald-500/30 flex items-center justify-center shadow-sm">
+                <img src="/logo/logo.jpeg" alt="Artificial Quotient Logo" className="w-full h-full object-cover" />
+              </div>
+              <div className="min-w-0">
+                <h1 className="font-heading text-base sm:text-2xl font-bold text-brand-text dark:text-white tracking-tight leading-tight">
                   Admin Management Portal
                 </h1>
-                <span className="text-xs bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-bold">
-                  {currentUser?.name || "Auth Active"} ({currentUser?.role || "Admin"})
-                </span>
-                <span className="text-xs bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1.5">
-                  <Database className="w-3.5 h-3.5 text-emerald-400" /> {dbStatus}
-                </span>
+                <p className="text-[10px] sm:text-sm text-brand-muted dark:text-emerald-200/70 font-medium mt-0.5 truncate">
+                  Logged in as <span className="text-emerald-600 dark:text-emerald-400 font-bold">{currentUser?.email || "Administrator"}</span>
+                </p>
               </div>
-              <p className="text-sm text-brand-muted dark:text-emerald-200/70 font-medium mt-0.5">
-                Logged in as <span className="text-emerald-600 dark:text-emerald-400 font-bold">{currentUser?.email || "Administrator"}</span> &bull; {currentUser?.role || "Admin"} Access
-              </p>
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <Link 
+                href="/" 
+                className="px-3 py-2 rounded-xl border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#102922] text-xs font-bold text-brand-text dark:text-emerald-100 hover:bg-emerald-500/10 transition-all flex items-center gap-1 shadow-sm"
+              >
+                <span className="hidden sm:inline">Live Site</span>
+                <ExternalLink className="w-3.5 h-3.5 text-emerald-400" />
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="px-3 py-2 rounded-xl bg-red-500/10 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/40 hover:bg-red-500/20 text-xs font-bold transition-all flex items-center gap-1 shadow-sm"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Sign Out</span>
+              </button>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 flex-wrap">
-            {/* View Mode Toggle Pill */}
-            <div className="inline-flex p-1.5 rounded-xl bg-brand-bg dark:bg-[#102922] border border-brand-border dark:border-[#16382e]">
+          {/* Info badges */}
+          <div className="flex flex-wrap gap-1.5 mt-3">
+            <span className="text-[10px] sm:text-xs bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold">
+              {currentUser?.name || "Auth Active"} · {currentUser?.role || "Admin"}
+            </span>
+            <span className="text-[10px] sm:text-xs bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold flex items-center gap-1">
+              <Database className="w-3 h-3 text-emerald-400" />
+              <span className="hidden sm:inline">{dbStatus}</span>
+              <span className="sm:hidden">DB Connected</span>
+            </span>
+          </div>
+
+          {/* View Mode Toggle — horizontal scroll on mobile */}
+          <div className="mt-3 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+            <div className="inline-flex p-1 rounded-xl bg-brand-bg dark:bg-[#102922] border border-brand-border dark:border-[#16382e] flex-shrink-0">
               <button
                 type="button"
                 onClick={() => setLayoutMode("split")}
-                className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 whitespace-nowrap ${
                   layoutMode === "split"
                     ? "bg-emerald-600 text-white shadow-sm"
                     : "text-brand-muted dark:text-emerald-200/70 hover:text-white"
                 }`}
               >
-                <Sparkles className="w-4 h-4" /> Split View
+                <Sparkles className="w-3.5 h-3.5" /> Split View
               </button>
               <button
                 type="button"
                 onClick={() => setLayoutMode("edit")}
-                className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 whitespace-nowrap ${
                   layoutMode === "edit"
                     ? "bg-emerald-600 text-white shadow-sm"
                     : "text-brand-muted dark:text-emerald-200/70 hover:text-white"
                 }`}
               >
-                <Edit3 className="w-4 h-4" /> Form Only
+                <Edit3 className="w-3.5 h-3.5" /> Form Only
               </button>
               <button
                 type="button"
                 onClick={() => setLayoutMode("preview")}
-                className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 whitespace-nowrap ${
                   layoutMode === "preview"
                     ? "bg-emerald-600 text-white shadow-sm"
                     : "text-brand-muted dark:text-emerald-200/70 hover:text-white"
                 }`}
               >
-                <Eye className="w-4 h-4" /> Preview Only
+                <Eye className="w-3.5 h-3.5" /> Preview Only
               </button>
             </div>
-
-            <Link 
-              href="/" 
-              className="px-4 py-2.5 rounded-xl border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#102922] text-xs sm:text-sm font-bold text-brand-text dark:text-emerald-100 hover:bg-emerald-500/10 transition-all flex items-center gap-1.5 shadow-sm"
-            >
-              <span>Live Site</span>
-              <ExternalLink className="w-4 h-4 text-emerald-400" />
-            </Link>
-
-            <button
-              onClick={handleLogout}
-              className="px-4 py-2.5 rounded-xl bg-red-500/10 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/40 hover:bg-red-500/20 text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 shadow-sm"
-            >
-              <LogOut className="w-4 h-4" /> Sign Out
-            </button>
           </div>
         </div>
 
         {/* Main Dashboard Grid */}
-        <div className="grid md:grid-cols-12 gap-8">
-          
-          {/* Sidebar Navigation */}
-          <div className="md:col-span-3 lg:col-span-3 flex flex-col gap-2.5">
-            <button
-              onClick={() => setActiveTab("stats")}
-              className={`flex items-center gap-3.5 px-5 py-3.5 rounded-xl text-left font-bold text-sm transition-all shadow-sm ${
-                activeTab === "stats"
-                  ? "bg-emerald-600 text-white shadow-emerald-600/20"
-                  : "bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] text-brand-muted dark:text-emerald-200/70 hover:text-white hover:bg-emerald-50 dark:hover:bg-[#102922]"
-              }`}
-            >
-              <BarChart className="w-4 h-4" /> Channel Stats &amp; Rates
-            </button>
+        <div className="flex flex-col md:grid md:grid-cols-12 gap-4 sm:gap-8">
 
-            <button
-              onClick={() => setActiveTab("case-studies")}
-              className={`flex items-center gap-3.5 px-5 py-3.5 rounded-xl text-left font-bold text-sm transition-all shadow-sm ${
-                activeTab === "case-studies"
-                  ? "bg-emerald-600 text-white shadow-emerald-600/20"
-                  : "bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] text-brand-muted dark:text-emerald-200/70 hover:text-white hover:bg-emerald-50 dark:hover:bg-[#102922]"
-              }`}
-            >
-              <Award className="w-4 h-4" /> Sponsor Case Studies
-            </button>
+          {/* Navigation: horizontal scrollable tabs on mobile, vertical sidebar on md+ */}
+          <div className="md:col-span-3 lg:col-span-3">
+            {/* Mobile horizontal tab strip */}
+            <div className="flex md:hidden gap-2 overflow-x-auto pb-2 scrollbar-none">
+              {[
+                { id: "stats", label: "Stats", Icon: BarChart },
+                { id: "case-studies", label: "Case Studies", Icon: Award },
+                { id: "what-performs", label: "Performs", Icon: Sparkles },
+                { id: "tools", label: "Tools", Icon: Database },
+                ...(canEditUsers ? [{ id: "users", label: `Admins (${adminUsers.filter(u => u.status === "Active").length})`, Icon: Users }] : []),
+                ...(canEditBackup ? [{ id: "backup", label: "Backup", Icon: ShieldCheck }] : []),
+              ].map(({ id, label, Icon }) => (
+                <button
+                  key={id}
+                  onClick={() => setActiveTab(id as typeof activeTab)}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
+                    activeTab === id
+                      ? "bg-emerald-600 text-white shadow-sm shadow-emerald-600/20"
+                      : "bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] text-brand-muted dark:text-emerald-200/70"
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5" /> {label}
+                </button>
+              ))}
+            </div>
 
-            <button
-              onClick={() => setActiveTab("what-performs")}
-              className={`flex items-center gap-3.5 px-5 py-3.5 rounded-xl text-left font-bold text-sm transition-all shadow-sm ${
-                activeTab === "what-performs"
-                  ? "bg-emerald-600 text-white shadow-emerald-600/20"
-                  : "bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] text-brand-muted dark:text-emerald-200/70 hover:text-white hover:bg-emerald-50 dark:hover:bg-[#102922]"
-              }`}
-            >
-              <Sparkles className="w-4 h-4" /> What Performs
-            </button>
-
-            <button
-              onClick={() => setActiveTab("tools")}
-              className={`flex items-center gap-3.5 px-5 py-3.5 rounded-xl text-left font-bold text-sm transition-all shadow-sm ${
-                activeTab === "tools"
-                  ? "bg-emerald-600 text-white shadow-emerald-600/20"
-                  : "bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] text-brand-muted dark:text-emerald-200/70 hover:text-white hover:bg-emerald-50 dark:hover:bg-[#102922]"
-              }`}
-            >
-              <Database className="w-4 h-4" /> AI Tool Vault
-            </button>
-
-            {canEditUsers && (
+            {/* Desktop vertical sidebar */}
+            <div className="hidden md:flex flex-col gap-2.5">
               <button
-                onClick={() => setActiveTab("users")}
+                onClick={() => setActiveTab("stats")}
                 className={`flex items-center gap-3.5 px-5 py-3.5 rounded-xl text-left font-bold text-sm transition-all shadow-sm ${
-                  activeTab === "users"
+                  activeTab === "stats"
                     ? "bg-emerald-600 text-white shadow-emerald-600/20"
                     : "bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] text-brand-muted dark:text-emerald-200/70 hover:text-white hover:bg-emerald-50 dark:hover:bg-[#102922]"
                 }`}
               >
-                <Users className="w-4 h-4" /> Admins &amp; Permissions ({adminUsers.filter(u => u.status === "Active").length})
+                <BarChart className="w-4 h-4" /> Channel Stats &amp; Rates
               </button>
-            )}
-
-            {canEditBackup && (
               <button
-                onClick={() => setActiveTab("backup")}
+                onClick={() => setActiveTab("case-studies")}
                 className={`flex items-center gap-3.5 px-5 py-3.5 rounded-xl text-left font-bold text-sm transition-all shadow-sm ${
-                  activeTab === "backup"
+                  activeTab === "case-studies"
                     ? "bg-emerald-600 text-white shadow-emerald-600/20"
                     : "bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] text-brand-muted dark:text-emerald-200/70 hover:text-white hover:bg-emerald-50 dark:hover:bg-[#102922]"
                 }`}
               >
-                <ShieldCheck className="w-4 h-4" /> Backup &amp; System
+                <Award className="w-4 h-4" /> Sponsor Case Studies
               </button>
-            )}
+              <button
+                onClick={() => setActiveTab("what-performs")}
+                className={`flex items-center gap-3.5 px-5 py-3.5 rounded-xl text-left font-bold text-sm transition-all shadow-sm ${
+                  activeTab === "what-performs"
+                    ? "bg-emerald-600 text-white shadow-emerald-600/20"
+                    : "bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] text-brand-muted dark:text-emerald-200/70 hover:text-white hover:bg-emerald-50 dark:hover:bg-[#102922]"
+                }`}
+              >
+                <Sparkles className="w-4 h-4" /> What Performs
+              </button>
+              <button
+                onClick={() => setActiveTab("tools")}
+                className={`flex items-center gap-3.5 px-5 py-3.5 rounded-xl text-left font-bold text-sm transition-all shadow-sm ${
+                  activeTab === "tools"
+                    ? "bg-emerald-600 text-white shadow-emerald-600/20"
+                    : "bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] text-brand-muted dark:text-emerald-200/70 hover:text-white hover:bg-emerald-50 dark:hover:bg-[#102922]"
+                }`}
+              >
+                <Database className="w-4 h-4" /> AI Tool Vault
+              </button>
+              {canEditUsers && (
+                <button
+                  onClick={() => setActiveTab("users")}
+                  className={`flex items-center gap-3.5 px-5 py-3.5 rounded-xl text-left font-bold text-sm transition-all shadow-sm ${
+                    activeTab === "users"
+                      ? "bg-emerald-600 text-white shadow-emerald-600/20"
+                      : "bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] text-brand-muted dark:text-emerald-200/70 hover:text-white hover:bg-emerald-50 dark:hover:bg-[#102922]"
+                  }`}
+                >
+                  <Users className="w-4 h-4" /> Admins &amp; Permissions ({adminUsers.filter(u => u.status === "Active").length})
+                </button>
+              )}
+              {canEditBackup && (
+                <button
+                  onClick={() => setActiveTab("backup")}
+                  className={`flex items-center gap-3.5 px-5 py-3.5 rounded-xl text-left font-bold text-sm transition-all shadow-sm ${
+                    activeTab === "backup"
+                      ? "bg-emerald-600 text-white shadow-emerald-600/20"
+                      : "bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] text-brand-muted dark:text-emerald-200/70 hover:text-white hover:bg-emerald-50 dark:hover:bg-[#102922]"
+                  }`}
+                >
+                  <ShieldCheck className="w-4 h-4" /> Backup &amp; System
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Main Workspace */}
-          <div className="md:col-span-9 lg:col-span-9 flex flex-col gap-6">
+          <div className="md:col-span-9 lg:col-span-9 flex flex-col gap-4 sm:gap-6">
             
             {savedSuccess && (
               <div ref={bannerRef} className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 px-5 py-3.5 rounded-xl text-sm font-bold flex items-center gap-2.5 animate-fade-in shadow-sm">
@@ -569,7 +601,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
               
               {/* EDIT FORM CONTAINER */}
               {(layoutMode === "split" || layoutMode === "edit") && (
-                <div className={`${layoutMode === "split" ? "lg:col-span-7" : "w-full"} bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] backdrop-blur-xl rounded-2xl p-7 shadow-md transition-colors duration-200`}>
+                <div className={`${layoutMode === "split" ? "lg:col-span-7" : "w-full"} bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] backdrop-blur-xl rounded-2xl p-4 sm:p-7 shadow-md transition-colors duration-200`}>
                   <div className="flex items-center justify-between pb-5 mb-6 border-b border-brand-border dark:border-[#16382e]">
                     <h2 className="font-heading text-lg font-bold text-brand-text dark:text-white flex items-center gap-2.5">
                       <Edit3 className="w-5 h-5 text-emerald-500" />
