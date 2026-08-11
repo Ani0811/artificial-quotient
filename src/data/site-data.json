@@ -125,5 +125,52 @@
       "desc": "The ultimate visual automation platform for building advanced workflows without code.",
       "tryUrl": "https://make.com"
     }
+  ],
+  "brandItems": [
+    {
+      "id": "revid",
+      "name": "Revid.AI",
+      "category": "AI Video Generator",
+      "tagline": "Automated viral short-form video generation platform.",
+      "logoText": "🎬 Revid.AI",
+      "ytUrl": "https://youtu.be/G_MW3vpfLxA?si=J-vDcmEjOt_P_M6u",
+      "logoUrl": ""
+    },
+    {
+      "id": "flashloop",
+      "name": "Flashloop AI",
+      "category": "Character Animation",
+      "tagline": "Talking fruit & consistent character video creator.",
+      "logoText": "⚡ Flashloop",
+      "ytUrl": "https://youtu.be/CO59xAteGRM?si=JMLIywF1ydT1MOsJ",
+      "logoUrl": ""
+    },
+    {
+      "id": "marky",
+      "name": "Marky Agent",
+      "category": "Autonomous AI Agent",
+      "tagline": "File analysis, task automation & custom app builder.",
+      "logoText": "🤖 Marky Agent",
+      "ytUrl": "https://youtu.be/Oo9H89i6SYk?si=flMdazfrd1ef-feb",
+      "logoUrl": ""
+    },
+    {
+      "id": "make",
+      "name": "Make.com",
+      "category": "Visual Automation",
+      "tagline": "The premier no-code visual workflow automation engine.",
+      "logoText": "🟣 Make.com",
+      "ytUrl": "https://make.com",
+      "logoUrl": ""
+    },
+    {
+      "id": "easypeasy",
+      "name": "Easy-Peasy.AI",
+      "category": "AI Workspace",
+      "tagline": "All-in-one AI copilot and content generation suite.",
+      "logoText": "✨ Easy-Peasy",
+      "ytUrl": "https://easy-peasy.ai",
+      "logoUrl": ""
+    }
   ]
 }

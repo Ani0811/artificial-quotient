@@ -2,7 +2,7 @@
 
 import { 
   Save, BarChart, Database, FileText, LogOut, Check, ExternalLink, 
-  UploadCloud, Eye, EyeOff, Edit3, Sparkles, Award, Plus, Trash2, ShieldCheck, Users
+  UploadCloud, Eye, EyeOff, Edit3, Sparkles, Award, Plus, Trash2, ShieldCheck, Users, Layers
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
@@ -61,6 +61,16 @@ interface AdminUser {
   lastLogin?: string;
 }
 
+interface BrandItem {
+  id: string;
+  name: string;
+  category: string;
+  tagline: string;
+  logoText: string;
+  ytUrl?: string;
+  logoUrl?: string;
+}
+
 function getYoutubeId(url?: string) {
   if (!url) return null;
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -72,7 +82,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
   const isViewer = currentUser?.role === "Viewer";
   const canEditUsers = currentUser?.role !== "Viewer" && (currentUser?.role === "Super Admin" || currentUser?.permissions?.includes("users"));
   const canEditBackup = currentUser?.role !== "Viewer" && (currentUser?.role === "Super Admin" || currentUser?.permissions?.includes("backup"));
-  const [activeTab, setActiveTab] = useState<"stats" | "case-studies" | "what-performs" | "tools" | "users" | "backup">("stats");
+  const [activeTab, setActiveTab] = useState<"stats" | "case-studies" | "what-performs" | "tools" | "brands" | "users" | "backup">("stats");
   const [savedSuccess, setSavedSuccess] = useState(false);
   const topRef = useRef<HTMLDivElement>(null);
   const bannerRef = useRef<HTMLDivElement>(null);
@@ -201,9 +211,17 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
       discount: "20% OFF 1st Year",
       desc: "The ultimate visual automation platform for building advanced workflows without code.",
       tryUrl: "https://make.com",
-      tutorialUrl: "https://youtube.com",
+      tutorialUrl: "",
       logo: "",
     }
+  ]);
+
+  const [brandsList, setBrandsList] = useState<BrandItem[]>([
+    { id: "revid", name: "Revid.AI", category: "AI Video Generator", tagline: "Automated viral short-form video generation platform.", logoText: "🎬 Revid.AI", ytUrl: "https://youtu.be/G_MW3vpfLxA", logoUrl: "" },
+    { id: "flashloop", name: "Flashloop AI", category: "Character Animation", tagline: "Talking fruit & consistent character video creator.", logoText: "⚡ Flashloop", ytUrl: "https://youtu.be/CO59xAteGRM", logoUrl: "" },
+    { id: "marky", name: "Marky Agent", category: "Autonomous AI Agent", tagline: "File analysis, task automation & custom app builder.", logoText: "🤖 Marky Agent", ytUrl: "https://youtu.be/Oo9H89i6SYk", logoUrl: "" },
+    { id: "make", name: "Make.com", category: "Visual Automation", tagline: "The premier no-code visual workflow automation engine.", logoText: "🟣 Make.com", ytUrl: "https://make.com", logoUrl: "" },
+    { id: "easypeasy", name: "Easy-Peasy.AI", category: "AI Workspace", tagline: "All-in-one AI copilot and content generation suite.", logoText: "✨ Easy-Peasy", ytUrl: "https://easy-peasy.ai", logoUrl: "" },
   ]);
 
   const [uploadingField, setUploadingField] = useState<string | null>(null);
@@ -227,6 +245,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
             });
           }
           if (data.tools && data.tools.length > 0) setToolsList(data.tools);
+          if (data.brandItems && data.brandItems.length > 0) setBrandsList(data.brandItems);
           if (data.dbStatus) setDbStatus(data.dbStatus);
         }
 
@@ -299,6 +318,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
       whatPerforms,
       sponsorResults,
       tools: toolsList,
+      brandItems: brandsList,
     };
 
     try {
@@ -326,6 +346,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
       whatPerforms,
       sponsorResults,
       tools: toolsList,
+      brandItems: brandsList,
     };
 
     const jsonStr = JSON.stringify(payload, null, 2);
@@ -362,6 +383,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
         });
       }
       if (data.tools) setToolsList(data.tools);
+      if (data.brandItems) setBrandsList(data.brandItems);
 
       // Persist restored backup
       const res = await fetch("/api/admin/data", {
@@ -502,6 +524,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                 { id: "case-studies", label: "Case Studies", Icon: Award },
                 { id: "what-performs", label: "Performs", Icon: Sparkles },
                 { id: "tools", label: "Tools", Icon: Database },
+                { id: "brands", label: "Brands", Icon: Layers },
                 ...(canEditUsers ? [{ id: "users", label: `Admins (${adminUsers.filter(u => u.status === "Active").length})`, Icon: Users }] : []),
                 ...(canEditBackup ? [{ id: "backup", label: "Backup", Icon: ShieldCheck }] : []),
               ].map(({ id, label, Icon }) => (
@@ -561,6 +584,16 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
               >
                 <Database className="w-4 h-4" /> AI Tool Vault
               </button>
+              <button
+                onClick={() => setActiveTab("brands")}
+                className={`flex items-center gap-3.5 px-5 py-3.5 rounded-xl text-left font-bold text-sm transition-all shadow-sm ${
+                  activeTab === "brands"
+                    ? "bg-emerald-600 text-white shadow-emerald-600/20"
+                    : "bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] text-brand-muted dark:text-emerald-200/70 hover:text-white hover:bg-emerald-50 dark:hover:bg-[#102922]"
+                }`}
+              >
+                <Layers className="w-4 h-4" /> Brands &amp; Partners
+              </button>
               {canEditUsers && (
                 <button
                   onClick={() => setActiveTab("users")}
@@ -609,6 +642,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                       {activeTab === "case-studies" && "Manage Sponsor Case Studies"}
                       {activeTab === "what-performs" && "Manage What Performs Cards"}
                       {activeTab === "tools" && "Manage AI Tool Vault"}
+                      {activeTab === "brands" && "Manage Brands & Partners"}
                       {activeTab === "users" && "Manage Administrators & Access Permissions"}
                       {activeTab === "backup" && "System Backup & Data Operations"}
                     </h2>
@@ -1305,6 +1339,153 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                     </div>
                   )}
 
+                  {/* TAB 5: BRANDS & PARTNERS */}
+                  {activeTab === "brands" && (
+                    <div className="space-y-6">
+                      <div className="flex justify-between items-center">
+                        <h3 className="font-heading font-bold text-sm text-brand-text dark:text-emerald-400 uppercase tracking-wider">Brands &amp; Partner Directory</h3>
+                        <button
+                          type="button"
+                          disabled={isViewer}
+                          onClick={() => setBrandsList([...brandsList, {
+                            id: Date.now().toString(),
+                            name: "New Brand",
+                            category: "Sponsor",
+                            tagline: "Brand tagline goes here.",
+                            logoText: "🚀 New Brand",
+                            ytUrl: "",
+                            logoUrl: "",
+                          }])}
+                          className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold px-4 py-2 rounded-xl text-xs sm:text-sm flex items-center gap-1.5 border border-emerald-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <Plus className="w-4 h-4" /> Add Brand
+                        </button>
+                      </div>
+
+                      <div className="space-y-5">
+                        {brandsList.map((brand, idx) => (
+                          <div key={brand.id} className="p-5 rounded-2xl border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] space-y-4 relative">
+                            <button
+                              type="button"
+                              onClick={() => setBrandsList(brandsList.filter(b => b.id !== brand.id))}
+                              disabled={isViewer}
+                              className="absolute top-4 right-4 text-red-500 hover:text-red-600 p-1.5 bg-red-500/10 rounded-lg transition-colors disabled:opacity-50"
+                              title="Delete brand"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pr-10">
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Brand Name</label>
+                                <input
+                                  type="text"
+                                  disabled={isViewer}
+                                  value={brand.name}
+                                  onChange={(e) => {
+                                    const next = [...brandsList];
+                                    next[idx] = { ...next[idx], name: e.target.value };
+                                    setBrandsList(next);
+                                  }}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Category</label>
+                                <input
+                                  type="text"
+                                  disabled={isViewer}
+                                  value={brand.category}
+                                  onChange={(e) => {
+                                    const next = [...brandsList];
+                                    next[idx] = { ...next[idx], category: e.target.value };
+                                    setBrandsList(next);
+                                  }}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                />
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Tagline / Short Description</label>
+                              <input
+                                type="text"
+                                disabled={isViewer}
+                                value={brand.tagline}
+                                onChange={(e) => {
+                                  const next = [...brandsList];
+                                  next[idx] = { ...next[idx], tagline: e.target.value };
+                                  setBrandsList(next);
+                                }}
+                                className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                              />
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              <div>
+                                <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">Logo Text (Emoji + Name)</label>
+                                <input
+                                  type="text"
+                                  disabled={isViewer}
+                                  placeholder="e.g. 🎬 Revid.AI"
+                                  value={brand.logoText}
+                                  onChange={(e) => {
+                                    const next = [...brandsList];
+                                    next[idx] = { ...next[idx], logoText: e.target.value };
+                                    setBrandsList(next);
+                                  }}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs disabled:opacity-50 disabled:cursor-not-allowed"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">YouTube / Website URL</label>
+                                <input
+                                  type="text"
+                                  disabled={isViewer}
+                                  placeholder="https://youtu.be/..."
+                                  value={brand.ytUrl || ""}
+                                  onChange={(e) => {
+                                    const next = [...brandsList];
+                                    next[idx] = { ...next[idx], ytUrl: e.target.value };
+                                    setBrandsList(next);
+                                  }}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs disabled:opacity-50 disabled:cursor-not-allowed"
+                                />
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">Logo Image URL (optional)</label>
+                              <input
+                                type="text"
+                                disabled={isViewer}
+                                placeholder="https://... or leave blank to use Logo Text"
+                                value={brand.logoUrl || ""}
+                                onChange={(e) => {
+                                  const next = [...brandsList];
+                                  next[idx] = { ...next[idx], logoUrl: e.target.value };
+                                  setBrandsList(next);
+                                }}
+                                className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs disabled:opacity-50 disabled:cursor-not-allowed"
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="flex justify-end pt-5 border-t border-brand-border dark:border-[#16382e]">
+                        <button
+                          type="button"
+                          onClick={handleSaveAll}
+                          disabled={isViewer}
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-md text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <Save className="w-4 h-4" /> Save Brands
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
                   {/* TAB: ADMIN USERS & PERMISSIONS */}
                   {activeTab === "users" && (
                     <div className="space-y-6 pt-1">
@@ -1689,6 +1870,29 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                           </div>
                           <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mb-2 block">{tool.category}</span>
                           <p className="text-xs sm:text-sm text-brand-muted dark:text-emerald-200/70 mb-3 leading-relaxed">{tool.desc}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* PREVIEW TAB 5: BRANDS & PARTNERS */}
+                  {activeTab === "brands" && (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between flex-wrap gap-2">
+                        <div className="text-sm font-bold text-brand-text dark:text-white">Brands &amp; Partners</div>
+                        <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500">{brandsList.length} Brands</span>
+                      </div>
+                      {brandsList.length === 0 ? (
+                        <div className="text-xs text-brand-muted dark:text-emerald-200/50 italic text-center py-6">No brands yet. Add one to get started.</div>
+                      ) : brandsList.map((brand, idx) => (
+                        <div key={brand.id} className="bg-brand-bg dark:bg-[#061612] rounded-xl border border-brand-border dark:border-[#16382e] p-4 shadow-sm relative overflow-hidden">
+                          <div className={`absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r ${["from-emerald-500 to-teal-400","from-amber-400 to-orange-500","from-indigo-500 to-purple-500","from-purple-500 to-pink-500","from-cyan-400 to-blue-500","from-rose-500 to-red-400"][idx % 6]}`}></div>
+                          <div className="flex justify-between items-start mb-2 gap-2">
+                            <span className="font-heading font-bold text-sm text-brand-text dark:text-white truncate">{brand.logoText || brand.name}</span>
+                            <span className="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shrink-0">Sponsor</span>
+                          </div>
+                          <div className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mb-1">{brand.category}</div>
+                          <p className="text-xs text-brand-muted dark:text-zinc-400 leading-relaxed">{brand.tagline}</p>
                         </div>
                       ))}
                     </div>

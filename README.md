@@ -287,8 +287,11 @@ Reduced vertical padding and internal gaps across all homepage sections on mobil
 - **Image Optimization & CLS Prevention**: Added explicit `width`, `height`, `decoding="async"`, and `loading="lazy"` / `loading="eager"` attributes across logos and YouTube video thumbnail images (`hero.tsx`, `navbar.tsx`, `footer.tsx`, `sponsor-results.tsx`, `what-performs.tsx`) to eliminate Cumulative Layout Shift (CLS).
 - **Public API Edge Caching**: Added `Cache-Control: public, s-maxage=30, stale-while-revalidate=59` headers to `GET /api/admin/data` for fast stale-while-revalidate responses.
 
-#### 4. Expanded OpenGraph & Social Sharing SEO Metadata
-- **Rich Social Metadata (`src/app/layout.tsx`)**: Expanded Next.js metadata with OpenGraph (`og:title`, `og:description`, `og:image`, `og:site_name`), Twitter `summary_large_image` cards, and keywords for rich link previews across Twitter/X, LinkedIn, Discord, and messaging apps.
+#### 5. Dynamic Brands Carousel & Admin Management Integration
+- **Knex Schema & MySQL Table (`src/schema/brand-items.ts`)**: Added `brand_items` table schema with `id`, `name`, `category`, `tagline`, `logo_text`, `yt_url`, `logo_url`, `display_order`, and `updated_at`.
+- **Raw SQL Queries & Seeding (`src/schema/sql/brand-items.sql`, `seed-data.sql`)**: Created dedicated raw SQL query definitions (`CREATE TABLE`, `SELECT`, `TRUNCATE`, parameterized `INSERT`) and updated database seeding scripts.
+- **Admin Management Portal (`Brands & Partners` Tab)**: Created full CRUD UI in `DashboardClient.tsx` allowing admins to dynamically add, edit, or delete sponsor brands, logo text/emojis, taglines, category tags, and external links with real-time pre-publish preview.
+- **Dynamic Frontend Carousel (`brand-carousel.tsx`)**: Transformed the static carousel into a dynamic component driven by database state with index-based cycling accent gradients and graceful empty states.
 
 ---
 
@@ -321,6 +324,7 @@ artificial-quotient/
 │   │   └── page.tsx           # Home Landing Page with Lazy Loading
 │   ├── components/
 │   │   ├── audience-snapshot.tsx # Dynamic Stats & Interactive SVG Flags
+│   │   ├── brand-carousel.tsx # Dynamic Brands & Partner Marquee Carousel
 │   │   ├── campaign-workflow.tsx
 │   │   ├── footer.tsx         # Modern Glassmorphic Footer
 │   │   ├── hero.tsx           # Redesigned Glassmorphic YouTube Channel Card
@@ -334,6 +338,8 @@ artificial-quotient/
 │   │   ├── site-data.json     # Primary Dynamic Data Store
 │   │   └── backups/           # Server-Side Rolling Snapshot Backups
 │   ├── schema/                # Knex Schema Modules & Raw SQL Queries
+│   │   ├── brand-items.ts     # Knex Schema Module for Brand Items
+│   │   └── sql/               # Raw SQL Definitions & Seed Scripts
 │   └── lib/
 │       ├── auth-store.ts      # Admin Password & Role State Manager
 │       ├── db.ts              # Knex MySQL Database Connection Initializer

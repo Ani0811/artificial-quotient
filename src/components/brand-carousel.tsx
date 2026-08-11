@@ -1,72 +1,54 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Sparkles, ChevronLeft, ChevronRight, ExternalLink, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 
-interface Brand {
+export interface BrandItem {
   id: string;
   name: string;
   category: string;
   tagline: string;
-  ytUrl?: string;
-  accentColor: string;
   logoText: string;
+  ytUrl?: string;
+  logoUrl?: string;
 }
 
-const BRANDS: Brand[] = [
-  {
-    id: "revid",
-    name: "Revid.AI",
-    category: "AI Video Generator",
-    tagline: "Automated viral short-form video generation platform.",
-    ytUrl: "https://youtu.be/G_MW3vpfLxA?si=J-vDcmEjOt_P_M6u",
-    accentColor: "from-emerald-500 to-teal-400",
-    logoText: "🎬 Revid.AI",
-  },
-  {
-    id: "flashloop",
-    name: "Flashloop AI",
-    category: "Character Animation",
-    tagline: "Talking fruit & consistent character video creator.",
-    ytUrl: "https://youtu.be/CO59xAteGRM?si=JMLIywF1ydT1MOsJ",
-    accentColor: "from-amber-400 to-orange-500",
-    logoText: "⚡ Flashloop",
-  },
-  {
-    id: "marky",
-    name: "Marky Agent",
-    category: "Autonomous AI Agent",
-    tagline: "File analysis, task automation & custom app builder.",
-    ytUrl: "https://youtu.be/Oo9H89i6SYk?si=flMdazfrd1ef-feb",
-    accentColor: "from-indigo-500 to-purple-500",
-    logoText: "🤖 Marky Agent",
-  },
-  {
-    id: "make",
-    name: "Make.com",
-    category: "Visual Automation",
-    tagline: "The premier no-code visual workflow automation engine.",
-    ytUrl: "https://make.com",
-    accentColor: "from-purple-500 to-pink-500",
-    logoText: "🟣 Make.com",
-  },
-  {
-    id: "easypeasy",
-    name: "Easy-Peasy.AI",
-    category: "AI Workspace",
-    tagline: "All-in-one AI copilot and content generation suite.",
-    ytUrl: "https://easy-peasy.ai",
-    accentColor: "from-cyan-400 to-blue-500",
-    logoText: "✨ Easy-Peasy",
-  },
+// Cycling palette for brand cards — assigned by index modulo
+const ACCENT_PALETTE = [
+  "from-emerald-500 to-teal-400",
+  "from-amber-400 to-orange-500",
+  "from-indigo-500 to-purple-500",
+  "from-purple-500 to-pink-500",
+  "from-cyan-400 to-blue-500",
+  "from-rose-500 to-red-400",
+  "from-lime-400 to-emerald-500",
+  "from-sky-400 to-indigo-500",
 ];
 
-// Duplicate items for seamless continuous looping
-const DOUBLE_BRANDS = [...BRANDS, ...BRANDS];
+interface BrandCarouselProps {
+  brands?: BrandItem[];
+}
 
-export default function BrandCarousel() {
+export default function BrandCarousel({ brands }: BrandCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [items, setItems] = useState<BrandItem[]>(brands ?? []);
+
+  // Fetch from API if no brands passed as props
+  useEffect(() => {
+    if (brands && brands.length > 0) {
+      setItems(brands);
+      return;
+    }
+    fetch("/api/admin/data")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.brandItems && data.brandItems.length > 0) {
+          setItems(data.brandItems);
+        }
+      })
+      .catch(() => {});
+  }, [brands]);
 
   const scroll = (direction: "left" | "right") => {
     if (scrollRef.current) {
@@ -74,6 +56,19 @@ export default function BrandCarousel() {
       scrollRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
     }
   };
+
+  // Duplicate items for seamless continuous looping
+  const displayItems = items.length > 0 ? [...items, ...items] : [];
+
+  if (items.length === 0) {
+    return (
+      <section id="brands" className="w-full py-12 sm:py-16 px-4 border-t border-brand-border dark:border-zinc-800/80 transition-colors relative overflow-hidden bg-brand-bg/50 dark:bg-zinc-950/40">
+        <div className="max-w-6xl mx-auto text-center py-10 text-brand-muted dark:text-zinc-500 text-sm font-medium">
+          No brands configured yet.
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="brands" className="w-full py-12 sm:py-16 px-4 border-t border-brand-border dark:border-zinc-800/80 transition-colors relative overflow-hidden bg-brand-bg/50 dark:bg-zinc-950/40">
@@ -128,42 +123,56 @@ export default function BrandCarousel() {
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
             <div className="animate-marquee-smooth gap-6 py-1">
-              {DOUBLE_BRANDS.map((brand, idx) => (
-                <div
-                  key={`${brand.id}-${idx}`}
-                  className="shrink-0 w-[290px] sm:w-[320px] bg-white dark:bg-zinc-900/90 rounded-2xl p-6 border border-brand-border dark:border-zinc-800/80 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col justify-between hover:border-emerald-500/40 relative overflow-hidden"
-                >
-                  {/* Top Gradient Line on Hover */}
-                  <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${brand.accentColor} opacity-70 group-hover:opacity-100 transition-opacity`}></div>
+              {displayItems.map((brand, idx) => {
+                const accent = ACCENT_PALETTE[idx % ACCENT_PALETTE.length];
+                return (
+                  <div
+                    key={`${brand.id}-${idx}`}
+                    className="shrink-0 w-[290px] sm:w-[320px] bg-white dark:bg-zinc-900/90 rounded-2xl p-6 border border-brand-border dark:border-zinc-800/80 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col justify-between hover:border-emerald-500/40 relative overflow-hidden"
+                  >
+                    {/* Top Gradient Line on Hover */}
+                    <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${accent} opacity-70 group-hover:opacity-100 transition-opacity`}></div>
 
-                  <div>
-                    <div className="flex justify-between items-center mb-4">
-                      <span className="font-heading font-extrabold text-xl text-brand-text dark:text-white tracking-tight flex items-center gap-2">
-                        {brand.logoText}
+                    <div>
+                      <div className="flex justify-between items-center mb-4">
+                        <span className="font-heading font-extrabold text-xl text-brand-text dark:text-white tracking-tight flex items-center gap-2">
+                          {brand.logoUrl ? (
+                            <img
+                              src={brand.logoUrl}
+                              alt={brand.name}
+                              width={24}
+                              height={24}
+                              className="w-6 h-6 object-contain rounded"
+                              loading="lazy"
+                              decoding="async"
+                            />
+                          ) : null}
+                          {brand.logoText || brand.name}
+                        </span>
+                        <span className="text-[10px] uppercase tracking-wider font-bold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                          Sponsor
+                        </span>
+                      </div>
+
+                      <span className="text-xs font-semibold text-brand-muted dark:text-emerald-400/90 mb-2 block">
+                        {brand.category}
                       </span>
-                      <span className="text-[10px] uppercase tracking-wider font-bold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                        Sponsor
-                      </span>
+
+                      <p className="text-xs text-brand-muted dark:text-zinc-400 leading-relaxed mb-6 font-medium">
+                        {brand.tagline}
+                      </p>
                     </div>
 
-                    <span className="text-xs font-semibold text-brand-muted dark:text-emerald-400/90 mb-2 block">
-                      {brand.category}
-                    </span>
-
-                    <p className="text-xs text-brand-muted dark:text-zinc-400 leading-relaxed mb-6 font-medium">
-                      {brand.tagline}
-                    </p>
+                    <div className="flex items-center justify-between pt-4 border-t border-brand-border/60 dark:border-zinc-800/80 text-xs font-bold text-emerald-600 dark:text-emerald-400 group-hover:translate-x-0.5 transition-transform">
+                      <Link href="/#case-studies" className="hover:underline flex items-center gap-1">
+                        <span>View Breakdown</span>
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </Link>
+                      <Sparkles className="w-4 h-4 text-emerald-500/40 group-hover:text-emerald-500 transition-colors" />
+                    </div>
                   </div>
-
-                  <div className="flex items-center justify-between pt-4 border-t border-brand-border/60 dark:border-zinc-800/80 text-xs font-bold text-emerald-600 dark:text-emerald-400 group-hover:translate-x-0.5 transition-transform">
-                    <Link href="/#case-studies" className="hover:underline flex items-center gap-1">
-                      <span>View Breakdown</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </Link>
-                    <Sparkles className="w-4 h-4 text-emerald-500/40 group-hover:text-emerald-500 transition-colors" />
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>

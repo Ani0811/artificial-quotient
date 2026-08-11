@@ -8,7 +8,9 @@ import {
   getWhatPerforms, 
   syncWhatPerforms, 
   getToolItems, 
-  syncToolItems 
+  syncToolItems,
+  getBrandItems,
+  syncBrandItems
 } from "@/schema";
 import fs from "fs/promises";
 import path from "path";
@@ -27,6 +29,7 @@ export async function GET() {
       const sponsorResults = await getSponsorCaseStudies();
       const whatPerforms = await getWhatPerforms();
       const tools = await getToolItems();
+      const brandItems = await getBrandItems();
 
       return NextResponse.json(
         {
@@ -37,6 +40,7 @@ export async function GET() {
           sponsorResults,
           whatPerforms,
           tools,
+          brandItems,
           dbStatus: "Connected to MySQL (AQ-Dashboard) via Knex",
         },
         {
@@ -97,6 +101,10 @@ export async function POST(request: Request) {
 
     if (data.tools && Array.isArray(data.tools)) {
       await syncToolItems(data.tools);
+    }
+
+    if (data.brandItems && Array.isArray(data.brandItems)) {
+      await syncBrandItems(data.brandItems);
     }
 
     // Also write JSON file backup snapshot

@@ -206,3 +206,48 @@ ON DUPLICATE KEY UPDATE
   description=VALUES(description),
   try_url=VALUES(try_url),
   display_order=VALUES(display_order);
+
+
+-- 6. Seed Brand Items
+INSERT INTO brand_items
+  (id, name, category, tagline, logo_text, yt_url, logo_url, display_order)
+VALUES
+  (
+    'revid',
+    'Revid.AI',
+    'AI Video Generator',
+    'Automated viral short-form video generation platform.',
+    '🎬 Revid.AI',
+    'https://youtu.be/G_MW3vpfLxA?si=J-vDcmEjOt_P_M6u',
+    '',
+    0
+  ),
+  (
+    'flashloop',
+    'Flashloop AI',
+    'Character Animation',
+    'Talking fruit & consistent character video creator.',
+    '⚡ Flashloop',
+    'https://youtu.be/CO59xAteGRM?si=JMLIywF1ydT1MOsJ',
+    '',
+    1
+  ),
+  (
+    'marky',
+    'Marky Agent',
+    'Autonomous AI Agent',
+    'File analysis, task automation & custom app builder.',
+    '🤖 Marky Agent',
+    'https://youtu.be/Oo9H89i6SYk?si=flMdazfrd1ef-feb',
+    '',
+    2
+  )
+ON DUPLICATE KEY UPDATE
+  name=VALUES(name),
+  category=VALUES(category),
+  tagline=VALUES(tagline),
+  logo_text=VALUES(logo_text),
+  yt_url=VALUES(yt_url),
+  logo_url=VALUES(logo_url),
+  display_order=VALUES(display_order);
+

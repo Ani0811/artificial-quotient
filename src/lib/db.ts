@@ -72,10 +72,12 @@ import {
   createSiteConfigTable, 
   createSponsorCaseStudiesTable, 
   createWhatPerformsTable, 
-  createToolItemsTable, 
+  createToolItemsTable,
+  createBrandItemsTable,
   syncWhatPerforms,
   syncSponsorCaseStudies,
   syncToolItems,
+  syncBrandItems,
   upsertSiteConfig
 } from "@/schema";
 
@@ -92,6 +94,7 @@ export async function initDatabase(): Promise<boolean> {
     await createSponsorCaseStudiesTable();
     await createWhatPerformsTable();
     await createToolItemsTable();
+    await createBrandItemsTable();
 
     // 2. Always sync/seed admin users and site data from JSON if needed
     await seedAdminUsersFromJSON();
@@ -147,6 +150,7 @@ export async function seedSiteDataFromJSON(): Promise<void> {
     await syncSponsorCaseStudies(data.sponsorResults);
     await syncWhatPerforms(data.whatPerforms);
     await syncToolItems(data.tools);
+    if (data.brandItems) await syncBrandItems(data.brandItems);
   } catch (e) {
     console.error("Error seeding site data:", e);
   }
