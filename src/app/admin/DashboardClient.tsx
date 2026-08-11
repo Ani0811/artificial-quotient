@@ -7,69 +7,7 @@ import {
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { QUOTE_FONT_OPTIONS, loadGoogleFont } from "@/components/font-provider";
-
-interface ToolItem {
-  id: string;
-  name: string;
-  category: string;
-  discount: string;
-  desc: string;
-  tryUrl: string;
-  tutorialUrl: string;
-  logo: string;
-}
-
-interface PerformItem {
-  id: string;
-  title: string;
-  views: string;
-  clicks: string;
-  type: string;
-  thumb: string;
-  highlight: string;
-  ytUrl?: string;
-  thumbnail?: string;
-}
-
-interface SponsorItem {
-  id: string;
-  partnerName: string;
-  campaignType: string;
-  quote: string;
-  quoteFont?: string;
-  stat1Label: string;
-  stat1Value: string;
-  stat2Label: string;
-  stat2Value: string;
-  description?: string;
-  deliverables?: string;
-  ytUrl?: string;
-  roiBreakdown?: string;
-  publishDate?: string;
-  logoUrl?: string;
-}
-
-interface AdminUser {
-  id: string;
-  name: string;
-  email: string;
-  password: string;
-  role: "Super Admin" | "Editor" | "Viewer";
-  permissions: string[];
-  recoveryKey: string;
-  status: "Active" | "Inactive";
-  lastLogin?: string;
-}
-
-interface BrandItem {
-  id: string;
-  name: string;
-  category: string;
-  tagline: string;
-  logoText: string;
-  ytUrl?: string;
-  logoUrl?: string;
-}
+import { ToolItem, PerformItem, SponsorItem, AdminUser, BrandItem } from "@/types";
 
 function getYoutubeId(url?: string) {
   if (!url) return null;

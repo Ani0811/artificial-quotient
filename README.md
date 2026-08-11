@@ -337,12 +337,11 @@ artificial-quotient/
 │   ├── data/
 │   │   ├── site-data.json     # Primary Dynamic Data Store
 │   │   └── backups/           # Server-Side Rolling Snapshot Backups
-│   ├── schema/                # Knex Schema Modules & Raw SQL Queries
-│   │   ├── brand-items.ts     # Knex Schema Module for Brand Items
-│   │   └── sql/               # Raw SQL Definitions & Seed Scripts
-│   └── lib/
-│       ├── auth-store.ts      # Admin Password & Role State Manager
-│       ├── db.ts              # Knex MySQL Database Connection Initializer
+│   ├── types/
+│   │   └── index.ts           # Centralized TypeScript Type Definitions
+│   ├── lib/
+│   │   ├── auth-store.ts      # Admin Password & Role State Manager
+│   │   ├── db.ts              # Knex MySQL Database Connection Initializer
 │       ├── email-service.ts   # Nodemailer Service & Inline CID Logo Template
 │       ├── otp-store.ts       # 2FA One-Time Password In-Memory Store
 │       └── rate-limit.ts      # Zero-Dependency In-Memory Sliding-Window Rate Limiter

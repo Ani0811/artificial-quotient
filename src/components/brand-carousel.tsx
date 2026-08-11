@@ -3,16 +3,7 @@
 import { useRef, useEffect, useState } from "react";
 import { Sparkles, ChevronLeft, ChevronRight, ExternalLink, ShieldCheck } from "lucide-react";
 import Link from "next/link";
-
-export interface BrandItem {
-  id: string;
-  name: string;
-  category: string;
-  tagline: string;
-  logoText: string;
-  ytUrl?: string;
-  logoUrl?: string;
-}
+import { BrandItem } from "@/types";
 
 // Cycling palette for brand cards — assigned by index modulo
 const ACCENT_PALETTE = [
