@@ -1,3 +1,6 @@
+import path from "path";
+import fs from "fs";
+
 export interface ContactEmailParams {
   name: string;
   email: string;
@@ -37,7 +40,16 @@ export function generateContactEmailHtml(params: ContactEmailParams): string {
   const { name, email, inquiryType, subject, message } = params;
   const initial = name ? name.trim().charAt(0).toUpperCase() : "A";
   const replySubject = encodeURIComponent(`Re: ${subject || inquiryType || "Artificial Quotient Inquiry"}`);
-  const logoUrl = "https://raw.githubusercontent.com/Ani0811/artificial-quotient/main/public/logo/logo.jpeg";
+  
+  let logoUrl = "data:image/jpeg;base64,";
+  try {
+    const logoPath = path.join(process.cwd(), "public", "logo", "logo.jpeg");
+    if (fs.existsSync(logoPath)) {
+      logoUrl += fs.readFileSync(logoPath).toString("base64");
+    }
+  } catch {
+    logoUrl = "https://raw.githubusercontent.com/Ani0811/artificial-quotient/main/public/logo/logo.jpeg";
+  }
 
   return `
 <!DOCTYPE html>
