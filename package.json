@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@getbrevo/brevo": "^6.0.3",
     "knex": "^3.3.0",
     "lucide-react": "^1.28.0",
     "mysql2": "^3.23.2",

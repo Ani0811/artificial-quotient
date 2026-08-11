@@ -34,6 +34,40 @@ export async function POST(request: Request) {
     const textBody = generateContactEmailText({ name, email, inquiryType, subject, message });
     const htmlBody = generateContactEmailHtml({ name, email, inquiryType, subject, message });
 
+    // 1. Try Brevo API if key is present
+    const brevoApiKey = process.env.BREVO_API_KEY;
+    if (brevoApiKey) {
+      try {
+        const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+          method: "POST",
+          headers: {
+            "api-key": brevoApiKey,
+            "accept": "application/json",
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({
+            sender: { name: `${name} (AQ Contact)`, email: process.env.SMTP_USER || "anirudha.basuthakur@gmail.com" },
+            to: [{ email: recipient }],
+            replyTo: { email: email, name: name },
+            subject: emailSubject,
+            textContent: textBody,
+            htmlContent: htmlBody,
+          }),
+        });
+
+        if (res.ok) {
+          return NextResponse.json({
+            success: true,
+            message: "Your message has been sent successfully.",
+          });
+        }
+        const errData = await res.json().catch(() => ({}));
+        console.warn("Brevo API warning on contact form (falling back to SMTP):", errData);
+      } catch (err) {
+        console.warn("Brevo API error on contact form (falling back to SMTP):", err);
+      }
+    }
+
     // Check if SMTP transporter credentials are configured
     const smtpHost = process.env.SMTP_HOST;
     const smtpPort = process.env.SMTP_PORT;

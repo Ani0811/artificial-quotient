@@ -293,6 +293,10 @@ Reduced vertical padding and internal gaps across all homepage sections on mobil
 - **Admin Management Portal (`Brands & Partners` Tab)**: Created full CRUD UI in `DashboardClient.tsx` allowing admins to dynamically add, edit, or delete sponsor brands, logo text/emojis, taglines, category tags, and external links with real-time pre-publish preview.
 - **Dynamic Frontend Carousel (`brand-carousel.tsx`)**: Transformed the static carousel into a dynamic component driven by database state with index-based cycling accent gradients and graceful empty states.
 
+#### 6. Brevo Transactional Email Integration & Anti-Spam Optimization
+- **Brevo API Integration (`BREVO_API_KEY`)**: Integrated Brevo v3 Transactional Email REST API into `src/lib/email-service.ts` (for 2FA codes) and `src/app/api/contact/route.ts` (for contact form submissions) with automatic fallback to SMTP.
+- **Inbox Placement & Anti-Spam Optimization**: Cleaned email subjects, removed bracketed OTP patterns (`[123456]`), and optimized HTML MIME headers to prevent verification emails from being routed to spam folders.
+
 ---
 
 ## 📂 Project Structure
