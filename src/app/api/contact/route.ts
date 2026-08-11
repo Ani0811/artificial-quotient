@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     }
 
     const recipient = process.env.CONTACT_RECEIVER_EMAIL || "artificialquotient01@gmail.com";
-    const emailSubject = `[AQ Contact Form] ${inquiryType} - ${subject || "New Inquiry"}`;
+    const emailSubject = `Inquiry: ${inquiryType} - ${subject || "New Message"}`;
 
     const textBody = generateContactEmailText({ name, email, inquiryType, subject, message });
     const htmlBody = generateContactEmailHtml({ name, email, inquiryType, subject, message });
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
             "content-type": "application/json",
           },
           body: JSON.stringify({
-            sender: { name: `${name} (AQ Contact)`, email: process.env.SMTP_USER || "anirudha.basuthakur@gmail.com" },
+            sender: { name: "Artificial Quotient Contact", email: process.env.SMTP_USER || "anirudha.basuthakur@gmail.com" },
             to: [{ email: recipient }],
             replyTo: { email: email, name: name },
             subject: emailSubject,
