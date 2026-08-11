@@ -2,10 +2,22 @@ import { NextResponse } from "next/server";
 import { getAdminPassword, getAdminUsers } from "@/lib/auth-store";
 import { generateOTP } from "@/lib/otp-store";
 import { send2FACodeEmail } from "@/lib/email-service";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
+  const rateLimit = checkRateLimit(request, 5, 60000);
+  if (!rateLimit.success) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: `Too many login attempts. Please wait ${Math.ceil(rateLimit.resetMs / 1000)} seconds before trying again.`,
+      },
+      { status: 429 }
+    );
+  }
+
   try {
     const { email, password } = await request.json();
 

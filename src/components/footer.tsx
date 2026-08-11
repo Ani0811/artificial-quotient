@@ -9,13 +9,13 @@ export default function Footer() {
       <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-teal-500/5 dark:bg-teal-500/10 blur-[100px] rounded-full pointer-events-none"></div>
 
       <div className="max-w-6xl mx-auto px-4 pt-16 pb-12 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-brand-border dark:border-zinc-800/80">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8 sm:gap-10 pb-12 border-b border-brand-border dark:border-zinc-800/80">
           
-          {/* Brand & Mission Column (Spans 2 cols on lg) */}
-          <div className="lg:col-span-2 flex flex-col gap-4">
+          {/* Brand & Mission Column (Spans full on mobile/tablet, 2 cols on lg) */}
+          <div className="col-span-2 sm:col-span-3 lg:col-span-2 flex flex-col gap-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl overflow-hidden border border-emerald-500/30 shadow-md flex items-center justify-center bg-brand-dark dark:bg-zinc-800">
-                <img src="/logo/logo.jpeg" alt="Artificial Quotient Logo" className="w-full h-full object-cover" />
+                <img src="/logo/logo.jpeg" alt="Artificial Quotient Logo" width={40} height={40} loading="lazy" decoding="async" className="w-full h-full object-cover" />
               </div>
               <span className="font-heading font-bold text-xl text-brand-text dark:text-white tracking-tight">
                 Artificial<span className="text-emerald-500">Quotient</span>
@@ -26,7 +26,7 @@ export default function Footer() {
               The premier hub for AI automation tutorials, workflow deep-dives, and tool reviews. Connecting tech builders with high-performing SaaS.
             </p>
 
-            <div className="flex items-center gap-3 pt-2">
+            <div className="flex flex-wrap items-center gap-3 pt-2">
               <a
                 href={"https://www.youtube.com/" + "@" + "ArtificialQuotient01"}
                 target="_blank"
@@ -53,7 +53,7 @@ export default function Footer() {
           </div>
 
           {/* Quick Links Column */}
-          <div className="flex flex-col gap-3">
+          <div className="col-span-1 flex flex-col gap-3">
             <h3 className="font-heading font-bold text-sm text-brand-text dark:text-white uppercase tracking-wider">
               Explore
             </h3>
@@ -69,7 +69,7 @@ export default function Footer() {
           </div>
 
           {/* Sponsoring Column */}
-          <div className="flex flex-col gap-3">
+          <div className="col-span-1 flex flex-col gap-3">
             <h3 className="font-heading font-bold text-sm text-brand-text dark:text-white uppercase tracking-wider">
               Sponsorships
             </h3>
@@ -85,7 +85,7 @@ export default function Footer() {
           </div>
 
           {/* Admin & Legal Column */}
-          <div className="flex flex-col gap-3">
+          <div className="col-span-1 flex flex-col gap-3">
             <h3 className="font-heading font-bold text-sm text-brand-text dark:text-white uppercase tracking-wider">
               Management
             </h3>

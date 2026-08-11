@@ -1,10 +1,22 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { generateContactEmailText, generateContactEmailHtml } from "@/emails/contact-template";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
+  const rateLimit = checkRateLimit(request, 5, 60000);
+  if (!rateLimit.success) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: `Too many contact requests. Please wait ${Math.ceil(rateLimit.resetMs / 1000)} seconds before sending another message.`,
+      },
+      { status: 429 }
+    );
+  }
+
   try {
     const { name, email, inquiryType, subject, message } = await request.json();
 

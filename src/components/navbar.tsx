@@ -44,7 +44,7 @@ function MobileDrawer({
   if (!mounted || !isOpen) return null;
 
   return createPortal(
-    <div className="md:hidden" style={{ position: "fixed", inset: 0, zIndex: 99999 }}>
+    <div className="lg:hidden" style={{ position: "fixed", inset: 0, zIndex: 99999 }}>
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/70 backdrop-blur-sm animate-fade-in"
@@ -61,7 +61,7 @@ function MobileDrawer({
           <div className="flex items-center justify-between pb-4 mb-2 border-b border-white/8">
             <Link href="/" onClick={onClose} className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full overflow-hidden border border-emerald-500/30 flex-shrink-0">
-                <img src="/logo/logo.jpeg" alt="AQ Logo" className="w-full h-full object-cover" />
+                <img src="/logo/logo.jpeg" alt="AQ Logo" width={32} height={32} loading="eager" decoding="async" className="w-full h-full object-cover" />
               </div>
               <span className="font-heading font-bold text-sm tracking-tight text-white">
                 Artificial<span className="text-emerald-500">Quotient</span>
@@ -144,7 +144,7 @@ export default function Navbar({ isAdmin = false }: NavbarProps) {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group">
             <div className="w-10 h-10 rounded-full overflow-hidden border border-emerald-500/30 flex items-center justify-center bg-brand-dark dark:bg-zinc-800 transition-transform group-hover:scale-105 shadow-sm">
-              <img src="/logo/logo.jpeg" alt="Artificial Quotient Logo" className="w-full h-full object-cover" />
+              <img src="/logo/logo.jpeg" alt="Artificial Quotient Logo" width={40} height={40} loading="eager" decoding="async" className="w-full h-full object-cover" />
             </div>
             <span className="font-heading font-bold text-lg tracking-tight text-brand-text dark:text-white">
               Artificial<span className="text-emerald-500">Quotient</span>
@@ -152,7 +152,7 @@ export default function Navbar({ isAdmin = false }: NavbarProps) {
           </Link>
 
           {/* Nav Links (Desktop) */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden lg:flex items-center gap-8">
             <Link href="/#brands" className="text-sm font-medium text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white transition-colors">
               Brands
             </Link>
@@ -173,7 +173,7 @@ export default function Navbar({ isAdmin = false }: NavbarProps) {
 
             <Link
               href={isAdmin ? "/admin" : "/admin/login?notice=not-admin"}
-              className="text-brand-text dark:text-white hover:text-emerald-500 px-3.5 py-2 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors border border-brand-border dark:border-zinc-800 bg-brand-card dark:bg-zinc-900 shadow-sm hidden md:flex"
+              className="text-brand-text dark:text-white hover:text-emerald-500 px-3.5 py-2 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors border border-brand-border dark:border-zinc-800 bg-brand-card dark:bg-zinc-900 shadow-sm hidden lg:flex"
             >
               <Lock className="w-3.5 h-3.5 text-emerald-500" />
               <span>Admin Portal</span>
@@ -184,7 +184,7 @@ export default function Navbar({ isAdmin = false }: NavbarProps) {
                 href="https://forms.gle/4uTUZkEi5o3iqYrs5"
                 target="_blank"
                 rel="noreferrer"
-                className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all shadow-sm hidden sm:inline-flex"
+                className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all shadow-sm hidden lg:inline-flex"
               >
                 Become a Sponsor
               </a>
@@ -193,7 +193,7 @@ export default function Navbar({ isAdmin = false }: NavbarProps) {
             {/* Hamburger */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden p-2 rounded-xl border border-brand-border dark:border-zinc-800 bg-brand-card dark:bg-zinc-900 text-brand-text dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
+              className="lg:hidden p-2 rounded-xl border border-brand-border dark:border-zinc-800 bg-brand-card dark:bg-zinc-900 text-brand-text dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
               aria-label="Toggle menu"
             >
               {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}

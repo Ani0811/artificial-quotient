@@ -58,6 +58,9 @@ export default function Hero() {
                     <img 
                       src="/logo/logo.jpeg" 
                       alt="Artificial Quotient Official Logo" 
+                      width={56}
+                      height={56}
+                      loading="eager"
                       decoding="async"
                       className="w-full h-full object-cover"
                     />

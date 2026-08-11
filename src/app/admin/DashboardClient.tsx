@@ -491,12 +491,12 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
         </div>
 
         {/* Main Dashboard Grid */}
-        <div className="flex flex-col md:grid md:grid-cols-12 gap-4 sm:gap-8">
+        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-4 sm:gap-8">
 
-          {/* Navigation: horizontal scrollable tabs on mobile, vertical sidebar on md+ */}
-          <div className="md:col-span-3 lg:col-span-3">
+          {/* Navigation: horizontal scrollable tabs on mobile, vertical sidebar on lg+ */}
+          <div className="lg:col-span-3">
             {/* Mobile horizontal tab strip */}
-            <div className="flex md:hidden gap-2 overflow-x-auto pb-2 scrollbar-none">
+            <div className="flex lg:hidden gap-2 overflow-x-auto pb-2 scrollbar-none">
               {[
                 { id: "stats", label: "Stats", Icon: BarChart },
                 { id: "case-studies", label: "Case Studies", Icon: Award },
@@ -520,7 +520,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
             </div>
 
             {/* Desktop vertical sidebar */}
-            <div className="hidden md:flex flex-col gap-2.5">
+            <div className="hidden lg:flex flex-col gap-2.5">
               <button
                 onClick={() => setActiveTab("stats")}
                 className={`flex items-center gap-3.5 px-5 py-3.5 rounded-xl text-left font-bold text-sm transition-all shadow-sm ${
@@ -589,7 +589,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
           </div>
 
           {/* Main Workspace */}
-          <div className="md:col-span-9 lg:col-span-9 flex flex-col gap-4 sm:gap-6">
+          <div className="lg:col-span-9 flex flex-col gap-4 sm:gap-6">
             
             {savedSuccess && (
               <div ref={bannerRef} className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 px-5 py-3.5 rounded-xl text-sm font-bold flex items-center gap-2.5 animate-fade-in shadow-sm">
@@ -597,11 +597,11 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
               </div>
             )}
 
-            <div className={`grid gap-8 ${layoutMode === "split" ? "lg:grid-cols-12" : "grid-cols-1"}`}>
+            <div className={`grid gap-8 ${layoutMode === "split" ? "xl:grid-cols-12" : "grid-cols-1"}`}>
               
               {/* EDIT FORM CONTAINER */}
               {(layoutMode === "split" || layoutMode === "edit") && (
-                <div className={`${layoutMode === "split" ? "lg:col-span-7" : "w-full"} bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] backdrop-blur-xl rounded-2xl p-4 sm:p-7 shadow-md transition-colors duration-200`}>
+                <div className={`${layoutMode === "split" ? "xl:col-span-7" : "w-full"} bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] backdrop-blur-xl rounded-2xl p-4 sm:p-7 shadow-md transition-colors duration-200`}>
                   <div className="flex items-center justify-between pb-5 mb-6 border-b border-brand-border dark:border-[#16382e]">
                     <h2 className="font-heading text-lg font-bold text-brand-text dark:text-white flex items-center gap-2.5">
                       <Edit3 className="w-5 h-5 text-emerald-500" />
@@ -1568,15 +1568,15 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
 
               {/* LIVE PREVIEW CONTAINER */}
               {(layoutMode === "split" || layoutMode === "preview") && (
-                <div className={`${layoutMode === "split" ? "lg:col-span-5" : "w-full"} bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] backdrop-blur-xl rounded-2xl p-7 shadow-md transition-colors duration-200`}>
-                  <div className="flex items-center justify-between pb-5 mb-6 border-b border-brand-border dark:border-[#16382e]">
-                    <div className="flex items-center gap-2.5">
-                      <Eye className="w-5 h-5 text-emerald-500 animate-pulse" />
-                      <h3 className="font-heading text-sm font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
+                <div className={`${layoutMode === "split" ? "xl:col-span-5" : "w-full"} bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] backdrop-blur-xl rounded-2xl p-4 sm:p-7 shadow-md transition-colors duration-200`}>
+                  <div className="flex items-center justify-between flex-wrap gap-2 pb-5 mb-6 border-b border-brand-border dark:border-[#16382e]">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <Eye className="w-5 h-5 text-emerald-500 animate-pulse shrink-0" />
+                      <h3 className="font-heading text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider truncate">
                         Live Pre-Publish Preview
                       </h3>
                     </div>
-                    <span className="text-xs bg-emerald-500/10 text-emerald-500 font-bold px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+                    <span className="text-xs bg-emerald-500/10 text-emerald-500 font-bold px-2.5 py-0.5 rounded-full border border-emerald-500/20 shrink-0">
                       Real-time
                     </span>
                   </div>
@@ -1584,7 +1584,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                   {/* PREVIEW TAB 1: STATS & PRICING */}
                   {activeTab === "stats" && (
                     <div className="space-y-6">
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="bg-brand-bg dark:bg-[#061612] border border-brand-border dark:border-[#16382e] rounded-xl p-4">
                           <div className="text-xs font-bold text-brand-muted dark:text-emerald-200/60 uppercase">Subscribers</div>
                           <div className="text-xl font-bold text-brand-text dark:text-white mt-1">{statsForm.subscribers}</div>
@@ -1596,7 +1596,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4 pt-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                         <div className="p-4 rounded-xl bg-brand-bg dark:bg-[#061612] border border-brand-border dark:border-[#16382e]">
                           <div className="text-xs text-emerald-500 font-bold uppercase">Dedicated Rate</div>
                           <div className="text-xl font-bold text-brand-text dark:text-white mt-1">{ratesForm.dedicatedRate}</div>
@@ -1616,19 +1616,21 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                       <div className="space-y-4">
                         {sponsorResults.map((item) => (
                           <div key={item.id} className="p-4 rounded-xl border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] space-y-3">
-                            <div className="flex justify-between items-center">
-                              <span className="font-bold text-sm text-brand-text dark:text-white">{item.partnerName}</span>
-                              <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500">{item.campaignType}</span>
+                            <div className="flex justify-between items-center flex-wrap gap-2">
+                              <span className="font-bold text-sm text-brand-text dark:text-white truncate min-w-0">{item.partnerName}</span>
+                              <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 shrink-0">{item.campaignType}</span>
                             </div>
-                            <p 
-                              style={{ fontFamily: item.quoteFont ? `'${item.quoteFont}', cursive, sans-serif` : undefined }}
-                              className="font-handwritten text-sm text-brand-muted dark:text-emerald-200/80 italic"
-                            >
-                              &quot;{item.quote}&quot;
-                            </p>
-                            <div className="flex justify-between text-xs font-bold border-t border-brand-border dark:border-[#16382e] pt-2">
-                              <span>{item.stat1Label}: <span className="text-emerald-500">{item.stat1Value}</span></span>
-                              <span>{item.stat2Label}: <span className="text-emerald-500">{item.stat2Value}</span></span>
+                            {item.quote && item.quote.trim() !== "" && (
+                              <p 
+                                style={{ fontFamily: item.quoteFont ? `'${item.quoteFont}', cursive, sans-serif` : undefined }}
+                                className="font-handwritten text-sm text-brand-muted dark:text-emerald-200/80 italic leading-relaxed"
+                              >
+                                &quot;{item.quote}&quot;
+                              </p>
+                            )}
+                            <div className="flex justify-between items-center flex-wrap gap-2 text-xs font-bold border-t border-brand-border dark:border-[#16382e] pt-2">
+                              <span className="min-w-0">{item.stat1Label}: <span className="text-emerald-500">{item.stat1Value}</span></span>
+                              <span className="min-w-0">{item.stat2Label}: <span className="text-emerald-500">{item.stat2Value}</span></span>
                             </div>
                           </div>
                         ))}

@@ -1,60 +1,12 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import Hero from "@/components/hero";
 import BrandCarousel from "@/components/brand-carousel";
-import {
-  AudienceSnapshotSkeleton,
-  WhatPerformsSkeleton,
-  SponsorResultsSkeleton,
-  RateCardSkeleton,
-  CampaignWorkflowSkeleton,
-} from "@/components/skeletons";
-
-// Helper to simulate network latency for demonstrating skeleton loaders
-const delayImport = (importFunc: () => Promise<any>, ms: number) => {
-  return () => new Promise((resolve) => setTimeout(resolve, ms)).then(importFunc);
-};
-
-const AudienceSnapshot = dynamic(
-  delayImport(() => import("@/components/audience-snapshot"), 600),
-  {
-    loading: () => <AudienceSnapshotSkeleton />,
-    ssr: false,
-  }
-);
-
-const WhatPerforms = dynamic(
-  delayImport(() => import("@/components/what-performs"), 900),
-  {
-    loading: () => <WhatPerformsSkeleton />,
-    ssr: false,
-  }
-);
-
-const SponsorResults = dynamic(
-  delayImport(() => import("@/components/sponsor-results"), 1200),
-  {
-    loading: () => <SponsorResultsSkeleton />,
-    ssr: false,
-  }
-);
-
-const RateCard = dynamic(
-  delayImport(() => import("@/components/rate-card"), 1500),
-  {
-    loading: () => <RateCardSkeleton />,
-    ssr: false,
-  }
-);
-
-const CampaignWorkflow = dynamic(
-  delayImport(() => import("@/components/campaign-workflow"), 1800),
-  {
-    loading: () => <CampaignWorkflowSkeleton />,
-    ssr: false,
-  }
-);
+import AudienceSnapshot from "@/components/audience-snapshot";
+import WhatPerforms from "@/components/what-performs";
+import SponsorResults from "@/components/sponsor-results";
+import RateCard from "@/components/rate-card";
+import CampaignWorkflow from "@/components/campaign-workflow";
 
 export default function Home() {
   return (

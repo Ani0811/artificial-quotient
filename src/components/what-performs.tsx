@@ -84,7 +84,7 @@ export default function WhatPerforms() {
                 <div>
                   <div className="aspect-video bg-gray-100 dark:bg-zinc-800 flex items-center justify-center text-5xl relative overflow-hidden">
                     {thumbImg ? (
-                      <img src={thumbImg} alt={study.title} loading="lazy" decoding="async" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                      <img src={thumbImg} alt={study.title} width={480} height={270} loading="lazy" decoding="async" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                     ) : (
                       <span>{study.thumb || "🎬"}</span>
                     )}

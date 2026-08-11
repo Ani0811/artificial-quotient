@@ -28,16 +28,23 @@ export async function GET() {
       const whatPerforms = await getWhatPerforms();
       const tools = await getToolItems();
 
-      return NextResponse.json({
-        stats: siteConfigData.stats,
-        rates: siteConfigData.rates,
-        demographics: siteConfigData.demographics,
-        geographies: siteConfigData.geographies,
-        sponsorResults,
-        whatPerforms,
-        tools,
-        dbStatus: "Connected to MySQL (AQ-Dashboard) via Knex",
-      });
+      return NextResponse.json(
+        {
+          stats: siteConfigData.stats,
+          rates: siteConfigData.rates,
+          demographics: siteConfigData.demographics,
+          geographies: siteConfigData.geographies,
+          sponsorResults,
+          whatPerforms,
+          tools,
+          dbStatus: "Connected to MySQL (AQ-Dashboard) via Knex",
+        },
+        {
+          headers: {
+            "Cache-Control": "public, s-maxage=30, stale-while-revalidate=59",
+          },
+        }
+      );
     }
 
     // Fallback to JSON if database rows empty

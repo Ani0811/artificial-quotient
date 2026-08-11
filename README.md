@@ -269,6 +269,29 @@ Reduced vertical padding and internal gaps across all homepage sections on mobil
 
 ---
 
+### 📅 Day 8 — Tablet Responsiveness (iPad Air, Mini & Pro), Zero-Dependency Rate Limiting, OpenGraph SEO & Performance Optimizations
+
+#### 1. Tablet Responsive Layout Overhaul (iPad Air, Mini & Pro)
+- **Navbar Breakpoint Adjustment (`lg:`)**: Changed `Navbar` mobile drawer breakpoint from `md` (768px) to `lg` (1024px) so iPad Air (820px) and iPad Mini (768px) use the clean Mobile Drawer panel instead of overcrowding desktop navigation links.
+- **Admin Dashboard Layout Breakpoint**: Switched Admin Dashboard main grid breakpoint to `lg:` (1024px) for horizontal tab navigation, and `xl:` (1280px) for Split View. On iPad Pro (1024px), the Form and Live Pre-Publish Preview now stack vertically with full width rather than squishing side-by-side.
+- **Live Pre-Publish Preview Responsiveness**: Added `flex-wrap` and text truncation to the live preview panel header to prevent title and "Real-time" badge collision. Updated preview stat grids to responsive `grid-cols-1 sm:grid-cols-2`.
+- **Case Study Preview Card Fixes**: Fixed floating hyphen (`"-"`) quotation rendering bug when case study quotes are empty (`""`). Added responsive `flex-wrap` to partner titles and campaign stat rows.
+- **Multi-Column Footer for Mobile & Tablet**: Updated footer link columns (`Explore`, `Sponsorships`, `Management`) from single-column vertical stacking to responsive multi-column grids (`grid-cols-2 sm:grid-cols-3 lg:grid-cols-5`).
+
+#### 2. Zero-Dependency In-Memory Rate Limiting (`src/lib/rate-limit.ts`)
+- **In-Memory Sliding-Window Rate Limiter**: Built a lightweight sliding-window IP rate limiting utility in `src/lib/rate-limit.ts` with zero external infrastructure or Redis requirements.
+- **API Endpoint Protection**: Applied rate limiting (`5 attempts / minute per IP`) to `/api/auth/login` and `/api/contact` returning `HTTP 429 Too Many Requests` to prevent brute-force attacks and email spamming.
+
+#### 3. High-Impact Performance & PageSpeed Enhancements
+- **Removed Artificial Load Delays**: Purged legacy `delayImport` artificial timeouts (up to 1.8s) from `src/app/page.tsx`, allowing instant component rendering for superior PageSpeed, LCP, and FCP scores.
+- **Image Optimization & CLS Prevention**: Added explicit `width`, `height`, `decoding="async"`, and `loading="lazy"` / `loading="eager"` attributes across logos and YouTube video thumbnail images (`hero.tsx`, `navbar.tsx`, `footer.tsx`, `sponsor-results.tsx`, `what-performs.tsx`) to eliminate Cumulative Layout Shift (CLS).
+- **Public API Edge Caching**: Added `Cache-Control: public, s-maxage=30, stale-while-revalidate=59` headers to `GET /api/admin/data` for fast stale-while-revalidate responses.
+
+#### 4. Expanded OpenGraph & Social Sharing SEO Metadata
+- **Rich Social Metadata (`src/app/layout.tsx`)**: Expanded Next.js metadata with OpenGraph (`og:title`, `og:description`, `og:image`, `og:site_name`), Twitter `summary_large_image` cards, and keywords for rich link previews across Twitter/X, LinkedIn, Discord, and messaging apps.
+
+---
+
 ## 📂 Project Structure
 
 ```
@@ -315,7 +338,8 @@ artificial-quotient/
 │       ├── auth-store.ts      # Admin Password & Role State Manager
 │       ├── db.ts              # Knex MySQL Database Connection Initializer
 │       ├── email-service.ts   # Nodemailer Service & Inline CID Logo Template
-│       └── otp-store.ts       # 2FA One-Time Password In-Memory Store
+│       ├── otp-store.ts       # 2FA One-Time Password In-Memory Store
+│       └── rate-limit.ts      # Zero-Dependency In-Memory Sliding-Window Rate Limiter
 ├── tailwind.config.ts
 ├── README.md
 └── package.json

@@ -21,10 +21,47 @@ const caveat = Caveat({
 });
 
 export const metadata: Metadata = {
-  title: "Artificial Quotient — AI Automation Workflows",
-  description: "Automated AI workflows for different industries",
+  title: {
+    default: "Artificial Quotient — Premier AI Automation & SaaS Media Hub",
+    template: "%s | Artificial Quotient",
+  },
+  description:
+    "The premier hub for AI automation tutorials, workflow deep-dives, and tool reviews. Connecting tech builders with high-performing SaaS.",
+  keywords: [
+    "AI Automation",
+    "Make.com Workflows",
+    "SaaS Sponsorships",
+    "Artificial Quotient",
+    "YouTube Sponsorships",
+    "AI Tools Directory",
+  ],
+  authors: [{ name: "Artificial Quotient" }],
   icons: {
     icon: "/logo/logo.jpeg",
+    apple: "/logo/logo.jpeg",
+  },
+  openGraph: {
+    title: "Artificial Quotient — Premier AI Automation & SaaS Media Hub",
+    description:
+      "Connecting high-performing SaaS brands with 10,000+ AI builders through dedicated video breakdowns and workflow integrations.",
+    siteName: "Artificial Quotient",
+    images: [
+      {
+        url: "/logo/logo.jpeg",
+        width: 800,
+        height: 800,
+        alt: "Artificial Quotient",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Artificial Quotient — Premier AI Automation & SaaS Media Hub",
+    description:
+      "Connecting high-performing SaaS brands with 10,000+ AI builders through dedicated video breakdowns and workflow integrations.",
+    images: ["/logo/logo.jpeg"],
   },
 };
 
