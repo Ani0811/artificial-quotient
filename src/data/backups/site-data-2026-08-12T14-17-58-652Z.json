@@ -91,13 +91,12 @@
       "ytUrl": "https://youtu.be/G_MW3vpfLxA?si=J-vDcmEjOt_P_M6u",
       "roiBreakdown": "Results:\n• Videos ranking on relevant keywords\n• Links getting clicks\n• Insightful visitor feedback",
       "publishDate": "Contract: 2 Videos @ $700",
-      "logoUrl": "",
-      "websiteUrl": "https://www.revid.ai/"
+      "logoUrl": ""
     },
     {
       "id": "2",
       "partnerName": "Flashloop AI",
-      "campaignType": "Viral Integration",
+      "campaignType": "Dedicated Video & Viral Integration",
       "quote": "Our goal is to demonstrate Flashloop AI's next-gen video models (Veo 3, Kling 3.0, Seedance 2.0) and show creators how to turn viral AI animation trends into millions of views.",
       "quoteFont": "Dancing Script",
       "stat1Label": "Link Clicks",
@@ -109,8 +108,24 @@
       "ytUrl": "https://youtu.be/CO59xAteGRM?si=JMLIywF1ydT1MOsJ",
       "roiBreakdown": "Results:\n• Instant 1,200+ direct clicks with $0.25 effective CPC\n• High conversion rate to Flashloop free trial & paid subscription\n• Featured placement in Tool Vault & MCP ecosystem showcase",
       "publishDate": "Dedicated Video Integration",
-      "logoUrl": "",
-      "websiteUrl": "https://www.flashloop.app/"
+      "logoUrl": ""
+    },
+    {
+      "id": "3",
+      "partnerName": "Marky Agent",
+      "campaignType": "Dedicated Video",
+      "quote": "",
+      "quoteFont": "Caveat",
+      "stat1Label": "Signups Generated",
+      "stat1Value": "680+",
+      "stat2Label": "Est. ROI Multiplier",
+      "stat2Value": "3.8x",
+      "description": "Full in-depth dedicated tutorial showcasing how Marky Agent (Easy-Peasy.AI) analyzes complex files, automates recurring workflows, and builds custom apps.",
+      "deliverables": "12-minute dedicated YouTube video, step-by-step workflow blueprint, and featured pinned comment link.",
+      "ytUrl": "https://youtu.be/Oo9H89i6SYk?si=flMdazfrd1ef-feb",
+      "roiBreakdown": "3.8x Return on Investment within 30 days of campaign launch",
+      "publishDate": "Q2 2026",
+      "logoUrl": ""
     }
   ],
   "tools": [

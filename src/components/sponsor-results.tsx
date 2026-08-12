@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowUpRight, ExternalLink, X, Play, Sparkles, CheckCircle, Calendar, Target } from "lucide-react";
+import { ArrowUpRight, ExternalLink, X, Play, Sparkles, CheckCircle, Calendar, Target, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { loadGoogleFont } from "./font-provider";
 import Link from "next/link";
@@ -21,6 +21,7 @@ export interface SponsorResult {
   roiBreakdown?: string;
   publishDate?: string;
   logoUrl?: string;
+  websiteUrl?: string;
 }
 
 function getYoutubeEmbedUrl(url?: string) {
@@ -34,6 +35,8 @@ export default function SponsorResults() {
   const [results, setResults] = useState<SponsorResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCaseStudy, setSelectedCaseStudy] = useState<SponsorResult | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 3;
 
   useEffect(() => {
     async function load() {
@@ -73,8 +76,28 @@ export default function SponsorResults() {
 
   if (results.length === 0) return null;
 
+  const totalPages = Math.ceil(results.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedResults = results.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+      const sectionElem = document.getElementById("case-studies-section");
+      if (sectionElem) {
+        sectionElem.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
+
+  const getGridLayout = (count: number) => {
+    if (count === 1) return "grid grid-cols-1 max-w-xl mx-auto gap-4 sm:gap-6";
+    if (count === 2) return "grid grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto gap-4 sm:gap-6";
+    return "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6";
+  };
+
   return (
-    <section className="w-full py-12 sm:py-16 px-4 border-t border-brand-border dark:border-zinc-800 transition-colors">
+    <section id="case-studies-section" className="w-full py-12 sm:py-16 px-4 border-t border-brand-border dark:border-zinc-800 transition-colors">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col gap-2 mb-12 text-center md:text-left">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-semibold text-xs w-fit mx-auto md:mx-0">
@@ -89,8 +112,8 @@ export default function SponsorResults() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {results.map((item, idx) => (
+        <div className={getGridLayout(paginatedResults.length)}>
+          {paginatedResults.map((item, idx) => (
             <div 
               key={item.id || idx} 
               onClick={() => setSelectedCaseStudy(item)}
@@ -100,14 +123,32 @@ export default function SponsorResults() {
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
               <div>
-                <div className="flex justify-between items-start mb-6">
-                  <div className="bg-brand-bg dark:bg-zinc-950 px-4 py-2 rounded-lg border border-brand-border dark:border-zinc-800 font-bold text-lg text-brand-text dark:text-white transition-all duration-300 group-hover:border-emerald-500/40 group-hover:bg-emerald-500/5 dark:group-hover:bg-emerald-500/10 group-hover:text-emerald-500 dark:group-hover:text-emerald-400 flex items-center gap-2">
-                    {item.logoUrl ? (
-                      <img src={item.logoUrl} alt={item.partnerName} width={20} height={20} loading="lazy" decoding="async" className="w-5 h-5 object-contain rounded" />
-                    ) : null}
-                    <span>{item.partnerName}</span>
-                  </div>
-                  <span className="text-xs font-bold px-3 py-1 bg-emerald-500/10 text-emerald-500 rounded-full transition-all duration-300 group-hover:scale-105 group-hover:bg-emerald-500 group-hover:text-white group-hover:shadow-sm cursor-pointer">
+                <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+                  {item.websiteUrl ? (
+                    <a
+                      href={item.websiteUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="inline-flex items-center gap-2 bg-brand-bg dark:bg-zinc-950 px-3.5 py-1.5 rounded-xl border border-brand-border dark:border-zinc-800 font-bold text-sm sm:text-base text-brand-text dark:text-white transition-all duration-300 hover:border-emerald-500/50 hover:bg-emerald-500/10 hover:text-emerald-400 group/link shrink-0"
+                      title={`Visit ${item.partnerName} Website`}
+                    >
+                      {item.logoUrl ? (
+                        <img src={item.logoUrl} alt={item.partnerName} width={20} height={20} loading="lazy" decoding="async" className="w-5 h-5 object-contain rounded shrink-0" />
+                      ) : null}
+                      <span className="whitespace-nowrap">{item.partnerName}</span>
+                      <ExternalLink className="w-3.5 h-3.5 text-emerald-500 opacity-70 group-hover/link:opacity-100 group-hover/link:translate-x-0.5 transition-all" />
+                    </a>
+                  ) : (
+                    <div className="bg-brand-bg dark:bg-zinc-950 px-3.5 py-1.5 rounded-xl border border-brand-border dark:border-zinc-800 font-bold text-sm sm:text-base text-brand-text dark:text-white flex items-center gap-2 shrink-0">
+                      {item.logoUrl ? (
+                        <img src={item.logoUrl} alt={item.partnerName} width={20} height={20} loading="lazy" decoding="async" className="w-5 h-5 object-contain rounded shrink-0" />
+                      ) : null}
+                      <span className="whitespace-nowrap">{item.partnerName}</span>
+                    </div>
+                  )}
+
+                  <span className="text-[11px] sm:text-xs font-bold px-3 py-1 bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 rounded-full border border-emerald-500/20 leading-tight">
                     {item.campaignType}
                   </span>
                 </div>
@@ -144,6 +185,52 @@ export default function SponsorResults() {
             </div>
           ))}
         </div>
+
+        {/* Pagination Bar */}
+        {totalPages > 1 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-10 pt-6 border-t border-brand-border dark:border-zinc-800">
+            <span className="text-xs sm:text-sm font-semibold text-brand-muted dark:text-zinc-400">
+              Showing <span className="font-bold text-brand-text dark:text-white">{startIndex + 1}</span>–<span className="font-bold text-brand-text dark:text-white">{Math.min(startIndex + ITEMS_PER_PAGE, results.length)}</span> of <span className="font-bold text-brand-text dark:text-white">{results.length}</span> Case Studies
+            </span>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                disabled={currentPage === 1}
+                onClick={() => handlePageChange(currentPage - 1)}
+                className="p-2 rounded-xl border border-brand-border dark:border-zinc-800 bg-white dark:bg-zinc-900 text-brand-text dark:text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-all"
+                title="Previous Page"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  type="button"
+                  onClick={() => handlePageChange(page)}
+                  className={`w-9 h-9 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center border ${
+                    currentPage === page
+                      ? "bg-emerald-600 border-emerald-500 text-white shadow-md shadow-emerald-500/20"
+                      : "border-brand-border dark:border-zinc-800 bg-white dark:bg-zinc-900 text-brand-text dark:text-zinc-300 hover:bg-emerald-500/10 hover:border-emerald-500/30"
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+
+              <button
+                type="button"
+                disabled={currentPage === totalPages}
+                onClick={() => handlePageChange(currentPage + 1)}
+                className="p-2 rounded-xl border border-brand-border dark:border-zinc-800 bg-white dark:bg-zinc-900 text-brand-text dark:text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-all"
+                title="Next Page"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* CASE STUDY DETAIL MODAL */}
@@ -249,11 +336,17 @@ export default function SponsorResults() {
               {selectedCaseStudy.roiBreakdown && (
                 <div className="sm:col-span-2 md:col-span-1 p-3.5 rounded-2xl bg-brand-bg dark:bg-[#061612] border border-brand-border dark:border-[#16382e]">
                   <span className="text-xs font-bold text-brand-muted dark:text-emerald-200/60 uppercase block mb-1">
-                    ROI Impact
+                    Campaign Impact
                   </span>
-                  <span className="text-xs sm:text-sm font-bold text-brand-text dark:text-emerald-200">
-                    {selectedCaseStudy.roiBreakdown}
-                  </span>
+                  <div className="text-xs sm:text-sm font-semibold text-brand-text dark:text-emerald-200 space-y-1">
+                    {selectedCaseStudy.roiBreakdown.includes("\n") ? (
+                      selectedCaseStudy.roiBreakdown.split("\n").map((line, i) => (
+                        <p key={i} className="leading-snug">{line}</p>
+                      ))
+                    ) : (
+                      <span>{selectedCaseStudy.roiBreakdown}</span>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
@@ -263,9 +356,9 @@ export default function SponsorResults() {
               {selectedCaseStudy.description && (
                 <div>
                   <h4 className="font-heading font-bold text-xs sm:text-sm text-brand-text dark:text-white uppercase tracking-wider mb-1 flex items-center gap-2">
-                    <Target className="w-4 h-4 text-emerald-500" /> Campaign Overview
+                    <Target className="w-4 h-4 text-emerald-500" /> Campaign Overview &amp; Goal
                   </h4>
-                  <p className="text-xs sm:text-sm text-brand-muted dark:text-emerald-200/80 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-brand-muted dark:text-emerald-200/80 leading-relaxed bg-brand-bg dark:bg-[#061612] p-3.5 rounded-xl border border-brand-border dark:border-[#16382e]">
                     {selectedCaseStudy.description}
                   </p>
                 </div>
@@ -273,12 +366,27 @@ export default function SponsorResults() {
 
               {selectedCaseStudy.deliverables && (
                 <div>
-                  <h4 className="font-heading font-bold text-xs sm:text-sm text-brand-text dark:text-white uppercase tracking-wider mb-1 flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-emerald-500" /> Deliverables Provided
+                  <h4 className="font-heading font-bold text-xs sm:text-sm text-brand-text dark:text-white uppercase tracking-wider mb-1.5 flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-emerald-500" /> Videos &amp; Deliverables Made
                   </h4>
-                  <p className="text-xs sm:text-sm text-brand-muted dark:text-emerald-200/80 leading-relaxed bg-brand-bg dark:bg-[#061612] p-3 rounded-xl border border-brand-border dark:border-[#16382e]">
-                    {selectedCaseStudy.deliverables}
-                  </p>
+                  <div className="text-xs sm:text-sm text-brand-muted dark:text-emerald-200/90 leading-relaxed bg-brand-bg dark:bg-[#061612] p-3.5 rounded-xl border border-brand-border dark:border-[#16382e] space-y-2">
+                    {selectedCaseStudy.deliverables.includes("\n") ? (
+                      selectedCaseStudy.deliverables.split("\n").map((line, i) => (
+                        <div key={i} className="flex items-start gap-2">
+                          {line.startsWith("Videos Made:") ? (
+                            <span className="font-bold text-emerald-400 block mb-1">{line}</span>
+                          ) : (
+                            <>
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0"></span>
+                              <span className="font-medium text-brand-text dark:text-white">{line}</span>
+                            </>
+                          )}
+                        </div>
+                      ))
+                    ) : (
+                      <p>{selectedCaseStudy.deliverables}</p>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
@@ -293,12 +401,26 @@ export default function SponsorResults() {
                 Close Breakdown
               </button>
 
-              <Link
-                href="/contact"
-                className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2.5 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md transition-all text-center"
-              >
-                Book Similar Campaign &rarr;
-              </Link>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                {selectedCaseStudy.websiteUrl && (
+                  <a
+                    href={selectedCaseStudy.websiteUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-4 py-2.5 rounded-xl border border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all text-center"
+                  >
+                    <span>Visit Official Website</span>
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                )}
+
+                <Link
+                  href="/contact"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2.5 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md transition-all text-center"
+                >
+                  Book Similar Campaign &rarr;
+                </Link>
+              </div>
             </div>
 
           </div>

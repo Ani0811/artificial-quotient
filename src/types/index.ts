@@ -39,6 +39,7 @@ export interface SponsorItem {
   roiBreakdown?: string;
   publishDate?: string;
   logoUrl?: string;
+  websiteUrl?: string;
 }
 
 export interface AdminUser {
@@ -74,6 +75,11 @@ export interface ChannelStats {
   videosCountSub: string;
   retention: string;
   channelBanner?: string;
+  uniqueViewers?: string;
+  watchTimeHours?: string;
+  avgViewDuration?: string;
+  avgPercentageViewed?: string;
+  returningViewers?: string;
 }
 
 export interface ChannelRates {
@@ -82,8 +88,13 @@ export interface ChannelRates {
 }
 
 export interface ChannelDemographics {
-  age25_34: string;
+  age13_17: string;
   age18_24: string;
+  age25_34: string;
+  age35_44: string;
+  age45_54: string;
+  age55_64: string;
+  age65_plus: string;
   malePercent: string;
   femalePercent: string;
 }
@@ -93,4 +104,12 @@ export interface ChannelGeographies {
   india: string;
   uk: string;
   germany: string;
+  pakistan: string;
+  nigeria: string;
+  bangladesh: string;
+}
+
+export interface InterestItem {
+  name: string;
+  level: string;
 }

@@ -1,3 +1,6 @@
+import path from "path";
+import fs from "fs";
+
 export interface ContactEmailParams {
   name: string;
   email: string;
@@ -37,6 +40,16 @@ export function generateContactEmailHtml(params: ContactEmailParams): string {
   const { name, email, inquiryType, subject, message } = params;
   const initial = name ? name.trim().charAt(0).toUpperCase() : "A";
   const replySubject = encodeURIComponent(`Re: ${subject || inquiryType || "Artificial Quotient Inquiry"}`);
+  
+  let logoUrl = "data:image/jpeg;base64,";
+  try {
+    const logoPath = path.join(process.cwd(), "public", "logo", "logo.jpeg");
+    if (fs.existsSync(logoPath)) {
+      logoUrl += fs.readFileSync(logoPath).toString("base64");
+    }
+  } catch {
+    logoUrl = "https://raw.githubusercontent.com/Ani0811/artificial-quotient/main/public/logo/logo.jpeg";
+  }
 
   return `
 <!DOCTYPE html>
@@ -70,9 +83,7 @@ export function generateContactEmailHtml(params: ContactEmailParams): string {
                     <table border="0" cellspacing="0" cellpadding="0">
                       <tr>
                         <td valign="middle" style="padding-right: 12px;">
-                          <div style="width: 42px; height: 42px; background: linear-gradient(135deg, #10b981, #059669); color: #ffffff; font-weight: 900; font-size: 16px; border-radius: 12px; text-align: center; line-height: 42px; border: 1px solid rgba(16, 185, 129, 0.5); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">
-                            AQ
-                          </div>
+                          <img src="${logoUrl}" alt="Artificial Quotient Logo" width="40" height="40" style="width: 40px; height: 40px; border-radius: 10px; border: 1px solid rgba(16, 185, 129, 0.4); display: block; object-fit: cover;" />
                         </td>
                         <td valign="middle">
                           <div style="font-size: 20px; font-weight: 800; color: #ffffff; letter-spacing: -0.02em; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.2;">
@@ -87,7 +98,7 @@ export function generateContactEmailHtml(params: ContactEmailParams): string {
                   </td>
                   <td align="right" valign="middle">
                     <span style="display: inline-block; padding: 6px 14px; background-color: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); color: #6ee7b7; font-size: 11px; font-weight: 700; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.06em;">
-                      Incoming Inquiry
+                      ⚡ Incoming Inquiry
                     </span>
                   </td>
                 </tr>

@@ -15,6 +15,8 @@ export interface SiteConfig {
   demographics?: any;
   geographies?: any;
   rates?: any;
+  audienceInterests?: any[];
+  shoppingInterests?: any[];
 }
 
 export async function createSiteConfigTable() {
@@ -35,8 +37,36 @@ export async function createSiteConfigTable() {
       t.text("demographics_json");
       t.text("geographies_json");
       t.text("rates_json");
+      t.text("audience_interests_json");
+      t.text("shopping_interests_json");
+      t.string("unique_viewers", 64);
+      t.string("watch_time_hours", 64);
+      t.string("avg_view_duration", 64);
+      t.string("avg_percentage_viewed", 64);
+      t.string("returning_viewers", 64);
       t.timestamp("updated_at").defaultTo(k.raw("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"));
     });
+  } else {
+    // Add columns if they do not exist
+    if (!(await k.schema.hasColumn("site_config", "unique_viewers"))) {
+      await k.schema.alterTable("site_config", (t) => {
+        t.string("unique_viewers", 64);
+        t.string("watch_time_hours", 64);
+        t.string("avg_view_duration", 64);
+        t.string("avg_percentage_viewed", 64);
+        t.string("returning_viewers", 64);
+      });
+    }
+    if (!(await k.schema.hasColumn("site_config", "audience_interests_json"))) {
+      await k.schema.alterTable("site_config", (t) => {
+        t.text("audience_interests_json");
+      });
+    }
+    if (!(await k.schema.hasColumn("site_config", "shopping_interests_json"))) {
+      await k.schema.alterTable("site_config", (t) => {
+        t.text("shopping_interests_json");
+      });
+    }
   }
 }
 
@@ -57,10 +87,17 @@ export async function getSiteConfig() {
       videosCountSub: row.videos_count_sub,
       retention: row.retention,
       channelBanner: row.channel_banner,
+      uniqueViewers: row.unique_viewers,
+      watchTimeHours: row.watch_time_hours,
+      avgViewDuration: row.avg_view_duration,
+      avgPercentageViewed: row.avg_percentage_viewed,
+      returningViewers: row.returning_viewers,
     },
     demographics: row.demographics_json ? JSON.parse(row.demographics_json) : [],
     geographies: row.geographies_json ? JSON.parse(row.geographies_json) : [],
     rates: row.rates_json ? JSON.parse(row.rates_json) : {},
+    audienceInterests: row.audience_interests_json ? JSON.parse(row.audience_interests_json) : [],
+    shoppingInterests: row.shopping_interests_json ? JSON.parse(row.shopping_interests_json) : [],
   };
 }
 
@@ -78,12 +115,19 @@ export async function upsertSiteConfig(data: any) {
       new_subs: data.stats.newSubs || "+1,200",
       new_subs_sub: data.stats.newSubsSub || "",
       videos_count: data.stats.videosCount || "222",
-      videos_count_sub: data.stats.videosCountSub || "",
-      retention: data.stats.retention || "27",
-      channel_banner: data.stats.channelBanner || "",
+      videos_count_sub: data.stats?.videosCountSub || "",
+      retention: data.stats?.retention || "",
+      channel_banner: data.stats?.channelBanner || "",
+      unique_viewers: data.stats?.uniqueViewers || "",
+      watch_time_hours: data.stats?.watchTimeHours || "",
+      avg_view_duration: data.stats?.avgViewDuration || "",
+      avg_percentage_viewed: data.stats?.avgPercentageViewed || "",
+      returning_viewers: data.stats?.returningViewers || "",
       demographics_json: JSON.stringify(data.demographics || []),
       geographies_json: JSON.stringify(data.geographies || []),
       rates_json: JSON.stringify(data.rates || {}),
+      audience_interests_json: JSON.stringify(data.audienceInterests || []),
+      shopping_interests_json: JSON.stringify(data.shoppingInterests || []),
     })
     .onConflict("id")
     .merge();

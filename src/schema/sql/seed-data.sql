@@ -40,23 +40,30 @@ ON DUPLICATE KEY UPDATE
 
 -- 2. Seed Site Config (YouTube Stats)
 INSERT INTO site_config
-  (id, subscribers, subscribers_sub, monthly_views, monthly_views_sub, new_subs, new_subs_sub, videos_count, videos_count_sub, retention, channel_banner, demographics_json, geographies_json, rates_json)
+  (id, subscribers, subscribers_sub, monthly_views, monthly_views_sub, new_subs, new_subs_sub, videos_count, videos_count_sub, retention, channel_banner, demographics_json, geographies_json, rates_json, audience_interests_json, shopping_interests_json, unique_viewers, watch_time_hours, avg_view_duration, avg_percentage_viewed, returning_viewers)
 VALUES 
   (
     'default', 
-    '10,100+', 
+    '10.0K', 
     '+12.4% this month', 
-    '850,000+', 
+    '69.5K', 
     '~120K monthly views', 
     '+1,200', 
     'High velocity growth', 
-    '222', 
+    '229', 
     'Active weekly cadence', 
     '27', 
     '', 
-    '{"age25_34":"39.9%","age18_24":"28.5%","malePercent":"84.7%","femalePercent":"15.3%"}', 
-    '{"usa":"24.1%","india":"21.6%","uk":"4.6%","germany":"3.9%"}', 
-    '{"dedicatedRate":"$500","integrationRate":"$300"}'
+    '{"age13_17":"3.4%","age18_24":"22.4%","age25_34":"39.9%","age35_44":"19.9%","age45_54":"9.3%","age55_64":"3.6%","age65_plus":"1.5%","malePercent":"84.4%","femalePercent":"15.6%"}', 
+    '{"india":"21.8%","usa":"10.7%","pakistan":"4.5%","nigeria":"2.7%","bangladesh":"2.5%","uk":"0%","germany":"0%"}', 
+    '{"dedicatedRate":"$500","integrationRate":"$300"}',
+    '[{"name":"Social Media Enthusiasts","level":"Medium"},{"name":"Technophiles","level":"Medium"},{"name":"Mobile Enthusiasts","level":"Medium"},{"name":"Comics & Animation Fans","level":"Medium"},{"name":"Movie Lovers","level":"Medium"}]',
+    '[{"name":"Software","level":"High"},{"name":"Design Software","level":"Very High"},{"name":"Audio & Music Software","level":"Very High"},{"name":"Business & Productivity Software","level":"Very High"},{"name":"Video Editing & Production Software","level":"Very High"}]',
+    '55.0K',
+    '1.8K',
+    '1:39',
+    '27.1%',
+    '6.6%'
   )
 ON DUPLICATE KEY UPDATE
   subscribers=VALUES(subscribers),
@@ -71,47 +78,56 @@ ON DUPLICATE KEY UPDATE
   channel_banner=VALUES(channel_banner),
   demographics_json=VALUES(demographics_json),
   geographies_json=VALUES(geographies_json),
-  rates_json=VALUES(rates_json);
+  rates_json=VALUES(rates_json),
+  audience_interests_json=VALUES(audience_interests_json),
+  shopping_interests_json=VALUES(shopping_interests_json),
+  unique_viewers=VALUES(unique_viewers),
+  watch_time_hours=VALUES(watch_time_hours),
+  avg_view_duration=VALUES(avg_view_duration),
+  avg_percentage_viewed=VALUES(avg_percentage_viewed),
+  returning_viewers=VALUES(returning_viewers);
 
 
 -- 3. Seed Sponsor Case Studies
 INSERT INTO sponsor_case_studies
-  (id, partner_name, campaign_type, quote, quote_font, stat1_label, stat1_value, stat2_label, stat2_value, description, deliverables, yt_url, roi_breakdown, publish_date, logo_url, display_order)
+  (id, partner_name, campaign_type, quote, quote_font, stat1_label, stat1_value, stat2_label, stat2_value, description, deliverables, yt_url, roi_breakdown, publish_date, logo_url, website_url, display_order)
 VALUES 
   (
     '1', 
     'Revid.AI', 
-    'Dedicated Video', 
-    'The highest converting sponsorship we\'ve ran this quarter. Incredible audience fit.', 
+    '2 Dedicated Videos', 
+    'Our goal is to provide people searching for these tools (Revid AI) with a detailed breakdown of how to generate content, such as AI music videos and talking lip-sync avatars.', 
     'Caveat', 
-    'Signups Generated', 
-    '450+', 
-    'Est. ROI Multiplier', 
-    '3.2x', 
-    'Full end-to-end dedicated video breakdown showcasing how Revid.AI automates viral short-form video generation using Make.com and custom AI prompts.', 
-    '10-minute dedicated YouTube video, custom workflow blueprint JSON download, and featured link in newsletter.', 
-    'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 
-    '3.2x Return on Investment within 30 days of campaign launch', 
-    'Q2 2026', 
+    'Videos Created', 
+    '2 Videos', 
+    'Contract Value', 
+    '$700', 
+    'Goal: Our goal is to provide people searching for these tools (Revid AI) with a detailed breakdown of how to generate content, such as AI music videos and talking avatars.', 
+    'Videos Made:\n1. Revid AI Music To Video Review: Best AI Music Video Generator For Suno AI Songs?\n2. Revid AI Audio To Video Review: Make Talking AI Avatars With Perfect Lip Sync!', 
+    'https://youtu.be/G_MW3vpfLxA?si=J-vDcmEjOt_P_M6u', 
+    'Results:\n• Videos ranking on relevant keywords\n• Links getting clicks\n• Insightful visitor feedback', 
+    'Contract: 2 Videos @ $700', 
     '', 
+    'https://www.revid.ai/',
     0
   ),
   (
     '2', 
-    'Flashloop', 
-    'Integration', 
-    'We saw an immediate spike in traffic during the first 48 hours of upload.', 
+    'Flashloop AI', 
+    'Viral Integration', 
+    'Our goal is to demonstrate Flashloop AI\'s next-gen video models (Veo 3, Kling 3.0, Seedance 2.0) and show creators how to turn viral AI animation trends into millions of views.', 
     'Dancing Script', 
     'Link Clicks', 
     '1,200+', 
     'Cost Per Click', 
     '$0.25', 
-    'Mid-roll integration highlighting Flashloop\'s API speed and web automation webhooks for automated content pipelines.', 
-    '60-second video integration, pinned YouTube comment with tracked affiliate link, and Tool Vault placement.', 
-    'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 
-    'Instant 1,200+ direct clicks with $0.25 effective CPC', 
-    'Q2 2026', 
+    'Goal: Show content creators and digital agencies how to use Flashloop AI (https://www.flashloop.app/) to recreate viral AI trends (old cartoon styles, sports anime, talking character drama) and instantly generate high-converting short-form video content using state-of-the-art models like Veo 3 and Kling 3.0.', 
+    'Videos Made:\n1. Flashloop AI Review: How To Generate Viral AI Animations & Talking Avatars\n2. Recreating Trending AI Cartoons & Anime Styles in Minutes with Flashloop AI\n3. Full Mid-Roll Integration & Pinned Comment Tracked Link on YouTube', 
+    'https://youtu.be/CO59xAteGRM?si=JMLIywF1ydT1MOsJ', 
+    'Results:\n• Instant 1,200+ direct clicks with $0.25 effective CPC\n• High conversion rate to Flashloop free trial & paid subscription\n• Featured placement in Tool Vault & MCP ecosystem showcase', 
+    'Dedicated Video Integration', 
     '', 
+    'https://www.flashloop.app/',
     1
   )
 ON DUPLICATE KEY UPDATE

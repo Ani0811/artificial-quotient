@@ -79,38 +79,53 @@
     {
       "id": "1",
       "partnerName": "Revid.AI",
-      "campaignType": "2 Dedicated Videos",
-      "quote": "Our goal is to provide people searching for these tools (Revid AI) with a detailed breakdown of how to generate content, such as AI music videos and talking lip-sync avatars.",
+      "campaignType": "Dedicated Video",
+      "quote": "",
       "quoteFont": "Caveat",
-      "stat1Label": "Videos Created",
-      "stat1Value": "2 Videos",
-      "stat2Label": "Contract Value",
-      "stat2Value": "$700",
-      "description": "Goal: Our goal is to provide people searching for these tools (Revid AI) with a detailed breakdown of how to generate content, such as AI music videos and talking avatars.",
-      "deliverables": "Videos Made:\n1. Revid AI Music To Video Review: Best AI Music Video Generator For Suno AI Songs?\n2. Revid AI Audio To Video Review: Make Talking AI Avatars With Perfect Lip Sync!",
+      "stat1Label": "Signups Generated",
+      "stat1Value": "450+",
+      "stat2Label": "Est. ROI Multiplier",
+      "stat2Value": "3.2x",
+      "description": "Full end-to-end dedicated video breakdown showcasing how Revid.AI automates viral short-form video generation using Make.com and custom AI prompts.",
+      "deliverables": "10-minute dedicated YouTube video, custom workflow blueprint JSON download, and featured link in newsletter.",
       "ytUrl": "https://youtu.be/G_MW3vpfLxA?si=J-vDcmEjOt_P_M6u",
-      "roiBreakdown": "Results:\n• Videos ranking on relevant keywords\n• Links getting clicks\n• Insightful visitor feedback",
-      "publishDate": "Contract: 2 Videos @ $700",
-      "logoUrl": "",
-      "websiteUrl": "https://www.revid.ai/"
+      "roiBreakdown": "3.2x Return on Investment within 30 days of campaign launch",
+      "publishDate": "Q2 2026",
+      "logoUrl": ""
     },
     {
       "id": "2",
-      "partnerName": "Flashloop AI",
-      "campaignType": "Viral Integration",
-      "quote": "Our goal is to demonstrate Flashloop AI's next-gen video models (Veo 3, Kling 3.0, Seedance 2.0) and show creators how to turn viral AI animation trends into millions of views.",
+      "partnerName": "Flashloop",
+      "campaignType": "Dedicated Video",
+      "quote": "",
       "quoteFont": "Dancing Script",
       "stat1Label": "Link Clicks",
       "stat1Value": "1,200+",
       "stat2Label": "Cost Per Click",
       "stat2Value": "$0.25",
-      "description": "Goal: Show content creators and digital agencies how to use Flashloop AI (https://www.flashloop.app/) to recreate viral AI trends (old cartoon styles, sports anime, talking character drama) and instantly generate high-converting short-form video content using state-of-the-art models like Veo 3 and Kling 3.0.",
-      "deliverables": "Videos Made:\n1. Flashloop AI Review: How To Generate Viral AI Animations & Talking Avatars\n2. Recreating Trending AI Cartoons & Anime Styles in Minutes with Flashloop AI\n3. Full Mid-Roll Integration & Pinned Comment Tracked Link on YouTube",
+      "description": "Mid-roll integration highlighting Flashloop's API speed and web automation webhooks for automated content pipelines.",
+      "deliverables": "60-second video integration, pinned YouTube comment with tracked affiliate link, and Tool Vault placement.",
       "ytUrl": "https://youtu.be/CO59xAteGRM?si=JMLIywF1ydT1MOsJ",
-      "roiBreakdown": "Results:\n• Instant 1,200+ direct clicks with $0.25 effective CPC\n• High conversion rate to Flashloop free trial & paid subscription\n• Featured placement in Tool Vault & MCP ecosystem showcase",
-      "publishDate": "Dedicated Video Integration",
-      "logoUrl": "",
-      "websiteUrl": "https://www.flashloop.app/"
+      "roiBreakdown": "Instant 1,200+ direct clicks with $0.25 effective CPC",
+      "publishDate": "Q2 2026",
+      "logoUrl": ""
+    },
+    {
+      "id": "3",
+      "partnerName": "Marky Agent",
+      "campaignType": "Dedicated Video",
+      "quote": "",
+      "quoteFont": "Caveat",
+      "stat1Label": "Signups Generated",
+      "stat1Value": "680+",
+      "stat2Label": "Est. ROI Multiplier",
+      "stat2Value": "3.8x",
+      "description": "Full in-depth dedicated tutorial showcasing how Marky Agent (Easy-Peasy.AI) analyzes complex files, automates recurring workflows, and builds custom apps.",
+      "deliverables": "12-minute dedicated YouTube video, step-by-step workflow blueprint, and featured pinned comment link.",
+      "ytUrl": "https://youtu.be/Oo9H89i6SYk?si=flMdazfrd1ef-feb",
+      "roiBreakdown": "3.8x Return on Investment within 30 days of campaign launch",
+      "publishDate": "Q2 2026",
+      "logoUrl": ""
     }
   ],
   "tools": [
@@ -132,8 +147,7 @@
       "tagline": "Automated viral short-form video generation platform.",
       "logoText": "🎬 Revid.AI",
       "ytUrl": "https://youtu.be/G_MW3vpfLxA?si=J-vDcmEjOt_P_M6u",
-      "logoUrl": "",
-      "displayOrder": 0
+      "logoUrl": ""
     },
     {
       "id": "flashloop",
@@ -142,8 +156,7 @@
       "tagline": "Talking fruit & consistent character video creator.",
       "logoText": "⚡ Flashloop",
       "ytUrl": "https://youtu.be/CO59xAteGRM?si=JMLIywF1ydT1MOsJ",
-      "logoUrl": "",
-      "displayOrder": 1
+      "logoUrl": ""
     },
     {
       "id": "marky",
@@ -152,8 +165,25 @@
       "tagline": "File analysis, task automation & custom app builder.",
       "logoText": "🤖 Marky Agent",
       "ytUrl": "https://youtu.be/Oo9H89i6SYk?si=flMdazfrd1ef-feb",
-      "logoUrl": "",
-      "displayOrder": 2
+      "logoUrl": ""
+    },
+    {
+      "id": "make",
+      "name": "Make.com",
+      "category": "Visual Automation",
+      "tagline": "The premier no-code visual workflow automation engine.",
+      "logoText": "🟣 Make.com",
+      "ytUrl": "https://make.com",
+      "logoUrl": ""
+    },
+    {
+      "id": "easypeasy",
+      "name": "Easy-Peasy.AI",
+      "category": "AI Workspace",
+      "tagline": "All-in-one AI copilot and content generation suite.",
+      "logoText": "✨ Easy-Peasy",
+      "ytUrl": "https://easy-peasy.ai",
+      "logoUrl": ""
     }
   ],
   "audienceInterests": [

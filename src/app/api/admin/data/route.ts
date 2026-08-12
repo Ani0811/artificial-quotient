@@ -37,6 +37,8 @@ export async function GET() {
           rates: siteConfigData.rates,
           demographics: siteConfigData.demographics,
           geographies: siteConfigData.geographies,
+          audienceInterests: siteConfigData.audienceInterests,
+          shoppingInterests: siteConfigData.shoppingInterests,
           sponsorResults,
           whatPerforms,
           tools,

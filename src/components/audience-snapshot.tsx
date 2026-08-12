@@ -1,7 +1,8 @@
 "use client";
 
-import { BarChart3, Globe, ShieldCheck, Users, Eye, TrendingUp, PlaySquare } from "lucide-react";
+import { BarChart3, Globe, ShieldCheck, Users, Eye, TrendingUp, PlaySquare, Heart, ShoppingBag } from "lucide-react";
 import { useEffect, useState } from "react";
+import { InterestItem } from "@/types";
 
 // Country SVG Flags
 const USAFlag = () => (
@@ -51,6 +52,29 @@ const GermanyFlag = () => (
   </svg>
 );
 
+const PakistanFlag = () => (
+  <svg className="w-5 h-3.5 rounded-[2px] shadow-sm flex-shrink-0 object-cover" viewBox="0 0 640 480">
+    <path fill="#01411c" d="M0 0h640v480H0z"/>
+    <path fill="#fff" d="M0 0h160v480H0z"/>
+    <path fill="#fff" d="M410.7 131.6a143.9 143.9 0 0 0-42.6 256.4 144 144 0 1 1 42.6-256.4z"/>
+    <path fill="#fff" d="m424 207.2 24.3 74.8-63.6-46.2h78.6l-63.6 46.2z"/>
+  </svg>
+);
+
+const NigeriaFlag = () => (
+  <svg className="w-5 h-3.5 rounded-[2px] shadow-sm flex-shrink-0 object-cover" viewBox="0 0 640 480">
+    <path fill="#fff" d="M0 0h640v480H0z"/>
+    <path fill="#008751" d="M0 0h213.3v480H0zM426.7 0H640v480H426.7z"/>
+  </svg>
+);
+
+const BangladeshFlag = () => (
+  <svg className="w-5 h-3.5 rounded-[2px] shadow-sm flex-shrink-0 object-cover" viewBox="0 0 640 480">
+    <path fill="#006a4e" d="M0 0h640v480H0z"/>
+    <circle cx="280" cy="240" r="160" fill="#f42a41"/>
+  </svg>
+);
+
 interface SiteData {
   stats?: {
     subscribers?: string;
@@ -61,10 +85,20 @@ interface SiteData {
     newSubsSub?: string;
     videosCount?: string;
     videosCountSub?: string;
+    uniqueViewers?: string;
+    watchTimeHours?: string;
+    avgViewDuration?: string;
+    avgPercentageViewed?: string;
+    returningViewers?: string;
   };
   demographics?: {
-    age25_34?: string;
+    age13_17?: string;
     age18_24?: string;
+    age25_34?: string;
+    age35_44?: string;
+    age45_54?: string;
+    age55_64?: string;
+    age65_plus?: string;
     malePercent?: string;
     femalePercent?: string;
   };
@@ -73,13 +107,28 @@ interface SiteData {
     india?: string;
     uk?: string;
     germany?: string;
+    pakistan?: string;
+    nigeria?: string;
+    bangladesh?: string;
   };
   buyerIntent?: {
     title?: string;
     desc?: string;
     badges?: string[];
   };
+  audienceInterests?: InterestItem[];
+  shoppingInterests?: InterestItem[];
 }
+
+const getInterestWidth = (level: string) => {
+  switch (level) {
+    case "Low": return "25%";
+    case "Medium": return "50%";
+    case "High": return "75%";
+    case "Very High": return "95%";
+    default: return "50%";
+  }
+};
 
 export default function AudienceSnapshot() {
   const [data, setData] = useState<SiteData | null>(null);
@@ -121,10 +170,12 @@ export default function AudienceSnapshot() {
   const demographics = data.demographics || {};
   const geographies = data.geographies || {};
   const buyerIntent = data.buyerIntent || {};
+  const audienceInterests = data.audienceInterests || [];
+  const shoppingInterests = data.shoppingInterests || [];
 
   const channelMetrics = [
     {
-      label: "Subscribers",
+      label: "Subscribers (Lifetime)",
       value: stats.subscribers || "0",
       sub: stats.subscribersSub || "",
       icon: Users,
@@ -132,28 +183,60 @@ export default function AudienceSnapshot() {
       bg: "bg-emerald-500/10 border-emerald-500/20",
     },
     {
-      label: "View Count",
-      value: stats.monthlyViews || "0",
-      sub: stats.monthlyViewsSub || "",
-      icon: Eye,
-      color: "text-blue-500 dark:text-blue-400",
-      bg: "bg-blue-500/10 border-blue-500/20",
-    },
-    {
-      label: "New Subs (30D)",
-      value: stats.newSubs || "0",
-      sub: stats.newSubsSub || "",
-      icon: TrendingUp,
-      color: "text-purple-500 dark:text-purple-400",
-      bg: "bg-purple-500/10 border-purple-500/20",
-    },
-    {
-      label: "Videos Published",
+      label: "Videos published (Lifetime)",
       value: stats.videosCount || "0",
       sub: stats.videosCountSub || "",
       icon: PlaySquare,
       color: "text-red-500 dark:text-red-400",
       bg: "bg-red-500/10 border-red-500/20",
+    },
+    {
+      label: "Unique Viewers",
+      value: stats.uniqueViewers || "0",
+      sub: "",
+      icon: Eye,
+      color: "text-blue-500 dark:text-blue-400",
+      bg: "bg-blue-500/10 border-blue-500/20",
+    },
+    {
+      label: "Views",
+      value: stats.monthlyViews || "0",
+      sub: stats.monthlyViewsSub || "",
+      icon: BarChart3,
+      color: "text-amber-500 dark:text-amber-400",
+      bg: "bg-amber-500/10 border-amber-500/20",
+    },
+    {
+      label: "Watch Time (hours)",
+      value: stats.watchTimeHours || "0",
+      sub: "",
+      icon: TrendingUp,
+      color: "text-purple-500 dark:text-purple-400",
+      bg: "bg-purple-500/10 border-purple-500/20",
+    },
+    {
+      label: "Average View Duration",
+      value: stats.avgViewDuration || "0",
+      sub: "",
+      icon: PlaySquare,
+      color: "text-pink-500 dark:text-pink-400",
+      bg: "bg-pink-500/10 border-pink-500/20",
+    },
+    {
+      label: "Average Percentage Viewed",
+      value: stats.avgPercentageViewed || "0",
+      sub: "",
+      icon: BarChart3,
+      color: "text-indigo-500 dark:text-indigo-400",
+      bg: "bg-indigo-500/10 border-indigo-500/20",
+    },
+    {
+      label: "Returning Viewers",
+      value: stats.returningViewers || "0",
+      sub: "",
+      icon: Users,
+      color: "text-teal-500 dark:text-teal-400",
+      bg: "bg-teal-500/10 border-teal-500/20",
     },
   ];
 
@@ -208,26 +291,26 @@ export default function AudienceSnapshot() {
               Demographics
             </h3>
             
-            <div className="space-y-6">
-              <div className="transition-transform duration-300 group-hover:translate-x-0.5">
-                <div className="flex justify-between text-sm font-medium mb-2 text-brand-text dark:text-zinc-300">
-                  <span>Age 25-34</span>
-                  <span className="text-emerald-500 font-bold transition-transform duration-300 group-hover:scale-105 inline-block">{demographics.age25_34 || "0%"}</span>
+            <div className="space-y-4">
+              {[
+                { label: "Age 13-17", value: demographics.age13_17 || "0%", opacity: "opacity-40" },
+                { label: "Age 18-24", value: demographics.age18_24 || "0%", opacity: "opacity-70" },
+                { label: "Age 25-34", value: demographics.age25_34 || "0%", opacity: "opacity-100" },
+                { label: "Age 35-44", value: demographics.age35_44 || "0%", opacity: "opacity-80" },
+                { label: "Age 45-54", value: demographics.age45_54 || "0%", opacity: "opacity-60" },
+                { label: "Age 55-64", value: demographics.age55_64 || "0%", opacity: "opacity-50" },
+                { label: "Age 65+", value: demographics.age65_plus || "0%", opacity: "opacity-30" },
+              ].map((item, idx) => (
+                <div key={idx} className="transition-transform duration-300 group-hover:translate-x-0.5">
+                  <div className="flex justify-between text-xs font-medium mb-1.5 text-brand-text dark:text-zinc-300">
+                    <span>{item.label}</span>
+                    <span className="text-emerald-500 font-bold transition-transform duration-300 group-hover:scale-105 inline-block">{item.value}</span>
+                  </div>
+                  <div className="w-full bg-gray-200 dark:bg-[#16382e] rounded-full h-1.5 overflow-hidden">
+                    <div className={`bg-emerald-500 h-1.5 rounded-full ${item.opacity} transition-all duration-500 group-hover:shadow-[0_0_8px_rgba(16,185,129,0.5)]`} style={{ width: item.value }}></div>
+                  </div>
                 </div>
-                <div className="w-full bg-gray-200 dark:bg-[#16382e] rounded-full h-2 overflow-hidden">
-                  <div className="bg-emerald-500 h-2 rounded-full transition-all duration-500 group-hover:shadow-[0_0_12px_rgba(16,185,129,0.6)] group-hover:brightness-110" style={{ width: demographics.age25_34 || "0%" }}></div>
-                </div>
-              </div>
-              
-              <div className="transition-transform duration-300 group-hover:translate-x-0.5">
-                <div className="flex justify-between text-sm font-medium mb-2 text-brand-text dark:text-zinc-300">
-                  <span>Age 18-24</span>
-                  <span className="text-emerald-500 font-bold transition-transform duration-300 group-hover:scale-105 inline-block">{demographics.age18_24 || "0%"}</span>
-                </div>
-                <div className="w-full bg-gray-200 dark:bg-[#16382e] rounded-full h-2 overflow-hidden">
-                  <div className="bg-emerald-500 h-2 rounded-full opacity-70 transition-all duration-500 group-hover:opacity-90 group-hover:shadow-[0_0_10px_rgba(16,185,129,0.4)]" style={{ width: demographics.age18_24 || "0%" }}></div>
-                </div>
-              </div>
+              ))}
 
               <div className="pt-4 border-t border-brand-border dark:border-[#16382e] transition-colors duration-300 group-hover:border-emerald-500/20 dark:group-hover:border-[#1e483b]">
                 <div className="flex gap-4">
@@ -255,42 +338,51 @@ export default function AudienceSnapshot() {
                 Top Geographies
               </h3>
               
-              <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                <div className="group/item flex items-center justify-between p-2.5 sm:p-3.5 bg-white dark:bg-[#102922] rounded-xl border border-brand-border dark:border-[#16382e] shadow-sm text-brand-text dark:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:border-emerald-500/40 hover:bg-emerald-500/5 dark:hover:bg-[#14332a] hover:shadow-md cursor-pointer">
-                  <span className="flex items-center gap-2.5 font-medium">
-                    <span className="transition-transform duration-200 group-hover/item:scale-125 inline-block">
-                      <USAFlag />
-                    </span>
-                    <span className="font-semibold text-xs sm:text-sm">USA</span>
-                  </span>
-                  <span className="font-bold text-emerald-500 text-xs sm:text-sm transition-transform duration-200 group-hover/item:scale-110">{geographies.usa || "0%"}</span>
-                </div>
-                <div className="group/item flex items-center justify-between p-2.5 sm:p-3.5 bg-white dark:bg-[#102922] rounded-xl border border-brand-border dark:border-[#16382e] shadow-sm text-brand-text dark:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:border-emerald-500/40 hover:bg-emerald-500/5 dark:hover:bg-[#14332a] hover:shadow-md cursor-pointer">
-                  <span className="flex items-center gap-2.5 font-medium">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+                <div className="group/item flex flex-col p-3 bg-white dark:bg-[#102922] rounded-xl border border-brand-border dark:border-[#16382e] shadow-sm text-brand-text dark:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:border-emerald-500/40 hover:bg-emerald-500/5 dark:hover:bg-[#14332a] hover:shadow-md cursor-pointer">
+                  <span className="flex items-center gap-2 mb-2 font-medium">
                     <span className="transition-transform duration-200 group-hover/item:scale-125 inline-block">
                       <IndiaFlag />
                     </span>
-                    <span className="font-semibold text-xs sm:text-sm">India</span>
+                    <span className="font-semibold text-xs truncate">India</span>
                   </span>
-                  <span className="font-bold text-emerald-500 text-xs sm:text-sm transition-transform duration-200 group-hover/item:scale-110">{geographies.india || "0%"}</span>
+                  <span className="font-bold text-emerald-500 text-sm transition-transform duration-200 group-hover/item:scale-110">{geographies.india || "0%"}</span>
                 </div>
-                <div className="group/item flex items-center justify-between p-2.5 sm:p-3.5 bg-white dark:bg-[#102922] rounded-xl border border-brand-border dark:border-[#16382e] shadow-sm text-brand-text dark:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:border-emerald-500/40 hover:bg-emerald-500/5 dark:hover:bg-[#14332a] hover:shadow-md cursor-pointer">
-                  <span className="flex items-center gap-2.5 font-medium">
+                <div className="group/item flex flex-col p-3 bg-white dark:bg-[#102922] rounded-xl border border-brand-border dark:border-[#16382e] shadow-sm text-brand-text dark:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:border-emerald-500/40 hover:bg-emerald-500/5 dark:hover:bg-[#14332a] hover:shadow-md cursor-pointer">
+                  <span className="flex items-center gap-2 mb-2 font-medium">
                     <span className="transition-transform duration-200 group-hover/item:scale-125 inline-block">
-                      <UKFlag />
+                      <USAFlag />
                     </span>
-                    <span className="font-semibold text-xs sm:text-sm">UK</span>
+                    <span className="font-semibold text-xs truncate">USA</span>
                   </span>
-                  <span className="font-bold text-emerald-500 text-xs sm:text-sm transition-transform duration-200 group-hover/item:scale-110">{geographies.uk || "0%"}</span>
+                  <span className="font-bold text-emerald-500 text-sm transition-transform duration-200 group-hover/item:scale-110">{geographies.usa || "0%"}</span>
                 </div>
-                <div className="group/item flex items-center justify-between p-2.5 sm:p-3.5 bg-white dark:bg-[#102922] rounded-xl border border-brand-border dark:border-[#16382e] shadow-sm text-brand-text dark:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:border-emerald-500/40 hover:bg-emerald-500/5 dark:hover:bg-[#14332a] hover:shadow-md cursor-pointer">
-                  <span className="flex items-center gap-2.5 font-medium">
+                <div className="group/item flex flex-col p-3 bg-white dark:bg-[#102922] rounded-xl border border-brand-border dark:border-[#16382e] shadow-sm text-brand-text dark:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:border-emerald-500/40 hover:bg-emerald-500/5 dark:hover:bg-[#14332a] hover:shadow-md cursor-pointer">
+                  <span className="flex items-center gap-2 mb-2 font-medium">
                     <span className="transition-transform duration-200 group-hover/item:scale-125 inline-block">
-                      <GermanyFlag />
+                      <PakistanFlag />
                     </span>
-                    <span className="font-semibold text-xs sm:text-sm">Germany</span>
+                    <span className="font-semibold text-xs truncate">Pakistan</span>
                   </span>
-                  <span className="font-bold text-emerald-500 text-xs sm:text-sm transition-transform duration-200 group-hover/item:scale-110">{geographies.germany || "0%"}</span>
+                  <span className="font-bold text-emerald-500 text-sm transition-transform duration-200 group-hover/item:scale-110">{geographies.pakistan || "0%"}</span>
+                </div>
+                <div className="group/item flex flex-col p-3 bg-white dark:bg-[#102922] rounded-xl border border-brand-border dark:border-[#16382e] shadow-sm text-brand-text dark:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:border-emerald-500/40 hover:bg-emerald-500/5 dark:hover:bg-[#14332a] hover:shadow-md cursor-pointer">
+                  <span className="flex items-center gap-2 mb-2 font-medium">
+                    <span className="transition-transform duration-200 group-hover/item:scale-125 inline-block">
+                      <NigeriaFlag />
+                    </span>
+                    <span className="font-semibold text-xs truncate">Nigeria</span>
+                  </span>
+                  <span className="font-bold text-emerald-500 text-sm transition-transform duration-200 group-hover/item:scale-110">{geographies.nigeria || "0%"}</span>
+                </div>
+                <div className="group/item flex flex-col p-3 bg-white dark:bg-[#102922] rounded-xl border border-brand-border dark:border-[#16382e] shadow-sm text-brand-text dark:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:border-emerald-500/40 hover:bg-emerald-500/5 dark:hover:bg-[#14332a] hover:shadow-md cursor-pointer">
+                  <span className="flex items-center gap-2 mb-2 font-medium">
+                    <span className="transition-transform duration-200 group-hover/item:scale-125 inline-block">
+                      <BangladeshFlag />
+                    </span>
+                    <span className="font-semibold text-xs truncate">Bangladesh</span>
+                  </span>
+                  <span className="font-bold text-emerald-500 text-sm transition-transform duration-200 group-hover/item:scale-110">{geographies.bangladesh || "0%"}</span>
                 </div>
               </div>
             </div>
@@ -315,6 +407,57 @@ export default function AudienceSnapshot() {
                   </span>
                 ))}
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Interests Grid */}
+        <div className="grid md:grid-cols-2 gap-6 sm:gap-8 mt-6 sm:mt-8">
+          {/* Audience Interests Card */}
+          <div className="group relative bg-brand-bg dark:bg-[#0c201a] rounded-2xl p-5 sm:p-8 border border-brand-border dark:border-[#16382e] shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-500/5 hover:border-emerald-500/40 dark:hover:border-emerald-500/40 overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+            <h3 className="font-heading text-xl font-bold mb-6 flex items-center gap-2 text-brand-text dark:text-white">
+              <Heart className="w-5 h-5 text-emerald-500 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6" />
+              Audience Interests
+            </h3>
+            
+            <div className="space-y-5">
+              {audienceInterests.map((interest, idx) => (
+                <div key={idx} className="transition-transform duration-300 group-hover:translate-x-0.5">
+                  <div className="flex justify-between text-sm font-medium mb-1.5 text-brand-text dark:text-zinc-300">
+                    <span>{interest.name}</span>
+                    <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">{interest.level}</span>
+                  </div>
+                  <div className="w-full bg-gray-200 dark:bg-[#16382e] rounded-full h-2 overflow-hidden">
+                    <div className="bg-emerald-500 h-2 rounded-full transition-all duration-1000 ease-out group-hover:shadow-[0_0_10px_rgba(16,185,129,0.5)]" style={{ width: getInterestWidth(interest.level) }}></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Shopping Interests Card */}
+          <div className="group relative bg-brand-bg dark:bg-[#0c201a] rounded-2xl p-5 sm:p-8 border border-brand-border dark:border-[#16382e] shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-500/5 hover:border-emerald-500/40 dark:hover:border-emerald-500/40 overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+            <h3 className="font-heading text-xl font-bold mb-6 flex items-center gap-2 text-brand-text dark:text-white">
+              <ShoppingBag className="w-5 h-5 text-emerald-500 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6" />
+              Shopping Interests
+            </h3>
+            
+            <div className="space-y-5">
+              {shoppingInterests.map((interest, idx) => (
+                <div key={idx} className="transition-transform duration-300 group-hover:translate-x-0.5">
+                  <div className="flex justify-between text-sm font-medium mb-1.5 text-brand-text dark:text-zinc-300">
+                    <span>{interest.name}</span>
+                    <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">{interest.level}</span>
+                  </div>
+                  <div className="w-full bg-gray-200 dark:bg-[#16382e] rounded-full h-2 overflow-hidden">
+                    <div className="bg-emerald-500 h-2 rounded-full transition-all duration-1000 ease-out group-hover:shadow-[0_0_10px_rgba(16,185,129,0.5)]" style={{ width: getInterestWidth(interest.level) }}></div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
