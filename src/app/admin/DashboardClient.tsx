@@ -1663,19 +1663,48 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                             </div>
 
                             <div>
-                              <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">Logo Image URL (optional)</label>
-                              <input
-                                type="text"
-                                disabled={isViewer}
-                                placeholder="https://... or leave blank to use Logo Text"
-                                value={brand.logoUrl || ""}
-                                onChange={(e) => {
-                                  const next = [...brandsList];
-                                  next[idx] = { ...next[idx], logoUrl: e.target.value };
-                                  setBrandsList(next);
-                                }}
-                                className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs disabled:opacity-50 disabled:cursor-not-allowed"
-                              />
+                              <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Logo Image URL</label>
+                              <div className="flex items-center gap-2">
+                                {brand.logoUrl ? (
+                                  <div className="w-8 h-8 rounded-lg bg-brand-bg dark:bg-[#061612] border border-brand-border dark:border-[#16382e] p-1 shrink-0 flex items-center justify-center overflow-hidden">
+                                    <img src={brand.logoUrl} alt="Logo" className="w-full h-full object-contain" />
+                                  </div>
+                                ) : null}
+                                <input
+                                  type="text"
+                                  disabled={isViewer}
+                                  placeholder="/logo/revid.png or https://..."
+                                  value={brand.logoUrl || ""}
+                                  onChange={(e) => {
+                                    const next = [...brandsList];
+                                    next[idx] = { ...next[idx], logoUrl: e.target.value };
+                                    setBrandsList(next);
+                                  }}
+                                  className="flex-1 min-w-0 border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                />
+                                <label 
+                                  htmlFor={`brand-logo-input-${brand.id}`}
+                                  className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold px-3 py-2 rounded-xl cursor-pointer text-xs flex items-center gap-1.5 border border-emerald-500/30 shrink-0 whitespace-nowrap shadow-sm"
+                                >
+                                  {uploadingField === `brand-logo-${brand.id}` ? "Saving..." : "Upload Logo"}
+                                  <input 
+                                    id={`brand-logo-input-${brand.id}`}
+                                    type="file" 
+                                    accept="image/*" 
+                                    disabled={isViewer}
+                                    className="hidden" 
+                                    onChange={(e) => handleInlineMediaUpload(
+                                      e.target.files, 
+                                      (url) => {
+                                        const next = [...brandsList];
+                                        next[idx] = { ...next[idx], logoUrl: url };
+                                        setBrandsList(next);
+                                      },
+                                      `brand-logo-${brand.id}`
+                                    )}
+                                  />
+                                </label>
+                              </div>
                             </div>
                           </div>
                         ))}
