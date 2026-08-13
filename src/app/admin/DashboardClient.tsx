@@ -1149,7 +1149,24 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                                 Extended Case Study Details (Modal View)
                               </div>
 
-                              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                                <div>
+                                  <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">
+                                    Brand Logo Image URL
+                                  </label>
+                                  <input 
+                                    type="text" 
+                                    placeholder="/logo/revid.png"
+                                    value={item.logoUrl || ""} 
+                                    onChange={(e) => {
+                                      const next = [...sponsorResults];
+                                      next[idx] = { ...next[idx], logoUrl: e.target.value };
+                                      setSponsorResults(next);
+                                    }}
+                                    className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs" 
+                                  />
+                                </div>
+
                                 <div>
                                   <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">
                                     Partner Official Website URL

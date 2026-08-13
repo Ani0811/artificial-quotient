@@ -91,7 +91,7 @@
       "ytUrl": "https://youtu.be/G_MW3vpfLxA?si=J-vDcmEjOt_P_M6u",
       "roiBreakdown": "Results:\n• Videos ranking on relevant keywords\n• Links getting clicks\n• Insightful visitor feedback",
       "publishDate": "Contract: 2 Videos @ $700",
-      "logoUrl": "",
+      "logoUrl": "/logo/revid.png",
       "websiteUrl": "https://www.revid.ai/"
     },
     {
@@ -109,7 +109,7 @@
       "ytUrl": "https://youtu.be/CO59xAteGRM?si=JMLIywF1ydT1MOsJ",
       "roiBreakdown": "Results:\n• Instant 1,200+ direct clicks with $0.25 effective CPC\n• High conversion rate to Flashloop free trial & paid subscription\n• Featured placement in Tool Vault & MCP ecosystem showcase",
       "publishDate": "Dedicated Video Integration",
-      "logoUrl": "",
+      "logoUrl": "/logo/flashloop.png",
       "websiteUrl": "https://www.flashloop.app/"
     }
   ],
@@ -130,9 +130,9 @@
       "name": "Revid.AI",
       "category": "AI Video Generator",
       "tagline": "Automated viral short-form video generation platform.",
-      "logoText": "🎬 Revid.AI",
+      "logoText": "Revid.AI",
       "ytUrl": "https://youtu.be/G_MW3vpfLxA?si=J-vDcmEjOt_P_M6u",
-      "logoUrl": "",
+      "logoUrl": "/logo/revid.png",
       "displayOrder": 0
     },
     {
@@ -140,9 +140,9 @@
       "name": "Flashloop AI",
       "category": "Character Animation",
       "tagline": "Talking fruit & consistent character video creator.",
-      "logoText": "⚡ Flashloop",
+      "logoText": "Flashloop",
       "ytUrl": "https://youtu.be/CO59xAteGRM?si=JMLIywF1ydT1MOsJ",
-      "logoUrl": "",
+      "logoUrl": "/logo/flashloop.png",
       "displayOrder": 1
     },
     {
