@@ -51,147 +51,57 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [showPasswordMap, setShowPasswordMap] = useState<Record<string, boolean>>({});
   const [statsForm, setStatsForm] = useState({
-    subscribers: "10,100+",
-    subscribersSub: "+12.4% this month",
-    monthlyViews: "850,000+",
-    monthlyViewsSub: "~120K monthly views",
-    newSubs: "+1,200",
-    newSubsSub: "High velocity growth",
-    videosCount: "229",
-    videosCountSub: "Active weekly cadence",
-    retention: "27",
+    subscribers: "",
+    subscribersSub: "",
+    monthlyViews: "",
+    monthlyViewsSub: "",
+    newSubs: "",
+    newSubsSub: "",
+    videosCount: "",
+    videosCountSub: "",
+    retention: "",
     channelBanner: "",
-    uniqueViewers: "55.0K",
-    watchTimeHours: "1.8K",
-    avgViewDuration: "1:39",
-    avgPercentageViewed: "27.1%",
-    returningViewers: "6.6%",
+    uniqueViewers: "",
+    watchTimeHours: "",
+    avgViewDuration: "",
+    avgPercentageViewed: "",
+    returningViewers: "",
   });
 
   const [ratesForm, setRatesForm] = useState({
-    dedicatedRate: "$500",
-    integrationRate: "$300",
+    dedicatedRate: "",
+    integrationRate: "",
   });
 
   const [demoForm, setDemoForm] = useState({
-    age13_17: "3.4%",
-    age18_24: "22.4%",
-    age25_34: "39.9%",
-    age35_44: "19.9%",
-    age45_54: "9.3%",
-    age55_64: "3.6%",
-    age65_plus: "1.5%",
-    malePercent: "84.4%",
-    femalePercent: "15.6%",
+    age13_17: "",
+    age18_24: "",
+    age25_34: "",
+    age35_44: "",
+    age45_54: "",
+    age55_64: "",
+    age65_plus: "",
+    malePercent: "",
+    femalePercent: "",
   });
 
   const [geoForm, setGeoForm] = useState({
-    usa: "10.7%",
-    india: "21.8%",
-    uk: "0%",
-    germany: "0%",
-    pakistan: "4.5%",
-    nigeria: "2.7%",
-    bangladesh: "2.5%",
+    usa: "",
+    india: "",
+    uk: "",
+    germany: "",
+    pakistan: "",
+    nigeria: "",
+    bangladesh: "",
   });
 
-  const [whatPerforms, setWhatPerforms] = useState<PerformItem[]>([
-    {
-      id: "1",
-      title: "Revid.AI",
-      views: "18.2k",
-      clicks: "1.4k+",
-      type: "Dedicated Video",
-      thumb: "🎬",
-      highlight: "High Conversion",
-      ytUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-      thumbnail: "",
-    },
-    {
-      id: "2",
-      title: "Flashloop AI",
-      views: "12.5k",
-      clicks: "950+",
-      type: "Integration",
-      thumb: "⚡",
-      highlight: "Solid ROI",
-      ytUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-      thumbnail: "",
-    },
-    {
-      id: "3",
-      title: "Marky Agent",
-      views: "21.1k",
-      clicks: "2.1k+",
-      type: "Dedicated Video",
-      thumb: "🤖",
-      highlight: "Viral Reach",
-      ytUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-      thumbnail: "",
-    },
-  ]);
-
-  const [sponsorResults, setSponsorResults] = useState<SponsorItem[]>([
-    {
-      id: "1",
-      partnerName: "Revid.AI",
-      campaignType: "Dedicated Video",
-      quote: "The highest converting sponsorship we've ran this quarter. Incredible audience fit.",
-      stat1Label: "Signups Generated",
-      stat1Value: "450+",
-      stat2Label: "Est. ROI Multiplier",
-      stat2Value: "3.2x",
-    },
-    {
-      id: "2",
-      partnerName: "Flashloop",
-      campaignType: "Integration",
-      quote: "We saw an immediate spike in traffic during the first 48 hours of upload.",
-      stat1Label: "Link Clicks",
-      stat1Value: "1,200+",
-      stat2Label: "Cost Per Click",
-      stat2Value: "$0.25",
-    },
-  ]);
-
-  const [toolsList, setToolsList] = useState<ToolItem[]>([
-    {
-      id: "1",
-      name: "Make.com",
-      category: "Automation",
-      discount: "20% OFF 1st Year",
-      desc: "The ultimate visual automation platform for building advanced workflows without code.",
-      tryUrl: "https://make.com",
-      tutorialUrl: "",
-      logo: "",
-    }
-  ]);
-
-  const [brandsList, setBrandsList] = useState<BrandItem[]>([
-    { id: "revid", name: "Revid.AI", category: "AI Video Generator", tagline: "Automated viral short-form video generation platform.", logoText: "🎬 Revid.AI", ytUrl: "https://youtu.be/G_MW3vpfLxA", logoUrl: "" },
-    { id: "flashloop", name: "Flashloop AI", category: "Character Animation", tagline: "Talking fruit & consistent character video creator.", logoText: "⚡ Flashloop", ytUrl: "https://youtu.be/CO59xAteGRM", logoUrl: "" },
-    { id: "marky", name: "Marky Agent", category: "Autonomous AI Agent", tagline: "File analysis, task automation & custom app builder.", logoText: "🤖 Marky Agent", ytUrl: "https://youtu.be/Oo9H89i6SYk", logoUrl: "" },
-    { id: "make", name: "Make.com", category: "Visual Automation", tagline: "The premier no-code visual workflow automation engine.", logoText: "🟣 Make.com", ytUrl: "https://make.com", logoUrl: "" },
-    { id: "easypeasy", name: "Easy-Peasy.AI", category: "AI Workspace", tagline: "All-in-one AI copilot and content generation suite.", logoText: "✨ Easy-Peasy", ytUrl: "https://easy-peasy.ai", logoUrl: "" },
-  ]);
-
+  const [whatPerforms, setWhatPerforms] = useState<PerformItem[]>([]);
+  const [sponsorResults, setSponsorResults] = useState<SponsorItem[]>([]);
+  const [toolsList, setToolsList] = useState<ToolItem[]>([]);
+  const [brandsList, setBrandsList] = useState<BrandItem[]>([]);
   const [uploadingField, setUploadingField] = useState<string | null>(null);
-
-  const [audienceInterests, setAudienceInterests] = useState<InterestItem[]>([
-    { name: "Social Media Enthusiasts", level: "Medium" },
-    { name: "Technophiles", level: "Medium" },
-    { name: "Mobile Enthusiasts", level: "Medium" },
-    { name: "Comics & Animation Fans", level: "Medium" },
-    { name: "Movie Lovers", level: "Medium" },
-  ]);
-
-  const [shoppingInterests, setShoppingInterests] = useState<InterestItem[]>([
-    { name: "Software", level: "High" },
-    { name: "Design Software", level: "Very High" },
-    { name: "Audio & Music Software", level: "Very High" },
-    { name: "Business & Productivity Software", level: "Very High" },
-    { name: "Video Editing & Production Software", level: "Very High" },
-  ]);
+  const [audienceInterests, setAudienceInterests] = useState<InterestItem[]>([]);
+  const [shoppingInterests, setShoppingInterests] = useState<InterestItem[]>([]);
 
   // Fetch initial site data from API on mount
   useEffect(() => {
@@ -630,361 +540,370 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
 
                   {/* TAB 1: STATS & PRICING */}
                   {activeTab === "stats" && (
-                    <form className="space-y-6">
-                      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
-                        {/* LEFT COLUMN: Metrics & Sponsorship Rates */}
-                        <div className="space-y-6">
-                          <div className="bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] p-5 sm:p-6 rounded-2xl space-y-4 shadow-sm">
-                            <h3 className="font-heading font-bold text-sm text-brand-text dark:text-emerald-400 uppercase tracking-wider flex items-center gap-2">
-                              <BarChart3 className="w-4 h-4" /> Channel Performance Metrics
-                            </h3>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                              <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">Subscribers</label>
-                                <input 
-                                  type="text" 
-                                  value={statsForm.subscribers} 
-                                  disabled={isViewer}
-                                  onChange={(e) => setStatsForm({ ...statsForm, subscribers: e.target.value })}
-                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-1.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-1.5 disabled:opacity-50" 
-                                />
-                                <label className="block text-[10px] font-bold text-brand-muted dark:text-emerald-200/60 mb-0.5">Subtext</label>
-                                <input 
-                                  type="text" 
-                                  value={statsForm.subscribersSub} 
-                                  disabled={isViewer}
-                                  onChange={(e) => setStatsForm({ ...statsForm, subscribersSub: e.target.value })}
-                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
-                                />
-                              </div>
-                              <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">Total View Count</label>
-                                <input 
-                                  type="text" 
-                                  value={statsForm.monthlyViews} 
-                                  disabled={isViewer}
-                                  onChange={(e) => setStatsForm({ ...statsForm, monthlyViews: e.target.value })}
-                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-1.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-1.5 disabled:opacity-50" 
-                                />
-                                <label className="block text-[10px] font-bold text-brand-muted dark:text-emerald-200/60 mb-0.5">Subtext</label>
-                                <input 
-                                  type="text" 
-                                  value={statsForm.monthlyViewsSub} 
-                                  disabled={isViewer}
-                                  onChange={(e) => setStatsForm({ ...statsForm, monthlyViewsSub: e.target.value })}
-                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
-                                />
-                              </div>
-                              <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">New Subs (30D)</label>
-                                <input 
-                                  type="text" 
-                                  value={statsForm.newSubs} 
-                                  disabled={isViewer}
-                                  onChange={(e) => setStatsForm({ ...statsForm, newSubs: e.target.value })}
-                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-1.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-1.5 disabled:opacity-50" 
-                                />
-                                <label className="block text-[10px] font-bold text-brand-muted dark:text-emerald-200/60 mb-0.5">Subtext</label>
-                                <input 
-                                  type="text" 
-                                  value={statsForm.newSubsSub} 
-                                  disabled={isViewer}
-                                  onChange={(e) => setStatsForm({ ...statsForm, newSubsSub: e.target.value })}
-                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
-                                />
-                              </div>
-                              <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">Videos Published</label>
-                                <input 
-                                  type="text" 
-                                  value={statsForm.videosCount} 
-                                  disabled={isViewer}
-                                  onChange={(e) => setStatsForm({ ...statsForm, videosCount: e.target.value })}
-                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-1.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-1.5 disabled:opacity-50" 
-                                />
-                                <label className="block text-[10px] font-bold text-brand-muted dark:text-emerald-200/60 mb-0.5">Subtext</label>
-                                <input 
-                                  type="text" 
-                                  value={statsForm.videosCountSub} 
-                                  disabled={isViewer}
-                                  onChange={(e) => setStatsForm({ ...statsForm, videosCountSub: e.target.value })}
-                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
-                                />
-                              </div>
-                              <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">Unique Viewers</label>
-                                <input 
-                                  type="text" 
-                                  value={statsForm.uniqueViewers} 
-                                  disabled={isViewer}
-                                  onChange={(e) => setStatsForm({ ...statsForm, uniqueViewers: e.target.value })}
-                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-1.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
-                                />
-                              </div>
-                              <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">Watch Time (hours)</label>
-                                <input 
-                                  type="text" 
-                                  value={statsForm.watchTimeHours} 
-                                  disabled={isViewer}
-                                  onChange={(e) => setStatsForm({ ...statsForm, watchTimeHours: e.target.value })}
-                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-1.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
-                                />
-                              </div>
-                              <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">Avg. View Duration</label>
-                                <input 
-                                  type="text" 
-                                  value={statsForm.avgViewDuration} 
-                                  disabled={isViewer}
-                                  onChange={(e) => setStatsForm({ ...statsForm, avgViewDuration: e.target.value })}
-                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-1.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
-                                />
-                              </div>
-                              <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">Avg. Percentage Viewed</label>
-                                <input 
-                                  type="text" 
-                                  value={statsForm.avgPercentageViewed} 
-                                  disabled={isViewer}
-                                  onChange={(e) => setStatsForm({ ...statsForm, avgPercentageViewed: e.target.value })}
-                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-1.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
-                                />
-                              </div>
-                              <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">Returning Viewers</label>
-                                <input 
-                                  type="text" 
-                                  value={statsForm.returningViewers} 
-                                  disabled={isViewer}
-                                  onChange={(e) => setStatsForm({ ...statsForm, returningViewers: e.target.value })}
-                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-1.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
-                                />
-                              </div>
-                            </div>
+                    <form className="space-y-8">
+                      {/* SECTION 1: Channel Performance Metrics */}
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2 pb-2.5 border-b border-brand-border dark:border-[#16382e]">
+                          <BarChart3 className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
+                          <h3 className="font-heading font-bold text-sm text-brand-text dark:text-emerald-400 uppercase tracking-wider">
+                            Channel Performance Metrics
+                          </h3>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Subscribers</label>
+                            <input 
+                              type="text" 
+                              value={statsForm.subscribers} 
+                              disabled={isViewer}
+                              onChange={(e) => setStatsForm({ ...statsForm, subscribers: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-2 disabled:opacity-50" 
+                            />
+                            <label className="block text-[11px] font-bold text-brand-muted dark:text-emerald-200/60 mb-1">Subscribers Subtext</label>
+                            <input 
+                              type="text" 
+                              value={statsForm.subscribersSub} 
+                              disabled={isViewer}
+                              onChange={(e) => setStatsForm({ ...statsForm, subscribersSub: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                            />
                           </div>
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Total View Count</label>
+                            <input 
+                              type="text" 
+                              value={statsForm.monthlyViews} 
+                              disabled={isViewer}
+                              onChange={(e) => setStatsForm({ ...statsForm, monthlyViews: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-2 disabled:opacity-50" 
+                            />
+                            <label className="block text-[11px] font-bold text-brand-muted dark:text-emerald-200/60 mb-1">View Count Subtext</label>
+                            <input 
+                              type="text" 
+                              value={statsForm.monthlyViewsSub} 
+                              disabled={isViewer}
+                              onChange={(e) => setStatsForm({ ...statsForm, monthlyViewsSub: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">New Subs (30D)</label>
+                            <input 
+                              type="text" 
+                              value={statsForm.newSubs} 
+                              disabled={isViewer}
+                              onChange={(e) => setStatsForm({ ...statsForm, newSubs: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-2 disabled:opacity-50" 
+                            />
+                            <label className="block text-[11px] font-bold text-brand-muted dark:text-emerald-200/60 mb-1">New Subs Subtext</label>
+                            <input 
+                              type="text" 
+                              value={statsForm.newSubsSub} 
+                              disabled={isViewer}
+                              onChange={(e) => setStatsForm({ ...statsForm, newSubsSub: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Videos Published</label>
+                            <input 
+                              type="text" 
+                              value={statsForm.videosCount} 
+                              disabled={isViewer}
+                              onChange={(e) => setStatsForm({ ...statsForm, videosCount: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-2 disabled:opacity-50" 
+                            />
+                            <label className="block text-[11px] font-bold text-brand-muted dark:text-emerald-200/60 mb-1">Videos Subtext</label>
+                            <input 
+                              type="text" 
+                              value={statsForm.videosCountSub} 
+                              disabled={isViewer}
+                              onChange={(e) => setStatsForm({ ...statsForm, videosCountSub: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Unique Viewers</label>
+                            <input 
+                              type="text" 
+                              value={statsForm.uniqueViewers} 
+                              disabled={isViewer}
+                              onChange={(e) => setStatsForm({ ...statsForm, uniqueViewers: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Watch Time (hours)</label>
+                            <input 
+                              type="text" 
+                              value={statsForm.watchTimeHours} 
+                              disabled={isViewer}
+                              onChange={(e) => setStatsForm({ ...statsForm, watchTimeHours: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Avg. View Duration</label>
+                            <input 
+                              type="text" 
+                              value={statsForm.avgViewDuration} 
+                              disabled={isViewer}
+                              onChange={(e) => setStatsForm({ ...statsForm, avgViewDuration: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Avg. Percentage Viewed</label>
+                            <input 
+                              type="text" 
+                              value={statsForm.avgPercentageViewed} 
+                              disabled={isViewer}
+                              onChange={(e) => setStatsForm({ ...statsForm, avgPercentageViewed: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Returning Viewers</label>
+                            <input 
+                              type="text" 
+                              value={statsForm.returningViewers} 
+                              disabled={isViewer}
+                              onChange={(e) => setStatsForm({ ...statsForm, returningViewers: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                            />
+                          </div>
+                        </div>
+                      </div>
 
-                          <div className="bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] p-5 sm:p-6 rounded-2xl space-y-4 shadow-sm">
+                      {/* SECTION 2: Sponsorship Rates */}
+                      <div className="space-y-4 pt-2">
+                        <div className="flex items-center gap-2 pb-2.5 border-b border-brand-border dark:border-[#16382e]">
+                          <DollarSign className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
+                          <h3 className="font-heading font-bold text-sm text-brand-text dark:text-emerald-400 uppercase tracking-wider">
+                            Sponsorship Rates
+                          </h3>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Dedicated Video ($)</label>
+                            <input 
+                              type="text" 
+                              value={ratesForm.dedicatedRate} 
+                              disabled={isViewer}
+                              onChange={(e) => setRatesForm({ ...ratesForm, dedicatedRate: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Integration ($)</label>
+                            <input 
+                              type="text" 
+                              value={ratesForm.integrationRate} 
+                              disabled={isViewer}
+                              onChange={(e) => setRatesForm({ ...ratesForm, integrationRate: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* SECTION 3: Geography Top Countries */}
+                      <div className="space-y-4 pt-2">
+                        <div className="flex items-center gap-2 pb-2.5 border-b border-brand-border dark:border-[#16382e]">
+                          <Globe className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
+                          <h3 className="font-heading font-bold text-sm text-brand-text dark:text-emerald-400 uppercase tracking-wider">
+                            Geography Top Countries
+                          </h3>
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4">
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">United States</label>
+                            <input 
+                              type="text" 
+                              value={geoForm.usa} 
+                              disabled={isViewer}
+                              onChange={(e) => setGeoForm({ ...geoForm, usa: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">India</label>
+                            <input 
+                              type="text" 
+                              value={geoForm.india} 
+                              disabled={isViewer}
+                              onChange={(e) => setGeoForm({ ...geoForm, india: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Pakistan</label>
+                            <input 
+                              type="text" 
+                              value={geoForm.pakistan} 
+                              disabled={isViewer}
+                              onChange={(e) => setGeoForm({ ...geoForm, pakistan: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Nigeria</label>
+                            <input 
+                              type="text" 
+                              value={geoForm.nigeria} 
+                              disabled={isViewer}
+                              onChange={(e) => setGeoForm({ ...geoForm, nigeria: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Bangladesh</label>
+                            <input 
+                              type="text" 
+                              value={geoForm.bangladesh} 
+                              disabled={isViewer}
+                              onChange={(e) => setGeoForm({ ...geoForm, bangladesh: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">United Kingdom</label>
+                            <input 
+                              type="text" 
+                              value={geoForm.uk} 
+                              disabled={isViewer}
+                              onChange={(e) => setGeoForm({ ...geoForm, uk: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Germany</label>
+                            <input 
+                              type="text" 
+                              value={geoForm.germany} 
+                              disabled={isViewer}
+                              onChange={(e) => setGeoForm({ ...geoForm, germany: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* SECTION 4 & 5: Audience & Shopping Interests */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                        {/* Audience Interests */}
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between pb-2.5 border-b border-brand-border dark:border-[#16382e]">
                             <h3 className="font-heading font-bold text-sm text-brand-text dark:text-emerald-400 uppercase tracking-wider flex items-center gap-2">
-                              <DollarSign className="w-4 h-4" /> Sponsorship Rates
+                              <Users className="w-4 h-4 text-emerald-500 dark:text-emerald-400" /> Audience Interests
                             </h3>
-                            <div className="grid grid-cols-2 gap-4">
-                              <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">Dedicated Video ($)</label>
+                            <button
+                              type="button"
+                              disabled={isViewer}
+                              onClick={() => setAudienceInterests([...audienceInterests, { name: "", level: "Medium" }])}
+                              className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold px-3 py-1 rounded-lg text-xs flex items-center gap-1 border border-emerald-500/30 disabled:opacity-50"
+                            >
+                              <Plus className="w-3.5 h-3.5" /> Add
+                            </button>
+                          </div>
+                          <div className="space-y-2.5">
+                            {audienceInterests.map((interest, idx) => (
+                              <div key={idx} className="flex items-center gap-2">
                                 <input 
                                   type="text" 
-                                  value={ratesForm.dedicatedRate} 
+                                  placeholder="Interest Name"
+                                  value={interest.name} 
                                   disabled={isViewer}
-                                  onChange={(e) => setRatesForm({ ...ratesForm, dedicatedRate: e.target.value })}
-                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-1.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                                  onChange={(e) => {
+                                    const next = [...audienceInterests];
+                                    next[idx].name = e.target.value;
+                                    setAudienceInterests(next);
+                                  }}
+                                  className="flex-1 border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
                                 />
-                              </div>
-                              <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">Integration ($)</label>
-                                <input 
-                                  type="text" 
-                                  value={ratesForm.integrationRate} 
+                                <select
+                                  value={interest.level}
                                   disabled={isViewer}
-                                  onChange={(e) => setRatesForm({ ...ratesForm, integrationRate: e.target.value })}
-                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-1.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
-                                />
+                                  onChange={(e) => {
+                                    const next = [...audienceInterests];
+                                    next[idx].level = e.target.value;
+                                    setAudienceInterests(next);
+                                  }}
+                                  className="w-28 border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-2.5 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
+                                >
+                                  <option value="Low">Low</option>
+                                  <option value="Medium">Medium</option>
+                                  <option value="High">High</option>
+                                  <option value="Very High">Very High</option>
+                                </select>
+                                <button
+                                  type="button"
+                                  disabled={isViewer}
+                                  onClick={() => setAudienceInterests(audienceInterests.filter((_, i) => i !== idx))}
+                                  className="text-red-500 hover:bg-red-500/10 p-2 rounded-lg transition-colors disabled:opacity-50"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
                               </div>
-                            </div>
+                            ))}
                           </div>
                         </div>
 
-                        {/* RIGHT COLUMN: Geography & Interests */}
-                        <div className="space-y-6">
-                          <div className="bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] p-5 sm:p-6 rounded-2xl space-y-4 shadow-sm">
+                        {/* Shopping Interests */}
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between pb-2.5 border-b border-brand-border dark:border-[#16382e]">
                             <h3 className="font-heading font-bold text-sm text-brand-text dark:text-emerald-400 uppercase tracking-wider flex items-center gap-2">
-                              <Globe className="w-4 h-4" /> Geography Top Countries
+                              <ShoppingBag className="w-4 h-4 text-emerald-500 dark:text-emerald-400" /> Shopping Interests
                             </h3>
-                            <div className="grid grid-cols-2 gap-4">
-                              <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">United States</label>
-                                <input 
-                                  type="text" 
-                                  value={geoForm.usa} 
-                                  disabled={isViewer}
-                                  onChange={(e) => setGeoForm({ ...geoForm, usa: e.target.value })}
-                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-1.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
-                                />
-                              </div>
-                              <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">India</label>
-                                <input 
-                                  type="text" 
-                                  value={geoForm.india} 
-                                  disabled={isViewer}
-                                  onChange={(e) => setGeoForm({ ...geoForm, india: e.target.value })}
-                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-1.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
-                                />
-                              </div>
-                              <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">Pakistan</label>
-                                <input 
-                                  type="text" 
-                                  value={geoForm.pakistan} 
-                                  disabled={isViewer}
-                                  onChange={(e) => setGeoForm({ ...geoForm, pakistan: e.target.value })}
-                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-1.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
-                                />
-                              </div>
-                              <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">Nigeria</label>
-                                <input 
-                                  type="text" 
-                                  value={geoForm.nigeria} 
-                                  disabled={isViewer}
-                                  onChange={(e) => setGeoForm({ ...geoForm, nigeria: e.target.value })}
-                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-1.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
-                                />
-                              </div>
-                              <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">Bangladesh</label>
-                                <input 
-                                  type="text" 
-                                  value={geoForm.bangladesh} 
-                                  disabled={isViewer}
-                                  onChange={(e) => setGeoForm({ ...geoForm, bangladesh: e.target.value })}
-                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-1.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
-                                />
-                              </div>
-                              <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">United Kingdom</label>
-                                <input 
-                                  type="text" 
-                                  value={geoForm.uk} 
-                                  disabled={isViewer}
-                                  onChange={(e) => setGeoForm({ ...geoForm, uk: e.target.value })}
-                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-1.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
-                                />
-                              </div>
-                              <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">Germany</label>
-                                <input 
-                                  type="text" 
-                                  value={geoForm.germany} 
-                                  disabled={isViewer}
-                                  onChange={(e) => setGeoForm({ ...geoForm, germany: e.target.value })}
-                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-1.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
-                                />
-                              </div>
-                            </div>
+                            <button
+                              type="button"
+                              disabled={isViewer}
+                              onClick={() => setShoppingInterests([...shoppingInterests, { name: "", level: "High" }])}
+                              className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold px-3 py-1 rounded-lg text-xs flex items-center gap-1 border border-emerald-500/30 disabled:opacity-50"
+                            >
+                              <Plus className="w-3.5 h-3.5" /> Add
+                            </button>
                           </div>
-
-                          <div className="bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] p-5 sm:p-6 rounded-2xl space-y-4 shadow-sm">
-                            <div className="flex items-center justify-between">
-                              <h3 className="font-heading font-bold text-sm text-brand-text dark:text-emerald-400 uppercase tracking-wider flex items-center gap-2">
-                                <Users className="w-4 h-4" /> Audience Interests
-                              </h3>
-                              <button
-                                type="button"
-                                disabled={isViewer}
-                                onClick={() => setAudienceInterests([...audienceInterests, { name: "", level: "Medium" }])}
-                                className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold px-3 py-1 rounded-lg text-xs flex items-center gap-1 border border-emerald-500/30 disabled:opacity-50"
-                              >
-                                <Plus className="w-3.5 h-3.5" /> Add
-                              </button>
-                            </div>
-                            <div className="space-y-2.5">
-                              {audienceInterests.map((interest, idx) => (
-                                <div key={idx} className="flex items-center gap-2">
-                                  <input 
-                                    type="text" 
-                                    placeholder="Interest Name"
-                                    value={interest.name} 
-                                    disabled={isViewer}
-                                    onChange={(e) => {
-                                      const next = [...audienceInterests];
-                                      next[idx].name = e.target.value;
-                                      setAudienceInterests(next);
-                                    }}
-                                    className="flex-1 border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-1.5 text-xs sm:text-sm" 
-                                  />
-                                  <select
-                                    value={interest.level}
-                                    disabled={isViewer}
-                                    onChange={(e) => {
-                                      const next = [...audienceInterests];
-                                      next[idx].level = e.target.value;
-                                      setAudienceInterests(next);
-                                    }}
-                                    className="w-28 border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-2.5 py-1.5 text-xs"
-                                  >
-                                    <option value="Low">Low</option>
-                                    <option value="Medium">Medium</option>
-                                    <option value="High">High</option>
-                                    <option value="Very High">Very High</option>
-                                  </select>
-                                  <button
-                                    type="button"
-                                    disabled={isViewer}
-                                    onClick={() => setAudienceInterests(audienceInterests.filter((_, i) => i !== idx))}
-                                    className="text-red-500 hover:bg-red-500/10 p-1.5 rounded-lg transition-colors"
-                                  >
-                                    <Trash2 className="w-4 h-4" />
-                                  </button>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-
-                          <div className="bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] p-5 sm:p-6 rounded-2xl space-y-4 shadow-sm">
-                            <div className="flex items-center justify-between">
-                              <h3 className="font-heading font-bold text-sm text-brand-text dark:text-emerald-400 uppercase tracking-wider flex items-center gap-2">
-                                <ShoppingBag className="w-4 h-4" /> Shopping Interests
-                              </h3>
-                              <button
-                                type="button"
-                                disabled={isViewer}
-                                onClick={() => setShoppingInterests([...shoppingInterests, { name: "", level: "High" }])}
-                                className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold px-3 py-1 rounded-lg text-xs flex items-center gap-1 border border-emerald-500/30 disabled:opacity-50"
-                              >
-                                <Plus className="w-3.5 h-3.5" /> Add
-                              </button>
-                            </div>
-                            <div className="space-y-2.5">
-                              {shoppingInterests.map((interest, idx) => (
-                                <div key={idx} className="flex items-center gap-2">
-                                  <input 
-                                    type="text" 
-                                    placeholder="Category Name"
-                                    value={interest.name} 
-                                    disabled={isViewer}
-                                    onChange={(e) => {
-                                      const next = [...shoppingInterests];
-                                      next[idx].name = e.target.value;
-                                      setShoppingInterests(next);
-                                    }}
-                                    className="flex-1 border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-1.5 text-xs sm:text-sm" 
-                                  />
-                                  <select
-                                    value={interest.level}
-                                    disabled={isViewer}
-                                    onChange={(e) => {
-                                      const next = [...shoppingInterests];
-                                      next[idx].level = e.target.value;
-                                      setShoppingInterests(next);
-                                    }}
-                                    className="w-28 border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-2.5 py-1.5 text-xs"
-                                  >
-                                    <option value="Low">Low</option>
-                                    <option value="Medium">Medium</option>
-                                    <option value="High">High</option>
-                                    <option value="Very High">Very High</option>
-                                  </select>
-                                  <button
-                                    type="button"
-                                    disabled={isViewer}
-                                    onClick={() => setShoppingInterests(shoppingInterests.filter((_, i) => i !== idx))}
-                                    className="text-red-500 hover:bg-red-500/10 p-1.5 rounded-lg transition-colors"
-                                  >
-                                    <Trash2 className="w-4 h-4" />
-                                  </button>
-                                </div>
-                              ))}
-                            </div>
+                          <div className="space-y-2.5">
+                            {shoppingInterests.map((interest, idx) => (
+                              <div key={idx} className="flex items-center gap-2">
+                                <input 
+                                  type="text" 
+                                  placeholder="Category Name"
+                                  value={interest.name} 
+                                  disabled={isViewer}
+                                  onChange={(e) => {
+                                    const next = [...shoppingInterests];
+                                    next[idx].name = e.target.value;
+                                    setShoppingInterests(next);
+                                  }}
+                                  className="flex-1 border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                                />
+                                <select
+                                  value={interest.level}
+                                  disabled={isViewer}
+                                  onChange={(e) => {
+                                    const next = [...shoppingInterests];
+                                    next[idx].level = e.target.value;
+                                    setShoppingInterests(next);
+                                  }}
+                                  className="w-28 border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-2.5 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
+                                >
+                                  <option value="Low">Low</option>
+                                  <option value="Medium">Medium</option>
+                                  <option value="High">High</option>
+                                  <option value="Very High">Very High</option>
+                                </select>
+                                <button
+                                  type="button"
+                                  disabled={isViewer}
+                                  onClick={() => setShoppingInterests(shoppingInterests.filter((_, i) => i !== idx))}
+                                  className="text-red-500 hover:bg-red-500/10 p-2 rounded-lg transition-colors disabled:opacity-50"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            ))}
                           </div>
                         </div>
                       </div>
