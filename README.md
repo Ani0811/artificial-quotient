@@ -410,3 +410,46 @@ artificial-quotient/
    npm run build
    npm run start
    ```
+
+---
+
+## 🌐 Deploying to GreenGeeks (cPanel Hosting)
+
+Artificial Quotient is configured for deployment on **GreenGeeks Hosting** using **Setup Node.js App** (Phusion Passenger) and **MySQL Databases**.
+
+### 1. Database Setup in GreenGeeks cPanel
+1. Log into your **GreenGeeks cPanel**.
+2. Open **Databases** → **MySQL® Database Wizard**.
+3. Create a database (e.g., `cpaneluser_aq_dashboard`) and database user (e.g., `cpaneluser_aq_user`) with a strong password. Assign **ALL PRIVILEGES**.
+4. *(Optional)* Open **phpMyAdmin**, select your database, and import `src/lib/schema.sql`. (Or let the app auto-initialize schema on first start).
+
+### 2. Configure "Setup Node.js App" in cPanel
+1. In cPanel, navigate to **Software** → **Setup Node.js App**.
+2. Click **CREATE APPLICATION**:
+   - **Node.js version**: `20.x`
+   - **Application mode**: `Production`
+   - **Application root**: `artificial-quotient`
+   - **Application URL**: Choose your domain / subdomain
+   - **Application startup file**: `server.js`
+3. Click **CREATE**.
+
+### 3. Upload Code & Environment Configuration
+1. Run local build: `npm run build`.
+2. Zip the root directory (excluding `node_modules` and `.git`).
+3. Upload and extract zip into the `artificial-quotient` folder via cPanel **File Manager**.
+4. Create `.env` in the `artificial-quotient` folder using `.env.production.example`:
+   ```env
+   NODE_ENV=production
+   MYSQL_HOST=localhost
+   MYSQL_PORT=3306
+   MYSQL_USER=cpaneluser_aq_user
+   MYSQL_PASSWORD=your_password
+   MYSQL_DATABASE=cpaneluser_aq_dashboard
+   ADMIN_MASTER_KEY=AQ-RESET-2026
+   ```
+5. Click **Run NPM Install** in cPanel Node.js App Manager.
+
+### 4. Launch Application
+1. Click **RESTART APPLICATION** in cPanel Setup Node.js App.
+2. Open your website domain and verify live operation and `/admin/login`.
+
