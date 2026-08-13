@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 
 export default function RateCard() {
   const [rates, setRates] = useState({
-    dedicatedRate: "$500",
-    integrationRate: "$300",
+    dedicatedRate: "",
+    integrationRate: "",
   });
 
   useEffect(() => {

@@ -26,17 +26,6 @@ export async function createBrandItemsTable() {
       t.timestamp("updated_at").defaultTo(k.raw("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"));
     });
   }
-
-  // Auto-populate default logos into MySQL database if currently empty
-  try {
-    await k("brand_items")
-      .where({ id: "easypeasy" })
-      .orWhere({ name: "Easy-Peasy.AI" })
-      .andWhere((builder) => builder.where("logo_url", "").orWhereNull("logo_url"))
-      .update({ logo_url: "/logo/easypeasy.png" });
-  } catch {
-    // Ignore migration error
-  }
 }
 
 export async function getBrandItems(): Promise<BrandItem[]> {

@@ -93,21 +93,6 @@ export async function createSponsorCaseStudiesTable() {
       // Ignore alter errors if already modified
     }
   }
-
-  // Auto-populate default logos into MySQL database if currently empty
-  try {
-    await k("sponsor_case_studies")
-      .where({ partner_name: "Revid.AI" })
-      .andWhere((builder) => builder.where("logo_url", "").orWhereNull("logo_url"))
-      .update({ logo_url: "/logo/revid.png" });
-
-    await k("sponsor_case_studies")
-      .where({ partner_name: "Flashloop AI" })
-      .andWhere((builder) => builder.where("logo_url", "").orWhereNull("logo_url"))
-      .update({ logo_url: "/logo/flashloop.png" });
-  } catch {
-    // Ignore migration error
-  }
 }
 
 export async function getSponsorCaseStudies(): Promise<SponsorCaseStudy[]> {
