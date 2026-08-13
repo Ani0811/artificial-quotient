@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  serverExternalPackages: ["knex"],
+  serverExternalPackages: ["knex", "mysql2"],
 };
 
 export default nextConfig;
