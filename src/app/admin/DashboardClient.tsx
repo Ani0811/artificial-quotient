@@ -549,7 +549,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                             Channel Performance Metrics
                           </h3>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                           <div>
                             <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Subscribers</label>
                             <input 
@@ -715,82 +715,82 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                             Geography Top Countries
                           </h3>
                         </div>
-                        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3.5">
                           <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">United States</label>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5 truncate">United States</label>
                             <input 
                               type="text" 
                               value={geoForm.usa} 
                               disabled={isViewer}
                               onChange={(e) => setGeoForm({ ...geoForm, usa: e.target.value })}
-                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
                             />
                           </div>
                           <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">India</label>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5 truncate">India</label>
                             <input 
                               type="text" 
                               value={geoForm.india} 
                               disabled={isViewer}
                               onChange={(e) => setGeoForm({ ...geoForm, india: e.target.value })}
-                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
                             />
                           </div>
                           <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Pakistan</label>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5 truncate">Pakistan</label>
                             <input 
                               type="text" 
                               value={geoForm.pakistan} 
                               disabled={isViewer}
                               onChange={(e) => setGeoForm({ ...geoForm, pakistan: e.target.value })}
-                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
                             />
                           </div>
                           <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Nigeria</label>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5 truncate">Nigeria</label>
                             <input 
                               type="text" 
                               value={geoForm.nigeria} 
                               disabled={isViewer}
                               onChange={(e) => setGeoForm({ ...geoForm, nigeria: e.target.value })}
-                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
                             />
                           </div>
                           <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Bangladesh</label>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5 truncate">Bangladesh</label>
                             <input 
                               type="text" 
                               value={geoForm.bangladesh} 
                               disabled={isViewer}
                               onChange={(e) => setGeoForm({ ...geoForm, bangladesh: e.target.value })}
-                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
                             />
                           </div>
                           <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">United Kingdom</label>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5 truncate">United Kingdom</label>
                             <input 
                               type="text" 
                               value={geoForm.uk} 
                               disabled={isViewer}
                               onChange={(e) => setGeoForm({ ...geoForm, uk: e.target.value })}
-                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
                             />
                           </div>
                           <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Germany</label>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5 truncate">Germany</label>
                             <input 
                               type="text" 
                               value={geoForm.germany} 
                               disabled={isViewer}
                               onChange={(e) => setGeoForm({ ...geoForm, germany: e.target.value })}
-                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
                             />
                           </div>
                         </div>
                       </div>
 
-                      {/* SECTION 4 & 5: Audience & Shopping Interests */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                      {/* SECTION 4 & 5: Audience & Shopping Interests Stacked for Width */}
+                      <div className="space-y-6 pt-2">
                         {/* Audience Interests */}
                         <div className="space-y-4">
                           <div className="flex items-center justify-between pb-2.5 border-b border-brand-border dark:border-[#16382e]">
@@ -819,7 +819,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                                     next[idx].name = e.target.value;
                                     setAudienceInterests(next);
                                   }}
-                                  className="flex-1 border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                                  className="flex-1 min-w-0 border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
                                 />
                                 <select
                                   value={interest.level}
@@ -829,7 +829,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                                     next[idx].level = e.target.value;
                                     setAudienceInterests(next);
                                   }}
-                                  className="w-28 border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-2.5 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
+                                  className="w-28 sm:w-32 border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-2.5 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50 shrink-0"
                                 >
                                   <option value="Low">Low</option>
                                   <option value="Medium">Medium</option>
@@ -840,7 +840,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                                   type="button"
                                   disabled={isViewer}
                                   onClick={() => setAudienceInterests(audienceInterests.filter((_, i) => i !== idx))}
-                                  className="text-red-500 hover:bg-red-500/10 p-2 rounded-lg transition-colors disabled:opacity-50"
+                                  className="text-red-500 hover:bg-red-500/10 p-2 rounded-lg transition-colors disabled:opacity-50 shrink-0"
                                 >
                                   <Trash2 className="w-4 h-4" />
                                 </button>
@@ -877,7 +877,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                                     next[idx].name = e.target.value;
                                     setShoppingInterests(next);
                                   }}
-                                  className="flex-1 border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                                  className="flex-1 min-w-0 border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
                                 />
                                 <select
                                   value={interest.level}
@@ -887,7 +887,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                                     next[idx].level = e.target.value;
                                     setShoppingInterests(next);
                                   }}
-                                  className="w-28 border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-2.5 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
+                                  className="w-28 sm:w-32 border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-2.5 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50 shrink-0"
                                 >
                                   <option value="Low">Low</option>
                                   <option value="Medium">Medium</option>
@@ -898,7 +898,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                                   type="button"
                                   disabled={isViewer}
                                   onClick={() => setShoppingInterests(shoppingInterests.filter((_, i) => i !== idx))}
-                                  className="text-red-500 hover:bg-red-500/10 p-2 rounded-lg transition-colors disabled:opacity-50"
+                                  className="text-red-500 hover:bg-red-500/10 p-2 rounded-lg transition-colors disabled:opacity-50 shrink-0"
                                 >
                                   <Trash2 className="w-4 h-4" />
                                 </button>
