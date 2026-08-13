@@ -41,15 +41,7 @@ export function generateContactEmailHtml(params: ContactEmailParams): string {
   const initial = name ? name.trim().charAt(0).toUpperCase() : "A";
   const replySubject = encodeURIComponent(`Re: ${subject || inquiryType || "Artificial Quotient Inquiry"}`);
   
-  let logoUrl = "data:image/jpeg;base64,";
-  try {
-    const logoPath = path.join(process.cwd(), "public", "logo", "logo.jpeg");
-    if (fs.existsSync(logoPath)) {
-      logoUrl += fs.readFileSync(logoPath).toString("base64");
-    }
-  } catch {
-    logoUrl = "https://raw.githubusercontent.com/Ani0811/artificial-quotient/main/public/logo/logo.jpeg";
-  }
+  const logoUrl = "https://artificial-quotient.com/logo.jpeg";
 
   return `
 <!DOCTYPE html>
