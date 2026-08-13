@@ -114,31 +114,24 @@ export async function getSponsorCaseStudies(): Promise<SponsorCaseStudy[]> {
   const k = getKnex();
   const rows = await k("sponsor_case_studies").orderBy("display_order", "asc");
 
-  return rows.map((r: any) => {
-    let logoUrl = r.logo_url;
-    if (!logoUrl) {
-      if (r.partner_name?.toLowerCase().includes("revid")) logoUrl = "/logo/revid.png";
-      else if (r.partner_name?.toLowerCase().includes("flashloop")) logoUrl = "/logo/flashloop.png";
-    }
-    return {
-      id: r.id,
-      partnerName: r.partner_name,
-      campaignType: r.campaign_type,
-      quote: r.quote,
-      quoteFont: r.quote_font,
-      stat1Label: r.stat1_label,
-      stat1Value: r.stat1_value,
-      stat2Label: r.stat2_label,
-      stat2Value: r.stat2_value,
-      description: r.description,
-      deliverables: r.deliverables,
-      ytUrl: r.yt_url,
-      roiBreakdown: r.roi_breakdown,
-      publishDate: r.publish_date,
-      logoUrl: logoUrl || "",
-      websiteUrl: r.website_url,
-    };
-  });
+  return rows.map((r: any) => ({
+    id: r.id,
+    partnerName: r.partner_name,
+    campaignType: r.campaign_type,
+    quote: r.quote,
+    quoteFont: r.quote_font,
+    stat1Label: r.stat1_label,
+    stat1Value: r.stat1_value,
+    stat2Label: r.stat2_label,
+    stat2Value: r.stat2_value,
+    description: r.description,
+    deliverables: r.deliverables,
+    ytUrl: r.yt_url,
+    roiBreakdown: r.roi_breakdown,
+    publishDate: r.publish_date,
+    logoUrl: r.logo_url || "",
+    websiteUrl: r.website_url,
+  }));
 }
 
 export async function syncSponsorCaseStudies(items: any[]) {
