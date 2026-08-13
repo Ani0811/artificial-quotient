@@ -1149,22 +1149,45 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                                 Extended Case Study Details (Modal View)
                               </div>
 
-                              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                                 <div>
                                   <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">
                                     Brand Logo Image URL
                                   </label>
-                                  <input 
-                                    type="text" 
-                                    placeholder="/logo/revid.png"
-                                    value={item.logoUrl || ""} 
-                                    onChange={(e) => {
-                                      const next = [...sponsorResults];
-                                      next[idx] = { ...next[idx], logoUrl: e.target.value };
-                                      setSponsorResults(next);
-                                    }}
-                                    className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs" 
-                                  />
+                                  <div className="flex items-center gap-2">
+                                    <input 
+                                      type="text" 
+                                      placeholder="/logo/revid.png"
+                                      value={item.logoUrl || ""} 
+                                      onChange={(e) => {
+                                        const next = [...sponsorResults];
+                                        next[idx] = { ...next[idx], logoUrl: e.target.value };
+                                        setSponsorResults(next);
+                                      }}
+                                      className="flex-1 min-w-0 border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs" 
+                                    />
+                                    <label 
+                                      htmlFor={`sponsor-logo-input-${item.id}`}
+                                      className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold px-2.5 py-1.5 rounded-lg cursor-pointer text-xs flex items-center gap-1 border border-emerald-500/30 shrink-0 whitespace-nowrap"
+                                    >
+                                      {uploadingField === `sponsor-logo-${item.id}` ? "Saving..." : "Upload"}
+                                      <input 
+                                        id={`sponsor-logo-input-${item.id}`}
+                                        type="file" 
+                                        accept="image/*" 
+                                        className="hidden" 
+                                        onChange={(e) => handleInlineMediaUpload(
+                                          e.target.files, 
+                                          (url) => {
+                                            const next = [...sponsorResults];
+                                            next[idx] = { ...next[idx], logoUrl: url };
+                                            setSponsorResults(next);
+                                          },
+                                          `sponsor-logo-${item.id}`
+                                        )}
+                                      />
+                                    </label>
+                                  </div>
                                 </div>
 
                                 <div>
