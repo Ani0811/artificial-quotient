@@ -38,7 +38,7 @@ export async function send2FACodeEmail(toEmail: string, code: string): Promise<b
                   <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
                     <tr>
                       <td align="center">
-                        ${logoBase64 ? `<img src="data:image/jpeg;base64,${logoBase64}" alt="Artificial Quotient Logo" style="width: 56px; height: 56px; border-radius: 14px; margin-bottom: 14px; border: 1px solid #374151; display: block;" />` : `<img src="cid:aqlogo@artificialquotient" alt="Artificial Quotient Logo" style="width: 56px; height: 56px; border-radius: 14px; margin-bottom: 14px; border: 1px solid #374151; display: block;" />`}
+                        <img src="https://artificial-quotient.com/logo.jpeg" width="56" height="56" alt="Artificial Quotient Logo" style="width: 56px; height: 56px; border-radius: 14px; margin-bottom: 14px; border: 1px solid #374151; display: block;" />
                         <div style="display: inline-block; padding: 6px 14px; background-color: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 20px; margin-bottom: 16px;">
                           <span style="color: #60a5fa; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">
                             Security Gateway
