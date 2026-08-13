@@ -154,6 +154,16 @@
       "ytUrl": "https://youtu.be/Oo9H89i6SYk?si=flMdazfrd1ef-feb",
       "logoUrl": "",
       "displayOrder": 2
+    },
+    {
+      "id": "easypeasy",
+      "name": "Easy-Peasy.AI",
+      "category": "AI Workspace",
+      "tagline": "All-in-one AI copilot and content generation suite.",
+      "logoText": "Easy-Peasy.AI",
+      "ytUrl": "https://easy-peasy.ai",
+      "logoUrl": "/logo/easypeasy.png",
+      "displayOrder": 3
     }
   ],
   "audienceInterests": [
