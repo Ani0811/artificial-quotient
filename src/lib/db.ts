@@ -28,6 +28,7 @@ export function getKnex(): Knex {
         user: poolConfig.user,
         password: poolConfig.password,
         database: poolConfig.database,
+        charset: "utf8mb4",
       },
       pool: { min: 2, max: 10 },
     });
