@@ -30,7 +30,13 @@ export function getKnex(): Knex {
         database: poolConfig.database,
         charset: "utf8mb4",
       },
-      pool: { min: 2, max: 10 },
+      pool: { 
+        min: 0, 
+        max: 5,
+        acquireTimeoutMillis: 3000,
+        createTimeoutMillis: 3000,
+        idleTimeoutMillis: 10000,
+      },
     });
   }
   return db;
