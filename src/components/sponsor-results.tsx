@@ -129,38 +129,38 @@ export default function SponsorResults() {
             <div 
               key={item.id || idx} 
               onClick={() => setSelectedCaseStudy(item)}
-              className="group relative bg-white dark:bg-zinc-900 rounded-2xl p-5 sm:p-8 border border-brand-border dark:border-zinc-800 shadow-sm flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-500/5 hover:border-emerald-500/40 dark:hover:border-emerald-500/40 overflow-hidden cursor-pointer"
+              className="group relative bg-white dark:bg-zinc-900 rounded-2xl p-5 sm:p-6 border border-brand-border dark:border-zinc-800 shadow-sm flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-500/5 hover:border-emerald-500/40 dark:hover:border-emerald-500/40 overflow-hidden cursor-pointer"
             >
               {/* Ambient top border glow line */}
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
               <div>
-                <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+                <div className="flex items-center justify-between gap-2 mb-6">
                   {item.websiteUrl ? (
                     <a
                       href={item.websiteUrl}
                       target="_blank"
                       rel="noreferrer"
                       onClick={(e) => e.stopPropagation()}
-                      className="inline-flex items-center gap-2 bg-brand-bg dark:bg-zinc-950 px-3.5 py-1.5 rounded-xl border border-brand-border dark:border-zinc-800 font-bold text-sm sm:text-base text-brand-text dark:text-white transition-all duration-300 hover:border-emerald-500/50 hover:bg-emerald-500/10 hover:text-emerald-400 group/link shrink-0"
+                      className="inline-flex items-center gap-1.5 bg-brand-bg dark:bg-zinc-950 px-2.5 sm:px-3 py-1.5 rounded-xl border border-brand-border dark:border-zinc-800 font-bold text-xs sm:text-sm text-brand-text dark:text-white transition-all duration-300 hover:border-emerald-500/50 hover:bg-emerald-500/10 hover:text-emerald-400 group/link shrink-0 min-w-0"
                       title={`Visit ${item.partnerName} Website`}
                     >
                       {item.logoUrl ? (
-                        <img src={item.logoUrl} alt={item.partnerName} width={20} height={20} loading="lazy" decoding="async" className="w-5 h-5 object-contain rounded shrink-0" />
+                        <img src={item.logoUrl} alt={item.partnerName} width={18} height={18} loading="lazy" decoding="async" className="w-4 h-4 sm:w-4.5 sm:h-4.5 object-contain rounded shrink-0" />
                       ) : null}
-                      <span className="whitespace-nowrap">{item.partnerName}</span>
-                      <ExternalLink className="w-3.5 h-3.5 text-emerald-500 opacity-70 group-hover/link:opacity-100 group-hover/link:translate-x-0.5 transition-all" />
+                      <span className="whitespace-nowrap truncate">{item.partnerName}</span>
+                      <ExternalLink className="w-3 h-3 text-emerald-500 opacity-70 group-hover/link:opacity-100 group-hover/link:translate-x-0.5 transition-all shrink-0" />
                     </a>
                   ) : (
-                    <div className="bg-brand-bg dark:bg-zinc-950 px-3.5 py-1.5 rounded-xl border border-brand-border dark:border-zinc-800 font-bold text-sm sm:text-base text-brand-text dark:text-white flex items-center gap-2 shrink-0">
+                    <div className="bg-brand-bg dark:bg-zinc-950 px-2.5 sm:px-3 py-1.5 rounded-xl border border-brand-border dark:border-zinc-800 font-bold text-xs sm:text-sm text-brand-text dark:text-white flex items-center gap-1.5 shrink-0 min-w-0">
                       {item.logoUrl ? (
-                        <img src={item.logoUrl} alt={item.partnerName} width={20} height={20} loading="lazy" decoding="async" className="w-5 h-5 object-contain rounded shrink-0" />
+                        <img src={item.logoUrl} alt={item.partnerName} width={18} height={18} loading="lazy" decoding="async" className="w-4 h-4 sm:w-4.5 sm:h-4.5 object-contain rounded shrink-0" />
                       ) : null}
-                      <span className="whitespace-nowrap">{item.partnerName}</span>
+                      <span className="whitespace-nowrap truncate">{item.partnerName}</span>
                     </div>
                   )}
 
-                  <span className="text-[11px] sm:text-xs font-bold px-3 py-1 bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 rounded-full border border-emerald-500/20 leading-tight">
+                  <span className="text-[10px] sm:text-xs font-bold px-2.5 py-1 bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 rounded-full border border-emerald-500/20 leading-tight whitespace-nowrap shrink-0">
                     {item.campaignType}
                   </span>
                 </div>

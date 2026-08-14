@@ -116,7 +116,7 @@ VALUES
     'Flashloop AI', 
     'Viral Integration', 
     'Our goal is to demonstrate Flashloop AI\'s next-gen video models (Veo 3, Kling 3.0, Seedance 2.0) and show creators how to turn viral AI animation trends into millions of views.', 
-    'Dancing Script', 
+    'Caveat', 
     'Link Clicks', 
     '1,200+', 
     'Cost Per Click', 

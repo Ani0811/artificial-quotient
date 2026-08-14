@@ -352,6 +352,10 @@ Reduced vertical padding and internal gaps across all homepage sections on mobil
 #### 3. Sponsorship Form Gateway Integration (`src/components/rate-card.tsx`)
 - **Replaced Email Links with Sponsorship Form**: Converted direct `mailto:` links on both the **60s Integration** ("Book Integration") and **Dedicated Video** ("Book Dedicated Video") pricing cards to open the official Google Sponsorship Application Form (`https://forms.gle/4uTUZkEi5o3iqYrs5`) in a new tab.
 
+#### 4. Case Studies Header Single-Row Alignment & Typography Standardization (`src/components/sponsor-results.tsx`)
+- **Single-Row Badge Framing**: Refined card padding and badge layout (`flex items-center justify-between gap-2` with compact pill dimensions) to guarantee partner badges and campaign type tags remain on a single horizontal line across all cards without wrapping.
+- **Unified Handwriting Typography**: Standardized `quoteFont` across all case studies to `Caveat` for 100% visual consistency.
+
 ---
 
 ## 📂 Project Structure
