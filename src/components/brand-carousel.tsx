@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import { Sparkles, ChevronLeft, ChevronRight, ExternalLink, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { BrandItem } from "@/types";
+import { handleSmoothScroll } from "@/lib/scroll";
 
 // Cycling palette for brand cards — assigned by index modulo
 const ACCENT_PALETTE = [
@@ -17,7 +18,7 @@ const ACCENT_PALETTE = [
   "from-sky-400 to-indigo-500",
 ];
 
-import { handleSmoothScroll } from "@/lib/scroll";
+const SETS_COUNT = 6;
 
 interface BrandCarouselProps {
   brands?: BrandItem[];
@@ -26,6 +27,9 @@ interface BrandCarouselProps {
 export default function BrandCarousel({ brands }: BrandCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [items, setItems] = useState<BrandItem[]>(brands ?? []);
+  const [isPaused, setIsPaused] = useState(false);
+  const isNormalizingRef = useRef(false);
+  const autoScrollResumeTimer = useRef<NodeJS.Timeout | null>(null);
 
   // Fetch from API if no brands passed as props
   useEffect(() => {
@@ -43,22 +47,93 @@ export default function BrandCarousel({ brands }: BrandCarouselProps) {
       .catch(() => {});
   }, [brands]);
 
-  const scroll = (direction: "left" | "right") => {
-    if (scrollRef.current) {
-      const scrollAmount = direction === "left" ? -340 : 340;
-      scrollRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+  // Multiply items by SETS_COUNT to ensure an infinite seamless buffer
+  const displayItems = items.length > 0
+    ? Array.from({ length: SETS_COUNT }, () => items).flat()
+    : [];
+
+  // Normalize scroll position seamlessly to prevent hitting edges or running into blank space
+  const normalizeScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el || isNormalizingRef.current || items.length === 0) return;
+
+    const setWidth = el.scrollWidth / SETS_COUNT;
+    if (!setWidth || setWidth <= 0) return;
+
+    // If scrolled past set 4, wrap back by 2 sets
+    if (el.scrollLeft >= setWidth * 4) {
+      isNormalizingRef.current = true;
+      el.scrollLeft -= setWidth * 2;
+      requestAnimationFrame(() => {
+        isNormalizingRef.current = false;
+      });
     }
-  };
+    // If scrolled back before set 1, wrap forward by 2 sets
+    else if (el.scrollLeft <= setWidth * 1) {
+      isNormalizingRef.current = true;
+      el.scrollLeft += setWidth * 2;
+      requestAnimationFrame(() => {
+        isNormalizingRef.current = false;
+      });
+    }
+  }, [items.length]);
 
-  // Repeat items array so marquee always fills full screen width seamlessly without empty gaps
-  const getDisplayItems = (list: BrandItem[]) => {
-    if (list.length === 0) return [];
-    if (list.length >= 10) return [...list, ...list];
-    if (list.length >= 5) return [...list, ...list, ...list];
-    return [...list, ...list, ...list, ...list, ...list, ...list];
-  };
+  // Center scroll position in the middle sets on load
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el || items.length === 0) return;
 
-  const displayItems = getDisplayItems(items);
+    const setWidth = el.scrollWidth / SETS_COUNT;
+    if (setWidth > 0) {
+      el.scrollLeft = setWidth * 2;
+    }
+  }, [items]);
+
+  // Smooth continuous marquee glide via requestAnimationFrame
+  useEffect(() => {
+    if (isPaused || items.length === 0) return;
+
+    let animId: number;
+    let lastTime = performance.now();
+
+    const step = (time: number) => {
+      const delta = (time - lastTime) / 1000;
+      lastTime = time;
+
+      const el = scrollRef.current;
+      if (el && !isPaused) {
+        // Continuous smooth glide at ~35px per second
+        el.scrollLeft += delta * 35;
+        normalizeScroll();
+      }
+      animId = requestAnimationFrame(step);
+    };
+
+    animId = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(animId);
+  }, [isPaused, items.length, normalizeScroll]);
+
+  // Manual scroll with Previous / Next buttons
+  const handleManualScroll = (direction: "left" | "right") => {
+    if (!scrollRef.current) return;
+    setIsPaused(true);
+
+    // Clear any existing resume timer
+    if (autoScrollResumeTimer.current) {
+      clearTimeout(autoScrollResumeTimer.current);
+    }
+
+    const el = scrollRef.current;
+    const scrollAmount = direction === "left" ? -344 : 344;
+    el.scrollBy({ left: scrollAmount, behavior: "smooth" });
+
+    // Normalize immediately and schedule auto-scroll resumption after user stops clicking
+    normalizeScroll();
+    autoScrollResumeTimer.current = setTimeout(() => {
+      normalizeScroll();
+      setIsPaused(false);
+    }, 2500);
+  };
 
   if (items.length === 0) {
     return (
@@ -95,15 +170,15 @@ export default function BrandCarousel({ brands }: BrandCarouselProps) {
           {/* Carousel Controls */}
           <div className="flex items-center justify-center gap-2">
             <button
-              onClick={() => scroll("left")}
-              className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-900 border border-brand-border dark:border-zinc-800 text-brand-text dark:text-white flex items-center justify-center hover:bg-emerald-500 hover:text-white dark:hover:bg-emerald-500 dark:hover:border-emerald-500 transition-all shadow-sm active:scale-95 z-30"
+              onClick={() => handleManualScroll("left")}
+              className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-900 border border-brand-border dark:border-zinc-800 text-brand-text dark:text-white flex items-center justify-center hover:bg-emerald-500 hover:text-white dark:hover:bg-emerald-500 dark:hover:border-emerald-500 transition-all shadow-sm active:scale-95 z-30 cursor-pointer"
               aria-label="Previous Brands"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button
-              onClick={() => scroll("right")}
-              className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-900 border border-brand-border dark:border-zinc-800 text-brand-text dark:text-white flex items-center justify-center hover:bg-emerald-500 hover:text-white dark:hover:bg-emerald-500 dark:hover:border-emerald-500 transition-all shadow-sm active:scale-95 z-30"
+              onClick={() => handleManualScroll("right")}
+              className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-900 border border-brand-border dark:border-zinc-800 text-brand-text dark:text-white flex items-center justify-center hover:bg-emerald-500 hover:text-white dark:hover:bg-emerald-500 dark:hover:border-emerald-500 transition-all shadow-sm active:scale-95 z-30 cursor-pointer"
               aria-label="Next Brands"
             >
               <ChevronRight className="w-5 h-5" />
@@ -111,18 +186,28 @@ export default function BrandCarousel({ brands }: BrandCarouselProps) {
           </div>
         </div>
 
-        {/* Continuous GPU-Accelerated Marquee Carousel */}
-        <div className="relative group/container overflow-hidden rounded-2xl">
+        {/* Seamless Infinite Marquee Carousel */}
+        <div 
+          className="relative group/container overflow-hidden rounded-2xl"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+          onTouchStart={() => setIsPaused(true)}
+          onTouchEnd={() => {
+            if (autoScrollResumeTimer.current) clearTimeout(autoScrollResumeTimer.current);
+            autoScrollResumeTimer.current = setTimeout(() => setIsPaused(false), 2000);
+          }}
+        >
           {/* Left & Right Gradient Mask Fades */}
           <div className="absolute top-0 bottom-0 left-0 w-16 bg-gradient-to-r from-brand-bg dark:from-zinc-950 to-transparent z-20 pointer-events-none"></div>
           <div className="absolute top-0 bottom-0 right-0 w-16 bg-gradient-to-l from-brand-bg dark:from-zinc-950 to-transparent z-20 pointer-events-none"></div>
 
           <div
             ref={scrollRef}
+            onScroll={normalizeScroll}
             className="overflow-x-auto scrollbar-none py-2 select-none"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
-            <div className="animate-marquee-smooth gap-6 py-1">
+            <div className="flex gap-6 py-1 w-max">
               {displayItems.map((brand, idx) => {
                 const accent = ACCENT_PALETTE[idx % ACCENT_PALETTE.length];
                 return (

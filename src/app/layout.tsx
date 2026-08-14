@@ -21,6 +21,7 @@ const caveat = Caveat({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://artificial-quotient.com"),
   title: {
     default: "Artificial Quotient — Premier AI Automation & SaaS Media Hub",
     template: "%s | Artificial Quotient",
@@ -37,7 +38,13 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Artificial Quotient" }],
   icons: {
-    icon: "/logo/logo-removebg-preview.png",
+    icon: [
+      { url: "/logo/logo-removebg-preview.png" },
+      { url: "/logo-removebg-preview.png" },
+      { url: "/logo.png" },
+      { url: "/favicon.ico" }
+    ],
+    shortcut: "/logo/logo-removebg-preview.png",
     apple: "/logo/logo-removebg-preview.png",
   },
   openGraph: {

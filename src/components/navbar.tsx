@@ -63,7 +63,23 @@ function MobileDrawer({
           <div className="flex items-center justify-between pb-4 mb-2 border-b border-white/8">
             <Link href="/" onClick={onClose} className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full overflow-hidden border border-emerald-500/30 flex-shrink-0">
-                <img src="/logo/logo-removebg-preview.png" alt="AQ Logo" width={32} height={32} loading="eager" decoding="async" className="w-full h-full object-cover" />
+                <img 
+                  src="/logo/logo-removebg-preview.png" 
+                  alt="AQ Logo" 
+                  width={32} 
+                  height={32} 
+                  loading="eager" 
+                  decoding="async" 
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    const t = e.currentTarget;
+                    if (t.src.includes("/logo/logo-removebg-preview.png")) {
+                      t.src = "/logo-removebg-preview.png";
+                    } else if (t.src.includes("/logo-removebg-preview.png")) {
+                      t.src = "/logo.png";
+                    }
+                  }}
+                />
               </div>
               <span className="font-heading font-bold text-sm tracking-tight text-white">
                 Artificial<span className="text-emerald-500">Quotient</span>
@@ -149,7 +165,23 @@ export default function Navbar({ isAdmin = false }: NavbarProps) {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group">
             <div className="w-10 h-10 rounded-full overflow-hidden border border-emerald-500/30 flex items-center justify-center bg-brand-dark dark:bg-zinc-800 transition-transform group-hover:scale-105 shadow-sm">
-              <img src="/logo/logo-removebg-preview.png" alt="Artificial Quotient Logo" width={40} height={40} loading="eager" decoding="async" className="w-full h-full object-cover" />
+              <img 
+                src="/logo/logo-removebg-preview.png" 
+                alt="Artificial Quotient Logo" 
+                width={40} 
+                height={40} 
+                loading="eager" 
+                decoding="async" 
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  const t = e.currentTarget;
+                  if (t.src.includes("/logo/logo-removebg-preview.png")) {
+                    t.src = "/logo-removebg-preview.png";
+                  } else if (t.src.includes("/logo-removebg-preview.png")) {
+                    t.src = "/logo.png";
+                  }
+                }}
+              />
             </div>
             <span className="font-heading font-bold text-lg tracking-tight text-brand-text dark:text-white">
               Artificial<span className="text-emerald-500">Quotient</span>

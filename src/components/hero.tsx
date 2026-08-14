@@ -70,6 +70,14 @@ export default function Hero() {
                       loading="eager"
                       decoding="async"
                       className="w-full h-full object-cover"
+                      onError={(e) => {
+                        const t = e.currentTarget;
+                        if (t.src.includes("/logo/logo-removebg-preview.png")) {
+                          t.src = "/logo-removebg-preview.png";
+                        } else if (t.src.includes("/logo-removebg-preview.png")) {
+                          t.src = "/logo.png";
+                        }
+                      }}
                     />
                   </div>
                   <div className="absolute -bottom-1 -right-1 bg-emerald-500 text-zinc-950 p-1 rounded-full border-2 border-zinc-950 shadow-md">
