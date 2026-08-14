@@ -26,10 +26,40 @@ export async function GET() {
 
     const siteConfigData = await getSiteConfig();
     if (siteConfigData) {
-      const sponsorResults = await getSponsorCaseStudies();
-      const whatPerforms = await getWhatPerforms();
-      const tools = await getToolItems();
-      const brandItems = await getBrandItems();
+      let sponsorResults = await getSponsorCaseStudies();
+      let whatPerforms = await getWhatPerforms();
+      let tools = await getToolItems();
+      let brandItems = await getBrandItems();
+
+      // Auto-sync missing/outdated seed data from site-data.json into MySQL database
+      try {
+        const fileContents = await fs.readFile(filePath, "utf8");
+        const fileData = JSON.parse(fileContents);
+
+        if (fileData.sponsorResults && Array.isArray(fileData.sponsorResults)) {
+          const hasAllCases = fileData.sponsorResults.every((fileCs: any) =>
+            sponsorResults.some((dbCs: any) => dbCs.id === fileCs.id && dbCs.partnerName === fileCs.partnerName && (dbCs.logoUrl || "") === (fileCs.logoUrl || ""))
+          ) && sponsorResults.length >= fileData.sponsorResults.length;
+
+          if (!hasAllCases) {
+            await syncSponsorCaseStudies(fileData.sponsorResults);
+            sponsorResults = await getSponsorCaseStudies();
+          }
+        }
+
+        if (fileData.brandItems && Array.isArray(fileData.brandItems)) {
+          const hasAllBrands = fileData.brandItems.every((fileB: any) =>
+            brandItems.some((dbB: any) => dbB.id === fileB.id && (dbB.logoUrl || "") === (fileB.logoUrl || ""))
+          ) && brandItems.length === fileData.brandItems.length;
+
+          if (!hasAllBrands) {
+            await syncBrandItems(fileData.brandItems);
+            brandItems = await getBrandItems();
+          }
+        }
+      } catch {
+        // Ignore file sync check error
+      }
 
       return NextResponse.json(
         {

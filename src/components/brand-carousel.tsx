@@ -50,8 +50,15 @@ export default function BrandCarousel({ brands }: BrandCarouselProps) {
     }
   };
 
-  // Duplicate items for seamless continuous looping
-  const displayItems = items.length > 0 ? [...items, ...items] : [];
+  // Repeat items array so marquee always fills full screen width seamlessly without empty gaps
+  const getDisplayItems = (list: BrandItem[]) => {
+    if (list.length === 0) return [];
+    if (list.length >= 10) return [...list, ...list];
+    if (list.length >= 5) return [...list, ...list, ...list];
+    return [...list, ...list, ...list, ...list, ...list, ...list];
+  };
+
+  const displayItems = getDisplayItems(items);
 
   if (items.length === 0) {
     return (
