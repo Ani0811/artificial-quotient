@@ -39,13 +39,13 @@ export const metadata: Metadata = {
   authors: [{ name: "Artificial Quotient" }],
   icons: {
     icon: [
-      { url: "/logo/logo-removebg-preview.png" },
-      { url: "/logo-removebg-preview.png" },
-      { url: "/logo.png" },
-      { url: "/favicon.ico" }
+      { url: "/logo/logo-removebg-preview.png?v=4", type: "image/png" },
+      { url: "/logo-removebg-preview.png?v=4", type: "image/png" },
+      { url: "/logo.png?v=4", type: "image/png" },
+      { url: "/favicon.ico?v=4", sizes: "any" }
     ],
-    shortcut: "/logo/logo-removebg-preview.png",
-    apple: "/logo/logo-removebg-preview.png",
+    shortcut: "/logo/logo-removebg-preview.png?v=4",
+    apple: "/logo/logo-removebg-preview.png?v=4",
   },
   openGraph: {
     title: "Artificial Quotient — Premier AI Automation & SaaS Media Hub",
@@ -87,6 +87,11 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/logo/logo-removebg-preview.png?v=4" type="image/png" sizes="any" />
+        <link rel="shortcut icon" href="/logo/logo-removebg-preview.png?v=4" type="image/png" />
+        <link rel="apple-touch-icon" href="/logo/logo-removebg-preview.png?v=4" />
+      </head>
       <body suppressHydrationWarning className={`${inter.variable} ${outfit.variable} ${caveat.variable} antialiased bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-emerald-50 font-body flex flex-col min-h-screen transition-colors duration-200 relative`}>
         {/* Global Ambient Background Glows */}
         <div className="fixed top-0 left-1/4 w-[500px] h-[500px] bg-emerald-500/10 dark:bg-emerald-500/15 blur-[120px] rounded-full pointer-events-none z-0"></div>

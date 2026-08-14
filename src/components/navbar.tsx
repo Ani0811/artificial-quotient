@@ -62,7 +62,7 @@ function MobileDrawer({
         <div>
           <div className="flex items-center justify-between pb-4 mb-2 border-b border-white/8">
             <Link href="/" onClick={onClose} className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full overflow-hidden border border-emerald-500/30 flex-shrink-0">
+              <div className="w-8 h-8 rounded-xl overflow-hidden border border-emerald-500/30 flex items-center justify-center bg-brand-dark dark:bg-zinc-800 flex-shrink-0 shadow-sm">
                 <img 
                   src="/logo/logo-removebg-preview.png" 
                   alt="AQ Logo" 
@@ -70,7 +70,7 @@ function MobileDrawer({
                   height={32} 
                   loading="eager" 
                   decoding="async" 
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain p-0.5"
                   onError={(e) => {
                     const t = e.currentTarget;
                     if (t.src.includes("/logo/logo-removebg-preview.png")) {
@@ -164,7 +164,7 @@ export default function Navbar({ isAdmin = false }: NavbarProps) {
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-full overflow-hidden border border-emerald-500/30 flex items-center justify-center bg-brand-dark dark:bg-zinc-800 transition-transform group-hover:scale-105 shadow-sm">
+            <div className="w-10 h-10 rounded-xl overflow-hidden border border-emerald-500/30 flex items-center justify-center bg-brand-dark dark:bg-zinc-800 transition-transform group-hover:scale-105 shadow-sm">
               <img 
                 src="/logo/logo-removebg-preview.png" 
                 alt="Artificial Quotient Logo" 
@@ -172,7 +172,7 @@ export default function Navbar({ isAdmin = false }: NavbarProps) {
                 height={40} 
                 loading="eager" 
                 decoding="async" 
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain p-0.5"
                 onError={(e) => {
                   const t = e.currentTarget;
                   if (t.src.includes("/logo/logo-removebg-preview.png")) {

@@ -68,7 +68,9 @@ export default function RateCard() {
             </ul>
             
             <a 
-              href="mailto:artificialquotient01@gmail.com?subject=Sponsorship%20Inquiry%20-%20Integration"
+              href="https://forms.gle/4uTUZkEi5o3iqYrs5"
+              target="_blank"
+              rel="noreferrer"
               className="block text-center w-full bg-white dark:bg-zinc-900 border border-brand-border dark:border-zinc-700 text-brand-text dark:text-white group-hover:bg-brand-blue group-hover:text-white group-hover:border-brand-blue dark:group-hover:bg-brand-blue hover:bg-brand-blue-hover hover:text-white dark:hover:bg-brand-blue-hover font-bold py-3 rounded-lg transition-all duration-200 shadow-sm"
             >
               Book Integration
@@ -110,7 +112,9 @@ export default function RateCard() {
             </ul>
             
             <a 
-              href="mailto:artificialquotient01@gmail.com?subject=Sponsorship%20Inquiry%20-%20Dedicated%20Video"
+              href="https://forms.gle/4uTUZkEi5o3iqYrs5"
+              target="_blank"
+              rel="noreferrer"
               className="block text-center w-full bg-brand-blue hover:bg-brand-blue-hover text-white font-bold py-3 rounded-lg transition-all duration-200 shadow-sm group-hover:shadow-md group-hover:scale-[1.02]"
             >
               Book Dedicated Video

@@ -25,7 +25,7 @@ export default function Footer() {
                   height={40} 
                   loading="lazy" 
                   decoding="async" 
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain p-0.5"
                   onError={(e) => {
                     const t = e.currentTarget;
                     if (t.src.includes("/logo/logo-removebg-preview.png")) {

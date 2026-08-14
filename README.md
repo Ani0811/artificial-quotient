@@ -343,10 +343,14 @@ Reduced vertical padding and internal gaps across all homepage sections on mobil
 - **Smooth `requestAnimationFrame` Auto-Glide**: Powered the ambient ticker with sub-pixel continuous velocity (~35px/s) with immediate pause on mouse hover / mobile touch and automatic resumption.
 - **Rapid Navigation Resilience**: Users can click Previous (`<`) or Next (`>`) indefinitely at any speed without running out of cards or encountering empty views.
 
-#### 2. Universal Brand Logo Synchronization (`logo-removebg-preview.png`)
-- **Synchronized All Static Logo Targets**: Standardized all static image references and metadata routes to the transparent official brand asset (`logo-removebg-preview.png`), synchronizing `public/logo/`, `public/`, and `src/app/` icons.
+#### 2. Universal Brand Logo Synchronization & Favicon Purge (`logo-removebg-preview.png`)
+- **Purged Legacy Favicon Files**: Removed `public/favicon.svg` (which was serving a legacy 🐼 SVG text element) and `src/app/icon.jpeg` that caused browser tabs to display the old icon.
+- **Navbar Squircle Framing (`object-contain`)**: Updated navbar logo container from circular mask (`rounded-full` + `object-cover`) to a sleek squircle badge (`rounded-xl` + `object-contain p-0.5`), preventing text/edge clipping of the brand logo.
 - **Multi-Layer `onError` Fallback Handlers**: Added automatic path fallback cascades across `Navbar`, `Hero`, `Footer`, `Loading`, and `NotFound` components (`/logo/logo-removebg-preview.png` → `/logo-removebg-preview.png` → `/logo.png`) for 100% reliability on shared hosting environments (GreenGeeks/cPanel).
-- **SEO & Canonical Metadata Configuration**: Configured `metadataBase: new URL("https://artificial-quotient.com")` with explicit OpenGraph, Twitter, and multi-resolution icon definitions in `src/app/layout.tsx`.
+- **SEO & Canonical Metadata Configuration**: Configured `metadataBase: new URL("https://artificial-quotient.com")` with cache-busted icon definitions (`?v=4`) and explicit `<head>` tags in `src/app/layout.tsx`.
+
+#### 3. Sponsorship Form Gateway Integration (`src/components/rate-card.tsx`)
+- **Replaced Email Links with Sponsorship Form**: Converted direct `mailto:` links on both the **60s Integration** ("Book Integration") and **Dedicated Video** ("Book Dedicated Video") pricing cards to open the official Google Sponsorship Application Form (`https://forms.gle/4uTUZkEi5o3iqYrs5`) in a new tab.
 
 ---
 

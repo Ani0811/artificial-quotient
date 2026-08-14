@@ -69,7 +69,7 @@ export default function Hero() {
                       height={56}
                       loading="eager"
                       decoding="async"
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain p-1"
                       onError={(e) => {
                         const t = e.currentTarget;
                         if (t.src.includes("/logo/logo-removebg-preview.png")) {
