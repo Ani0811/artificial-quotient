@@ -311,8 +311,22 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
           {/* Top row: logo + title + actions */}
           <div className="flex items-start sm:items-center justify-between gap-3 flex-wrap">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-500/10 dark:bg-emerald-500/20 rounded-xl overflow-hidden shrink-0 border border-emerald-500/30 flex items-center justify-center shadow-sm">
-                <img src="/logo/logo-removebg-preview.png" alt="Artificial Quotient Logo" className="w-full h-full object-cover" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-500/10 dark:bg-emerald-500/20 rounded-xl overflow-hidden shrink-0 border border-emerald-500/30 flex items-center justify-center shadow-sm p-1">
+                <img 
+                  src="/logo/logo-removebg-preview.png" 
+                  alt="Artificial Quotient Logo" 
+                  className="w-full h-full object-contain"
+                  onError={(e) => {
+                    const t = e.currentTarget;
+                    if (t.src.includes("/logo/logo-removebg-preview.png")) {
+                      t.src = "/logo-removebg-preview.png";
+                    } else if (t.src.includes("/logo-removebg-preview.png")) {
+                      t.src = "/logo.png";
+                    } else if (t.src.includes("/logo.png")) {
+                      t.src = "/logo.jpeg";
+                    }
+                  }}
+                />
               </div>
               <div className="min-w-0">
                 <h1 className="font-heading text-base sm:text-2xl font-bold text-brand-text dark:text-white tracking-tight leading-tight">
