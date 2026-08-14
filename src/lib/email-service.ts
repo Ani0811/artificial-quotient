@@ -7,7 +7,7 @@ export async function send2FACodeEmail(toEmail: string, code: string): Promise<b
   const senderName = "Artificial Quotient Security";
   const subjectText = `Your Artificial Quotient Verification Code`;
 
-  const logoPath = path.join(process.cwd(), "public", "logo", "logo.jpeg");
+  const logoPath = path.join(process.cwd(), "public", "logo", "logo-removebg-preview.png");
   let logoBase64 = "";
   try {
     if (fs.existsSync(logoPath)) {

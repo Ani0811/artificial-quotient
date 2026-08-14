@@ -18,11 +18,9 @@ export default function Home() {
       <div id="stats" className="scroll-mt-16">
         <AudienceSnapshot />
       </div>
-      <div id="case-studies" className="scroll-mt-16">
+      <SponsorResults />
+      <div id="what-performs" className="scroll-mt-16">
         <WhatPerforms />
-      </div>
-      <div id="sponsor-results" className="scroll-mt-16">
-        <SponsorResults />
       </div>
       <div id="sponsor" className="scroll-mt-16">
         <RateCard />

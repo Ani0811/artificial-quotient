@@ -10,7 +10,7 @@ export default function Loading() {
         {/* Animated logo loader */}
         <div className="relative flex items-center justify-center">
           <div className="w-16 h-16 rounded-2xl bg-brand-card dark:bg-[#0c201a] overflow-hidden flex items-center justify-center shadow-lg border border-brand-border dark:border-[#16382e]">
-            <img src="/logo/logo.jpeg" alt="Artificial Quotient Logo" className="w-full h-full object-cover" />
+            <img src="/logo/logo-removebg-preview.png" alt="Artificial Quotient Logo" className="w-full h-full object-cover" />
           </div>
           <div className="absolute -inset-2 rounded-3xl border-2 border-emerald-500/30 border-t-emerald-500 animate-spin [animation-duration:1.2s]"></div>
         </div>

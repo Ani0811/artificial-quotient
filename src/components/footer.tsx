@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import { Mail, Sparkles } from "lucide-react";
+import { handleSmoothScroll } from "@/lib/scroll";
 
 export default function Footer() {
   return (
@@ -15,7 +18,7 @@ export default function Footer() {
           <div className="col-span-2 sm:col-span-3 lg:col-span-2 flex flex-col gap-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl overflow-hidden border border-emerald-500/30 shadow-md flex items-center justify-center bg-brand-dark dark:bg-zinc-800">
-                <img src="/logo/logo.jpeg" alt="Artificial Quotient Logo" width={40} height={40} loading="lazy" decoding="async" className="w-full h-full object-cover" />
+                <img src="/logo/logo-removebg-preview.png" alt="Artificial Quotient Logo" width={40} height={40} loading="lazy" decoding="async" className="w-full h-full object-cover" />
               </div>
               <span className="font-heading font-bold text-xl text-brand-text dark:text-white tracking-tight">
                 Artificial<span className="text-emerald-500">Quotient</span>
@@ -57,13 +60,25 @@ export default function Footer() {
             <h3 className="font-heading font-bold text-sm text-brand-text dark:text-white uppercase tracking-wider">
               Explore
             </h3>
-            <Link href="/#brands" className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors">
+            <Link 
+              href="/#brands" 
+              onClick={(e) => handleSmoothScroll(e, "brands")}
+              className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors"
+            >
               Sponsor Brands
             </Link>
-            <Link href="/#stats" className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors">
+            <Link 
+              href="/#stats" 
+              onClick={(e) => handleSmoothScroll(e, "stats")}
+              className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors"
+            >
               Channel Stats
             </Link>
-            <Link href="/#case-studies" className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors">
+            <Link 
+              href="/#case-studies" 
+              onClick={(e) => handleSmoothScroll(e, "case-studies")}
+              className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors"
+            >
               Case Studies
             </Link>
           </div>

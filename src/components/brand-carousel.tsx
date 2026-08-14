@@ -17,6 +17,8 @@ const ACCENT_PALETTE = [
   "from-sky-400 to-indigo-500",
 ];
 
+import { handleSmoothScroll } from "@/lib/scroll";
+
 interface BrandCarouselProps {
   brands?: BrandItem[];
 }
@@ -155,7 +157,11 @@ export default function BrandCarousel({ brands }: BrandCarouselProps) {
                     </div>
 
                     <div className="flex items-center justify-between pt-4 border-t border-brand-border/60 dark:border-zinc-800/80 text-xs font-bold text-emerald-600 dark:text-emerald-400 group-hover:translate-x-0.5 transition-transform">
-                      <Link href="/#case-studies" className="hover:underline flex items-center gap-1">
+                      <Link 
+                        href="/#case-studies" 
+                        onClick={(e) => handleSmoothScroll(e, "case-studies")}
+                        className="hover:underline flex items-center gap-1"
+                      >
                         <span>View Breakdown</span>
                         <ExternalLink className="w-3.5 h-3.5" />
                       </Link>

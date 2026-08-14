@@ -60,9 +60,21 @@ export default function SponsorResults() {
     load();
   }, []);
 
+  useEffect(() => {
+    if (!loading && typeof window !== "undefined" && window.location.hash === "#case-studies") {
+      const timer = setTimeout(() => {
+        const elem = document.getElementById("case-studies");
+        if (elem) {
+          elem.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 150);
+      return () => clearTimeout(timer);
+    }
+  }, [loading]);
+
   if (loading) {
     return (
-      <section className="w-full py-20 px-4 border-t border-brand-border dark:border-zinc-800 transition-colors">
+      <section id="case-studies" className="w-full py-20 px-4 border-t border-brand-border dark:border-zinc-800 transition-colors scroll-mt-16">
         <div className="max-w-6xl mx-auto space-y-8 animate-pulse">
           <div className="h-8 bg-emerald-500/10 rounded-lg w-56"></div>
           <div className="grid md:grid-cols-2 gap-8">
@@ -83,7 +95,7 @@ export default function SponsorResults() {
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
-      const sectionElem = document.getElementById("case-studies-section");
+      const sectionElem = document.getElementById("case-studies");
       if (sectionElem) {
         sectionElem.scrollIntoView({ behavior: "smooth" });
       }
@@ -97,7 +109,7 @@ export default function SponsorResults() {
   };
 
   return (
-    <section id="case-studies-section" className="w-full py-12 sm:py-16 px-4 border-t border-brand-border dark:border-zinc-800 transition-colors">
+    <section id="case-studies" className="w-full py-12 sm:py-16 px-4 border-t border-brand-border dark:border-zinc-800 transition-colors scroll-mt-16">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col gap-2 mb-12 text-center md:text-left">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-semibold text-xs w-fit mx-auto md:mx-0">

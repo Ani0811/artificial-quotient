@@ -41,7 +41,7 @@ export function generateContactEmailHtml(params: ContactEmailParams): string {
   const initial = name ? name.trim().charAt(0).toUpperCase() : "A";
   const replySubject = encodeURIComponent(`Re: ${subject || inquiryType || "Artificial Quotient Inquiry"}`);
   
-  const logoUrl = "https://artificial-quotient.com/logo.jpeg";
+  const logoUrl = "https://artificial-quotient.com/logo/logo-removebg-preview.png";
 
   return `
 <!DOCTYPE html>

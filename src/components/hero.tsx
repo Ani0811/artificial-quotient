@@ -1,5 +1,8 @@
-import { Play, Users, TrendingUp, Sparkles, CheckCircle2 } from "lucide-react";
+"use client";
+
 import Link from "next/link";
+import { Play, Users, TrendingUp, Sparkles, CheckCircle2 } from "lucide-react";
+import { handleSmoothScroll } from "@/lib/scroll";
 
 export default function Hero() {
   return (
@@ -11,18 +14,18 @@ export default function Hero() {
       <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-6 lg:gap-12 items-center relative z-10">
         
         {/* Left Column: Copy */}
-        <div className="flex flex-col gap-3 sm:gap-5">
+        <div className="flex flex-col gap-3 sm:gap-5 order-2 lg:order-1">
           <div className="inline-flex items-center gap-2 px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-brand-card dark:bg-zinc-900/90 border border-brand-border dark:border-emerald-500/20 shadow-sm w-fit">
             <span className="w-1.5 h-1.5 sm:w-2.5 sm:h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
             <span className="text-[9px] sm:text-xs font-semibold text-brand-muted dark:text-emerald-400 uppercase tracking-wider">Open for Q3 Sponsorships</span>
           </div>
           
           <h1 className="font-heading text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold leading-tight text-brand-text dark:text-white">
-            Automate Your Workflows. <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-500">Scale Your Impact.</span>
+            Actionable AI Workflows <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-500">For Everyone</span>
           </h1>
           
           <p className="text-sm sm:text-base text-brand-muted dark:text-zinc-300 max-w-xl font-body leading-relaxed">
-            Artificial Quotient is the premier destination for automation builders and AI enthusiasts looking to optimize their tech stack. Put your tool in front of an audience that builds.
+            Artificial Quotient turns AI software into step-by-step workflow tutorials for 10K+ subscribers and 55K+ monthly viewers who create with AI tools every day.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-4 pt-1 sm:pt-3">
@@ -34,14 +37,18 @@ export default function Hero() {
             >
               Sponsor the Channel
             </a>
-            <Link href="/#case-studies" className="bg-brand-card dark:bg-zinc-900/90 hover:bg-gray-50 dark:hover:bg-zinc-800 text-brand-text dark:text-white border border-brand-border dark:border-zinc-800 px-5 py-3 sm:px-8 sm:py-4 rounded-xl font-bold text-sm sm:text-lg text-center transition-all shadow-sm hover:-translate-y-0.5">
+            <Link 
+              href="/#case-studies" 
+              onClick={(e) => handleSmoothScroll(e, "case-studies")}
+              className="bg-brand-card dark:bg-zinc-900/90 hover:bg-gray-50 dark:hover:bg-zinc-800 text-brand-text dark:text-white border border-brand-border dark:border-zinc-800 px-5 py-3 sm:px-8 sm:py-4 rounded-xl font-bold text-sm sm:text-lg text-center transition-all shadow-sm hover:-translate-y-0.5"
+            >
               View Case Studies
             </Link>
           </div>
         </div>
 
         {/* Right Column: Premium Floating Snapshot Card */}
-        <div className="relative group">
+        <div className="relative group order-1 lg:order-2">
           {/* Ambient Card Background Glow */}
           <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/30 via-teal-500/20 to-blue-500/30 rounded-3xl blur-xl opacity-75 group-hover:opacity-100 transition duration-500 pointer-events-none"></div>
 
@@ -56,7 +63,7 @@ export default function Hero() {
                 <div className="relative flex-shrink-0">
                   <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-2xl overflow-hidden border-2 border-emerald-500/40 shadow-lg bg-zinc-900 flex items-center justify-center transition-transform group-hover:scale-105">
                     <img 
-                      src="/logo/logo.jpeg" 
+                      src="/logo/logo-removebg-preview.png" 
                       alt="Artificial Quotient Official Logo" 
                       width={56}
                       height={56}

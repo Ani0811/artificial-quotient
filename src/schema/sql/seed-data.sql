@@ -126,9 +126,27 @@ VALUES
     'https://youtu.be/CO59xAteGRM?si=JMLIywF1ydT1MOsJ', 
     'Results:\n• Instant 1,200+ direct clicks with $0.25 effective CPC\n• High conversion rate to Flashloop free trial & paid subscription\n• Featured placement in Tool Vault & MCP ecosystem showcase', 
     'Dedicated Video Integration', 
-    '', 
     'https://www.flashloop.app/',
     1
+  ),
+  (
+    '3',
+    'Marky Agent',
+    'Dedicated Video',
+    'Our goal was to showcase Marky Agent\'s powerful AI workflow automation capabilities, driving high-intent signups and demonstrating real-world productivity use cases.',
+    'Caveat',
+    'Signups Generated',
+    '680+',
+    'Est. ROI Multiplier',
+    '3.8x',
+    'Goal: Show content creators, marketers, and power users how to utilize Marky Agent (Easy-Peasy.AI) to automate complex tasks, analyze documents, and construct custom AI tools effortlessly.',
+    'Videos Made:\n1. Marky Agent Tutorial: Build Custom AI Workflows & Automate Tasks\n2. Tracked Pinned Comment Link & Workflow Blueprint Download',
+    'https://youtu.be/Oo9H89i6SYk?si=flMdazfrd1ef-feb',
+    'Results:\n• 3.8x Return on Investment within 30 days\n• 680+ high-intent platform signups\n• High organic search visibility for AI workflow agents',
+    'Dedicated Video Integration',
+    '',
+    'https://easy-peasy.ai/marky',
+    2
   )
 ON DUPLICATE KEY UPDATE
   partner_name=VALUES(partner_name),

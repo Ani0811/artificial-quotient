@@ -7,6 +7,8 @@ import { usePathname } from "next/navigation";
 import { Lock, Menu, X, Sparkles, BarChart3, PlayCircle, Mail, ChevronRight } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
 
+import { handleSmoothScroll } from "@/lib/scroll";
+
 interface NavbarProps {
   isAdmin?: boolean;
 }
@@ -61,7 +63,7 @@ function MobileDrawer({
           <div className="flex items-center justify-between pb-4 mb-2 border-b border-white/8">
             <Link href="/" onClick={onClose} className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full overflow-hidden border border-emerald-500/30 flex-shrink-0">
-                <img src="/logo/logo.jpeg" alt="AQ Logo" width={32} height={32} loading="eager" decoding="async" className="w-full h-full object-cover" />
+                <img src="/logo/logo-removebg-preview.png" alt="AQ Logo" width={32} height={32} loading="eager" decoding="async" className="w-full h-full object-cover" />
               </div>
               <span className="font-heading font-bold text-sm tracking-tight text-white">
                 Artificial<span className="text-emerald-500">Quotient</span>
@@ -79,15 +81,18 @@ function MobileDrawer({
           {/* Nav Links */}
           <nav className="flex flex-col gap-1 mt-4">
             {[
-              { href: "/#brands", label: "Brands", Icon: Sparkles },
-              { href: "/#stats", label: "Stats", Icon: BarChart3 },
-              { href: "/#case-studies", label: "Case Studies", Icon: PlayCircle },
-              { href: "/contact", label: "Contact", Icon: Mail },
-            ].map(({ href, label, Icon }) => (
+              { href: "/#brands", targetId: "brands", label: "Brands", Icon: Sparkles },
+              { href: "/#stats", targetId: "stats", label: "Stats", Icon: BarChart3 },
+              { href: "/#case-studies", targetId: "case-studies", label: "Case Studies", Icon: PlayCircle },
+              { href: "/contact", targetId: null, label: "Contact", Icon: Mail },
+            ].map(({ href, targetId, label, Icon }) => (
               <Link
                 key={href}
                 href={href}
-                onClick={onClose}
+                onClick={(e) => {
+                  onClose();
+                  if (targetId) handleSmoothScroll(e, targetId);
+                }}
                 className="flex items-center justify-between p-3 rounded-xl text-zinc-300 hover:text-white hover:bg-white/5 transition-colors group"
               >
                 <div className="flex items-center gap-3">
@@ -144,7 +149,7 @@ export default function Navbar({ isAdmin = false }: NavbarProps) {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group">
             <div className="w-10 h-10 rounded-full overflow-hidden border border-emerald-500/30 flex items-center justify-center bg-brand-dark dark:bg-zinc-800 transition-transform group-hover:scale-105 shadow-sm">
-              <img src="/logo/logo.jpeg" alt="Artificial Quotient Logo" width={40} height={40} loading="eager" decoding="async" className="w-full h-full object-cover" />
+              <img src="/logo/logo-removebg-preview.png" alt="Artificial Quotient Logo" width={40} height={40} loading="eager" decoding="async" className="w-full h-full object-cover" />
             </div>
             <span className="font-heading font-bold text-lg tracking-tight text-brand-text dark:text-white">
               Artificial<span className="text-emerald-500">Quotient</span>
@@ -153,13 +158,25 @@ export default function Navbar({ isAdmin = false }: NavbarProps) {
 
           {/* Nav Links (Desktop) */}
           <div className="hidden lg:flex items-center gap-8">
-            <Link href="/#brands" className="text-sm font-medium text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white transition-colors">
+            <Link 
+              href="/#brands" 
+              onClick={(e) => handleSmoothScroll(e, "brands")}
+              className="text-sm font-medium text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white transition-colors"
+            >
               Brands
             </Link>
-            <Link href="/#stats" className="text-sm font-medium text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white transition-colors">
+            <Link 
+              href="/#stats" 
+              onClick={(e) => handleSmoothScroll(e, "stats")}
+              className="text-sm font-medium text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white transition-colors"
+            >
               Stats
             </Link>
-            <Link href="/#case-studies" className="text-sm font-medium text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white transition-colors">
+            <Link 
+              href="/#case-studies" 
+              onClick={(e) => handleSmoothScroll(e, "case-studies")}
+              className="text-sm font-medium text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white transition-colors"
+            >
               Case Studies
             </Link>
             <Link href="/contact" className="text-sm font-medium text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white transition-colors">

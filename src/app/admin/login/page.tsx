@@ -144,7 +144,7 @@ function AdminLoginForm() {
         <div className="flex flex-col items-center justify-center mb-8">
           {/* Logo container */}
           <div className="w-16 h-16 rounded-2xl overflow-hidden bg-brand-dark dark:bg-zinc-800 flex items-center justify-center transition-transform hover:rotate-6 duration-300 shadow-md border border-brand-border dark:border-zinc-700/50 mb-4 p-0.5">
-            <img src="/logo/logo.jpeg" alt="Artificial Quotient Logo" className="w-full h-full object-cover rounded-xl" />
+            <img src="/logo/logo-removebg-preview.png" alt="Artificial Quotient Logo" className="w-full h-full object-cover rounded-xl" />
           </div>
           
           <h1 className="font-heading text-2xl font-bold text-brand-text dark:text-white flex items-center gap-1.5">

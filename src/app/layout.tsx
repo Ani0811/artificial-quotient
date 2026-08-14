@@ -37,8 +37,8 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Artificial Quotient" }],
   icons: {
-    icon: "/logo/logo.jpeg",
-    apple: "/logo/logo.jpeg",
+    icon: "/logo/logo-removebg-preview.png",
+    apple: "/logo/logo-removebg-preview.png",
   },
   openGraph: {
     title: "Artificial Quotient — Premier AI Automation & SaaS Media Hub",
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     siteName: "Artificial Quotient",
     images: [
       {
-        url: "/logo/logo.jpeg",
+        url: "/logo/logo-removebg-preview.png",
         width: 800,
         height: 800,
         alt: "Artificial Quotient",
@@ -61,7 +61,7 @@ export const metadata: Metadata = {
     title: "Artificial Quotient — Premier AI Automation & SaaS Media Hub",
     description:
       "Connecting high-performing SaaS brands with 10,000+ AI builders through dedicated video breakdowns and workflow integrations.",
-    images: ["/logo/logo.jpeg"],
+    images: ["/logo/logo-removebg-preview.png"],
   },
 };
 
