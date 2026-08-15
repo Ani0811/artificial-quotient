@@ -478,7 +478,23 @@ Artificial Quotient is configured for deployment on **GreenGeeks Hosting** using
    ```
 5. Click **Run NPM Install** in cPanel Node.js App Manager.
 
-### 4. Launch Application
-1. Click **RESTART APPLICATION** in cPanel Setup Node.js App.
-2. Open your website domain and verify live operation and `/admin/login`.
+### 4. Configure Google Analytics & Search Console (SEO)
+1. Add the following additional environment variables to your `.env` file in the application root on cPanel:
+   ```env
+   NEXT_PUBLIC_SITE_URL=https://artificial-quotient.com
+   NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+   NEXT_PUBLIC_GTM_ID=GTM-XXXXXXX
+   NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=your_google_search_console_verification_code
+   ```
+2. Save the `.env` file.
+
+### 5. Launch & Restart Application
+1. Click **RESTART APPLICATION** in cPanel Setup Node.js App (or touch `tmp/restart.txt`).
+2. Open your website domain and verify live operation.
+3. Validate crawler endpoints in your browser:
+   - Sitemap: `https://yourdomain.com/sitemap.xml`
+   - Crawl Rules: `https://yourdomain.com/robots.txt`
+   - Manifest: `https://yourdomain.com/manifest.webmanifest`
+4. Register `https://yourdomain.com` in Google Search Console and submit `sitemap.xml`.
+
 

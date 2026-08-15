@@ -1,0 +1,45 @@
+import { MetadataRoute } from "next";
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://artificial-quotient.com";
+  const lastModified = new Date();
+
+  return [
+    {
+      url: `${siteUrl}`,
+      lastModified,
+      changeFrequency: "daily",
+      priority: 1.0,
+    },
+    {
+      url: `${siteUrl}/tools`,
+      lastModified,
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
+      url: `${siteUrl}/contact`,
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${siteUrl}/sponsor`,
+      lastModified,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    {
+      url: `${siteUrl}/stats`,
+      lastModified,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    {
+      url: `${siteUrl}/case-studies`,
+      lastModified,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+  ];
+}
