@@ -22,11 +22,22 @@ function getYoutubeId(url?: string) {
   return (match && match[2].length === 11) ? match[2] : null;
 }
 
-export default function WhatPerforms() {
+interface WhatPerformsProps {
+  whatPerforms?: PerformItem[];
+  isLoading?: boolean;
+}
+
+export default function WhatPerforms({ whatPerforms, isLoading }: WhatPerformsProps) {
   const [items, setItems] = useState<PerformItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (whatPerforms !== undefined) {
+      setItems(whatPerforms || []);
+      setLoading(isLoading !== undefined ? isLoading : false);
+      return;
+    }
+
     async function load() {
       try {
         const res = await fetch("/api/admin/data");
@@ -43,7 +54,7 @@ export default function WhatPerforms() {
       }
     }
     load();
-  }, []);
+  }, [whatPerforms, isLoading]);
 
   if (loading) {
     return (

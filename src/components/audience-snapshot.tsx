@@ -130,11 +130,22 @@ const getInterestWidth = (level: string) => {
   }
 };
 
-export default function AudienceSnapshot() {
+interface AudienceSnapshotProps {
+  siteData?: any;
+  isLoading?: boolean;
+}
+
+export default function AudienceSnapshot({ siteData, isLoading }: AudienceSnapshotProps) {
   const [data, setData] = useState<SiteData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (siteData !== undefined) {
+      setData(siteData);
+      setLoading(isLoading !== undefined ? isLoading : false);
+      return;
+    }
+
     async function load() {
       try {
         const res = await fetch("/api/admin/data");
@@ -149,7 +160,7 @@ export default function AudienceSnapshot() {
       }
     }
     load();
-  }, []);
+  }, [siteData, isLoading]);
 
   if (loading || !data) {
     return (

@@ -33,8 +33,8 @@ export default function BrandCarousel({ brands }: BrandCarouselProps) {
 
   // Fetch from API if no brands passed as props
   useEffect(() => {
-    if (brands && brands.length > 0) {
-      setItems(brands);
+    if (brands !== undefined) {
+      setItems(brands || []);
       return;
     }
     fetch("/api/admin/data")

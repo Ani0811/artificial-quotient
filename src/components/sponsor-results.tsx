@@ -31,7 +31,12 @@ function getYoutubeEmbedUrl(url?: string) {
   return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}` : null;
 }
 
-export default function SponsorResults() {
+interface SponsorResultsProps {
+  sponsorResults?: SponsorResult[];
+  isLoading?: boolean;
+}
+
+export default function SponsorResults({ sponsorResults, isLoading }: SponsorResultsProps) {
   const [results, setResults] = useState<SponsorResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCaseStudy, setSelectedCaseStudy] = useState<SponsorResult | null>(null);
@@ -39,6 +44,17 @@ export default function SponsorResults() {
   const ITEMS_PER_PAGE = 3;
 
   useEffect(() => {
+    if (sponsorResults !== undefined) {
+      setResults(sponsorResults || []);
+      setLoading(isLoading !== undefined ? isLoading : false);
+      if (sponsorResults) {
+        sponsorResults.forEach((item: SponsorResult) => {
+          if (item.quoteFont) loadGoogleFont(item.quoteFont);
+        });
+      }
+      return;
+    }
+
     async function load() {
       try {
         const res = await fetch("/api/admin/data");
@@ -58,7 +74,7 @@ export default function SponsorResults() {
       }
     }
     load();
-  }, []);
+  }, [sponsorResults, isLoading]);
 
   useEffect(() => {
     if (!loading && typeof window !== "undefined" && window.location.hash === "#case-studies") {

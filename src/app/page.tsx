@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Hero from "@/components/hero";
 import BrandCarousel from "@/components/brand-carousel";
 import AudienceSnapshot from "@/components/audience-snapshot";
@@ -9,21 +10,45 @@ import RateCard from "@/components/rate-card";
 import CampaignWorkflow from "@/components/campaign-workflow";
 
 export default function Home() {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    async function load() {
+      try {
+        const res = await fetch("/api/admin/data");
+        if (res.ok && active) {
+          const json = await res.json();
+          setData(json);
+        }
+      } catch {
+        // Fallback
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+    load();
+    return () => {
+      active = false;
+    };
+  }, []);
+
   return (
     <div className="flex flex-col">
       <Hero />
       <div id="brands" className="scroll-mt-16">
-        <BrandCarousel />
+        <BrandCarousel brands={data?.brandItems} />
       </div>
       <div id="stats" className="scroll-mt-16">
-        <AudienceSnapshot />
+        <AudienceSnapshot siteData={data} isLoading={loading} />
       </div>
-      <SponsorResults />
+      <SponsorResults sponsorResults={data?.sponsorResults} isLoading={loading} />
       <div id="what-performs" className="scroll-mt-16">
-        <WhatPerforms />
+        <WhatPerforms whatPerforms={data?.whatPerforms} isLoading={loading} />
       </div>
       <div id="sponsor" className="scroll-mt-16">
-        <RateCard />
+        <RateCard ratesData={data?.rates} />
       </div>
       <div id="workflow" className="scroll-mt-16">
         <CampaignWorkflow />

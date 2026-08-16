@@ -3,13 +3,25 @@
 import { CheckCircle2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
-export default function RateCard() {
+interface RateCardProps {
+  ratesData?: {
+    dedicatedRate: string;
+    integrationRate: string;
+  };
+}
+
+export default function RateCard({ ratesData }: RateCardProps) {
   const [rates, setRates] = useState({
     dedicatedRate: "",
     integrationRate: "",
   });
 
   useEffect(() => {
+    if (ratesData !== undefined) {
+      setRates(ratesData || { dedicatedRate: "", integrationRate: "" });
+      return;
+    }
+
     async function load() {
       try {
         const res = await fetch("/api/admin/data");
@@ -22,7 +34,7 @@ export default function RateCard() {
       }
     }
     load();
-  }, []);
+  }, [ratesData]);
 
   return (
     <section className="w-full py-12 sm:py-16 px-4 border-t border-brand-border dark:border-zinc-800 transition-colors">
