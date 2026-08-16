@@ -6,14 +6,17 @@ Artificial Quotient is a high-converting, modern web application and sponsorship
 
 ## 🛠️ Tech Stack & Architecture
 
-- **Framework**: Next.js 15 (App Router, Turbopack)
-- **Language**: TypeScript & React 19
-- **Styling**: TailwindCSS 3.4 & Vanilla CSS Design System
-- **Icons**: Lucide React & Custom Vector SVG Flags
-- **Theming**: `next-themes` (Full Light & Dark Mode Support)
-- **Authentication**: HTTP-Only Cookie Session (`admin_session`) & In-Memory Recovery Manager
-- **Media Handling**: Server-Side Local Storage (`/public/uploads`) via API Upload Routes
-- **Data Persistence**: Direct MySQL (`AQ-Dashboard`) & Knex.js Query Builder with JSON Fallback & Automated Snapshots (`src/data/backups/`)
+- **Framework**: Next.js 15 / 16 (App Router, Turbopack, React 19)
+- **Language & Types**: TypeScript 5
+- **Styling**: TailwindCSS 3.4 & Vanilla CSS Design System (Custom Radial Matrix Glows)
+- **Icons & Graphics**: Lucide React & Custom Vector SVG Country Flags
+- **Theming**: `next-themes` (Light & Dark Mode Support with hydration suppression)
+- **Authentication**: HTTP-Only Secure Cookie Session (`admin_session`, `admin_user_id`), Role-Based Access Control (Super Admin, Editor, Viewer), and in-house 2-Step Verification (2FA / OTP)
+- **Email Delivery**: Brevo v3 Transactional REST API with multi-key pool failover & Nodemailer SMTP fallback with inline CID logo branding
+- **Data Persistence**: Direct MySQL (`AQ-Dashboard`) & Knex.js Query Builder with JSON Fallback & Automated Rolling Snapshots (`src/data/backups/`)
+- **SEO & Analytics**: Google Analytics 4 (GA4), Google Tag Manager (GTM), Google Search Console verification, dynamic XML Sitemap (`/sitemap.xml`), Robots.txt (`/robots.txt`), Web App Manifest (`/manifest.webmanifest`), and Schema.org JSON-LD Structured Data
+- **Asset Resilience**: Multi-tier cascading fallback `<LogoImage />` with automatic cache-busting, smooth opacity transitions, and SVG fallback
+- **Security & Networking**: Global CORS configuration with explicit HTTP OPTIONS preflight handlers, and in-memory sliding-window rate limiting
 
 ---
 
@@ -354,7 +357,57 @@ Reduced vertical padding and internal gaps across all homepage sections on mobil
 
 #### 4. Case Studies Header Single-Row Alignment & Typography Standardization (`src/components/sponsor-results.tsx`)
 - **Single-Row Badge Framing**: Refined card padding and badge layout (`flex items-center justify-between gap-2` with compact pill dimensions) to guarantee partner badges and campaign type tags remain on a single horizontal line across all cards without wrapping.
-- **Unified Handwriting Typography**: Standardized `quoteFont` across all case studies to `Caveat` for 100% visual consistency.
+- ---
+
+### 📅 Day 11 — Google-Ready SEO & Analytics Engine, Search Console, Dynamic Sitemap, Structured Data & Metadata Architecture
+
+#### 1. Dynamic XML Sitemap & Robots.txt (`src/app/sitemap.ts`, `src/app/robots.ts`)
+- **Dynamic XML Sitemap**: Built automatic sitemap generation serving `/sitemap.xml` with all core public routes (`/`, `/sponsor`, `/stats`, `/case-studies`, `/tools`, `/contact`), dynamic `lastModified` timestamps, `changeFrequency` configurations, and weighted priorities.
+- **Search Engine Crawl Directives**: Implemented `/robots.txt` directives explicitly permitting Googlebot and web crawlers to index public pages while disallowing private administrative and API routes (`/admin`, `/api`). Added absolute sitemap references.
+
+#### 2. JSON-LD Structured Data & Rich Snippets Engine (`src/components/seo/structured-data.tsx`)
+- **Schema.org Structured Data**: Injected semantic JSON-LD structured data into the `<head>` to qualify for Google rich search results:
+  - `Organization` & `WebSite` Schema (Brand identity, search queries, channel links, official logo).
+  - `ContactPage` Schema for `/contact`.
+  - `ItemList` / `SoftwareApplication` Schema for the AI Tool Vault (`/tools`).
+  - `FAQPage` & `OfferCatalog` Schema for campaign packages and sponsorship rates (`/sponsor`).
+
+#### 3. Google Analytics 4 (GA4) & Google Tag Manager (GTM) (`src/components/analytics/google-analytics.tsx`)
+- **Non-Blocking Analytics**: Created a lightweight analytics integration supporting `NEXT_PUBLIC_GA_MEASUREMENT_ID` and `NEXT_PUBLIC_GTM_ID` using Next.js `Script` with `strategy="afterInteractive"` to prevent any impact on Core Web Vitals (LCP/FID).
+- **Client Route Tracking**: Implemented automated pageview tracking across Next.js App Router client-side navigation.
+
+#### 4. Subpage Metadata Layouts & Social Share Cards
+- **Dedicated Subpage Layouts**: Added metadata layout wrappers with custom `title`, `description`, `canonical`, and OpenGraph/Twitter social cards for:
+  - `/contact` (`src/app/contact/layout.tsx`)
+  - `/tools` (`src/app/tools/layout.tsx`)
+  - `/admin` (`src/app/admin/layout.tsx` with `robots: { index: false, follow: false }`)
+- **Web App Manifest (`src/app/manifest.ts`)**: Built dynamic web app manifest (`/manifest.webmanifest`) specifying app icons, standalone display mode, background/theme colors (`#061612`), and PWA compatibility.
+
+---
+
+### 📅 Day 12 — Single-Source Homepage Data Prefetching, Global CORS Preflight Engine, Resilient `<LogoImage />` & Multi-Key Brevo Failover Pool
+
+#### 1. Single-Source-of-Truth Homepage Data Prefetching (`src/app/page.tsx`)
+- **Reduced DB Connection Contention**: Eliminated 5 separate client-side API requests from child components (`AudienceSnapshot`, `WhatPerforms`, `SponsorResults`, `RateCard`, `BrandCarousel`).
+- **Cascaded Data Architecture**: Configured `src/app/page.tsx` as a single-source server component that fetches site-wide MySQL/JSON data once and distributes it directly down to all child sections, eliminating connection contention, race conditions, and waterfall loading on the homepage.
+
+#### 2. Global CORS & HTTP OPTIONS Preflight Handlers
+- **Global Next.js CORS Headers (`next.config.mjs`)**: Configured standard CORS headers across API routes (`Access-Control-Allow-Origin: *`, `Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS`, `Access-Control-Allow-Headers: Content-Type, Authorization`).
+- **OPTIONS Preflight Handlers**: Added explicit `OPTIONS` preflight request handlers to `/api/admin/data` and `/api/contact` returning `204 No Content` to allow seamless cross-origin and headless tool integration without browser preflight errors.
+
+#### 3. Smooth Scroll-To-Top Navbar Logo & URL Hash Normalization (`src/components/navbar.tsx`)
+- **Smooth Scroll-To-Top**: Clicking the Navbar brand logo while on the home page executes `window.scrollTo({ top: 0, behavior: "smooth" })`.
+- **URL Hash Normalization**: Cleans lingering hash tags (e.g. `#brands`, `#workflow`) from the browser address bar via `window.history.pushState` without triggering hard page reloads.
+
+#### 4. Resilient Multi-Layer `<LogoImage />` Component (`src/components/ui/logo-image.tsx`)
+- **Universal Logo Component**: Extracted a dedicated, reusable `<LogoImage />` component integrated across all core application areas (`Navbar`, `Hero`, `Footer`, `Loading`, `NotFound`, `Admin Dashboard`, `Admin Login`).
+- **4-Tier Fallback Cascade**: Automatically cascades across multiple potential asset locations (`/logo/logo-removebg-preview.png` → `/logo-removebg-preview.png` → `/logo/logo.png` → `/logo.png`) and gracefully falls back to an inline branded SVG icon if all image files fail.
+- **Cache-Busting & Zero Layout Shift**: Appends version queries to prevent stale browser caching and applies smooth opacity transitions on asset load.
+
+#### 5. Multi-Key Brevo API Key Failover Pool & SMTP Resilience (`src/lib/email-service.ts`, `src/app/api/contact/route.ts`)
+- **Multi-Key Failover Pool**: `BREVO_API_KEY` now accepts comma-, semicolon-, or newline-separated lists of Brevo API keys.
+- **Automated Failover Rotation**: If an API key encounters quota limits, rate limits, or auth errors (`401`, `403`, `429`, `500`), the email engine instantly rotates to the next available key and retries delivery.
+- **Nodemailer SMTP Fallback**: If all Brevo API keys are exhausted, the system automatically falls back to Nodemailer SMTP, guaranteeing 100% deliverability for 2FA OTP codes and sponsorship inquiries.
 
 ---
 
@@ -375,45 +428,81 @@ artificial-quotient/
 ├── src/
 │   ├── app/
 │   │   ├── admin/
-│   │   │   ├── login/         # Admin Login & Password Reset Page
-│   │   │   ├── loading.tsx    # Dedicated Admin Loading Screen
-│   │   │   ├── DashboardClient.tsx # Theme-Corrected Admin Management Portal
-│   │   │   └── page.tsx       # Server Auth Check
+│   │   │   ├── login/                # Admin Login & 2FA Page
+│   │   │   ├── layout.tsx            # Admin Metadata Layout (noindex)
+│   │   │   ├── loading.tsx           # Dedicated Admin Loading Screen
+│   │   │   ├── DashboardClient.tsx   # Theme-Corrected Admin Management Portal
+│   │   │   └── page.tsx              # Server Auth & RBAC Check
 │   │   ├── api/
-│   │   │   ├── admin/data/    # JSON Data Read, Save & Auto Backup API
-│   │   │   ├── admin/upload/  # Media File Upload API
-│   │   │   └── auth/          # Login, Logout & Reset Password APIs
-│   │   ├── sponsor/           # Sponsorship Subpage
-│   │   ├── stats/             # Audience Stats Subpage
-│   │   ├── case-studies/      # Case Studies Subpage
-│   │   ├── tools/             # Tool Vault
-│   │   ├── globals.css        # Global CSS & Dot Matrix Utilities
-│   │   ├── layout.tsx         # Root Layout, Async Cookies & Ambient Glows
-│   │   ├── loading.tsx        # Global Loading Screen & Animated Logo
-│   │   └── page.tsx           # Home Landing Page with Lazy Loading
+│   │   │   ├── admin/data/           # JSON Data Read, Save & Auto Backup API (with CORS & OPTIONS)
+│   │   │   ├── admin/upload/         # Media File Upload API
+│   │   │   ├── admin/users/          # Admin User Management API
+│   │   │   ├── auth/                 # Login, Logout, 2FA & Reset Password APIs
+│   │   │   └── contact/              # Sponsorship Inquiry API (Brevo/SMTP with CORS & OPTIONS)
+│   │   ├── contact/
+│   │   │   ├── layout.tsx            # Contact Page SEO Layout & Meta
+│   │   │   └── page.tsx              # Contact & Sponsorship Booking Page
+│   │   ├── sponsor/                  # Sponsorship Subpage
+│   │   ├── stats/                    # Audience Stats Subpage
+│   │   ├── case-studies/             # Case Studies Subpage
+│   │   ├── tools/
+│   │   │   ├── layout.tsx            # AI Tools SEO Layout & Meta
+│   │   │   └── page.tsx              # AI Tool Vault Directory
+│   │   ├── globals.css               # Global CSS & Dot Matrix Utilities
+│   │   ├── layout.tsx                # Root Layout, Analytics, Async Cookies & Ambient Glows
+│   │   ├── loading.tsx               # Global Loading Screen & Animated Logo
+│   │   ├── manifest.ts               # Dynamic Web App Manifest (/manifest.webmanifest)
+│   │   ├── not-found.tsx             # 404 Error Page
+│   │   ├── page.tsx                  # Home Landing Page with Single-Source Prefetching
+│   │   ├── robots.ts                 # Dynamic Crawler Rules (/robots.txt)
+│   │   └── sitemap.ts                # Dynamic XML Sitemap Generator (/sitemap.xml)
 │   ├── components/
-│   │   ├── audience-snapshot.tsx # Dynamic Stats & Interactive SVG Flags
-│   │   ├── brand-carousel.tsx # Dynamic Brands & Partner Marquee Carousel
-│   │   ├── campaign-workflow.tsx
-│   │   ├── footer.tsx         # Modern Glassmorphic Footer
-│   │   ├── hero.tsx           # Redesigned Glassmorphic YouTube Channel Card
-│   │   ├── navbar.tsx         # Dynamic Lock Gateway Header with Official Logo
-│   │   ├── rate-card.tsx
-│   │   ├── skeletons.tsx      # Skeleton Loaders for Homepage Sections
-│   │   ├── sponsor-results.tsx # Dynamic Sponsor Case Study Cards
-│   │   ├── what-performs.tsx  # Dynamic Video Performance Cards with YouTube Links
-│   │   └── theme-provider.tsx
+│   │   ├── analytics/
+│   │   │   └── google-analytics.tsx  # GA4 & Google Tag Manager Integration
+│   │   ├── seo/
+│   │   │   └── structured-data.tsx   # Schema.org JSON-LD Structured Data Components
+│   │   ├── ui/
+│   │   │   └── logo-image.tsx        # Multi-Tier Fallback Cascading Brand Logo Component
+│   │   ├── audience-snapshot.tsx     # Dynamic Stats & Interactive SVG Flags
+│   │   ├── brand-carousel.tsx        # Glitch-Free Infinite Wrap Brands & Partner Marquee
+│   │   ├── campaign-workflow.tsx     # 5-Step Campaign Process Cards
+│   │   ├── footer.tsx                # Modern Multi-Column Glassmorphic Footer
+│   │   ├── hero.tsx                  # Redesigned Glassmorphic YouTube Channel Card
+│   │   ├── navbar.tsx                # Dynamic Lock Gateway Header with Smooth Scroll-To-Top
+│   │   ├── rate-card.tsx             # Pricing Packages with Google Form Gateway Links
+│   │   ├── scroll-to-top.tsx         # Floating Glassmorphic Scroll Restoration Button
+│   │   ├── skeletons.tsx             # Skeleton Loaders for Homepage Sections
+│   │   ├── sponsor-results.tsx       # Dynamic Sponsor Case Study Cards with Pagination & Modal
+│   │   ├── theme-provider.tsx        # Dark/Light Theme Context
+│   │   ├── theme-toggle.tsx          # Interactive Theme Switch Button
+│   │   └── what-performs.tsx         # Dynamic Video Performance Cards with YouTube Links
 │   ├── data/
-│   │   ├── site-data.json     # Primary Dynamic Data Store
-│   │   └── backups/           # Server-Side Rolling Snapshot Backups
-│   ├── types/
-│   │   └── index.ts           # Centralized TypeScript Type Definitions
+│   │   ├── admin-users.json          # Seed Admin User Accounts
+│   │   ├── site-data.json            # Primary Dynamic Site Data Store
+│   │   └── backups/                  # Server-Side Rolling Snapshot Backups
+│   ├── emails/
+│   │   └── contact-template.ts       # Responsive Dark Email Template with Inline CID Logo
 │   ├── lib/
-│   │   ├── auth-store.ts      # Admin Password & Role State Manager
-│   │   ├── db.ts              # Knex MySQL Database Connection Initializer
-│       ├── email-service.ts   # Nodemailer Service & Inline CID Logo Template
-│       ├── otp-store.ts       # 2FA One-Time Password In-Memory Store
-│       └── rate-limit.ts      # Zero-Dependency In-Memory Sliding-Window Rate Limiter
+│   │   ├── auth-store.ts             # Admin Password & Role State Manager
+│   │   ├── db.ts                     # Knex MySQL Connection Pool & Schema Initializer
+│   │   ├── email-service.ts          # Brevo Multi-Key Pool & Nodemailer SMTP Engine
+│   │   ├── otp-store.ts              # In-Memory 2FA One-Time Password Store
+│   │   ├── rate-limit.ts             # Sliding-Window Rate Limiter (IP Protection)
+│   │   ├── schema.sql                # Complete MySQL Database Schema Script
+│   │   └── scroll.ts                 # Smooth Scroll Utilities
+│   ├── schema/                       # Knex.js Domain Models & Auto-Table Initializers
+│   │   ├── admin-users.ts
+│   │   ├── brand-items.ts
+│   │   ├── index.ts
+│   │   ├── site-config.ts
+│   │   ├── sponsor-case-studies.ts
+│   │   ├── tool-items.ts
+│   │   ├── what-performs.ts
+│   │   ├── raw/                      # Parameterized SQL Helper Modules
+│   │   └── sql/                      # Standalone Reference SQL Scripts & Seed Data
+│   └── types/
+│       └── index.ts                  # Centralized TypeScript Type Definitions
+├── next.config.mjs
 ├── tailwind.config.ts
 ├── README.md
 └── package.json
@@ -428,13 +517,49 @@ artificial-quotient/
    npm install
    ```
 
-2. **Run Development Server**:
+2. **Configure Environment Variables (`.env`)**:
+   Create a `.env` file in the project root:
+   ```env
+   NODE_ENV=development
+   PORT=3000
+
+   # Database Settings (Direct MySQL)
+   MYSQL_HOST=localhost
+   MYSQL_PORT=3306
+   MYSQL_USER=root
+   MYSQL_PASSWORD=your_mysql_password
+   MYSQL_DATABASE=AQ-Dashboard
+
+   # Security & Authentication
+   ADMIN_MASTER_KEY=AQ-RESET-2026
+
+   # Transactional Email (Brevo Multi-Key Pool & Fallback)
+   # You can supply a single key or a comma-separated list of keys for automatic failover
+   BREVO_API_KEY=xkeysib-key1,xkeysib-key2
+   CONTACT_RECEIVER_EMAIL=anirudha.basuthakur@gmail.com
+
+   # SMTP Fallback Settings (Optional)
+   SMTP_HOST=mail.yourdomain.com
+   SMTP_PORT=465
+   SMTP_USER=contact@yourdomain.com
+   SMTP_PASS=your_smtp_password
+   SMTP_SECURE=true
+   SMTP_FROM="Artificial Quotient <contact@yourdomain.com>"
+
+   # SEO & Analytics
+   NEXT_PUBLIC_SITE_URL=http://localhost:3000
+   NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+   NEXT_PUBLIC_GTM_ID=GTM-XXXXXXX
+   NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=your_google_site_verification_token
+   ```
+
+3. **Run Development Server**:
    ```bash
    npm run dev
    ```
    Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-3. **Production Build**:
+4. **Production Build & Verification**:
    ```bash
    npm run build
    npm run start
@@ -444,13 +569,13 @@ artificial-quotient/
 
 ## 🌐 Deploying to GreenGeeks (cPanel Hosting)
 
-Artificial Quotient is configured for deployment on **GreenGeeks Hosting** using **Setup Node.js App** (Phusion Passenger) and **MySQL Databases**.
+Artificial Quotient is optimized for deployment on **GreenGeeks Hosting** using **Setup Node.js App** (Phusion Passenger) and **MySQL Databases**.
 
 ### 1. Database Setup in GreenGeeks cPanel
 1. Log into your **GreenGeeks cPanel**.
 2. Open **Databases** → **MySQL® Database Wizard**.
 3. Create a database (e.g., `cpaneluser_aq_dashboard`) and database user (e.g., `cpaneluser_aq_user`) with a strong password. Assign **ALL PRIVILEGES**.
-4. *(Optional)* Open **phpMyAdmin**, select your database, and import `src/lib/schema.sql`. (Or let the app auto-initialize schema on first start).
+4. *(Optional)* Open **phpMyAdmin**, select your database, and import `src/lib/schema.sql`. (The application will also auto-initialize schemas and seed missing data on first launch).
 
 ### 2. Configure "Setup Node.js App" in cPanel
 1. In cPanel, navigate to **Software** → **Setup Node.js App**.
@@ -458,43 +583,44 @@ Artificial Quotient is configured for deployment on **GreenGeeks Hosting** using
    - **Node.js version**: `20.x`
    - **Application mode**: `Production`
    - **Application root**: `artificial-quotient`
-   - **Application URL**: Choose your domain / subdomain
+   - **Application URL**: Choose your primary domain or subdomain
    - **Application startup file**: `server.js`
 3. Click **CREATE**.
 
 ### 3. Upload Code & Environment Configuration
-1. Run local build: `npm run build`.
-2. Zip the root directory (excluding `node_modules` and `.git`).
-3. Upload and extract zip into the `artificial-quotient` folder via cPanel **File Manager**.
-4. Create `.env` in the `artificial-quotient` folder using `.env.production.example`:
+1. Run local production build:
+   ```bash
+   npm run build
+   ```
+2. Create an archive of the project root directory (excluding `node_modules` and `.git`).
+3. Upload and extract the archive into the `artificial-quotient` folder via cPanel **File Manager**.
+4. Create `.env` in the `artificial-quotient` folder:
    ```env
    NODE_ENV=production
    MYSQL_HOST=localhost
    MYSQL_PORT=3306
    MYSQL_USER=cpaneluser_aq_user
-   MYSQL_PASSWORD=your_password
+   MYSQL_PASSWORD=your_database_password
    MYSQL_DATABASE=cpaneluser_aq_dashboard
    ADMIN_MASTER_KEY=AQ-RESET-2026
-   ```
-5. Click **Run NPM Install** in cPanel Node.js App Manager.
 
-### 4. Configure Google Analytics & Search Console (SEO)
-1. Add the following additional environment variables to your `.env` file in the application root on cPanel:
-   ```env
+   # Transactional Email (Brevo Multi-Key Failover Pool)
+   BREVO_API_KEY=xkeysib-production-key1,xkeysib-production-key2
+   CONTACT_RECEIVER_EMAIL=anirudha.basuthakur@gmail.com
+
+   # Production SEO & Analytics
    NEXT_PUBLIC_SITE_URL=https://artificial-quotient.com
    NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
    NEXT_PUBLIC_GTM_ID=GTM-XXXXXXX
    NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=your_google_search_console_verification_code
    ```
-2. Save the `.env` file.
+5. Click **Run NPM Install** in cPanel Node.js App Manager.
 
-### 5. Launch & Restart Application
-1. Click **RESTART APPLICATION** in cPanel Setup Node.js App (or touch `tmp/restart.txt`).
-2. Open your website domain and verify live operation.
+### 4. Launch & Restart Application
+1. Click **RESTART APPLICATION** in cPanel Setup Node.js App (or create/touch `tmp/restart.txt`).
+2. Open your live website domain and verify operation.
 3. Validate crawler endpoints in your browser:
-   - Sitemap: `https://yourdomain.com/sitemap.xml`
-   - Crawl Rules: `https://yourdomain.com/robots.txt`
-   - Manifest: `https://yourdomain.com/manifest.webmanifest`
-4. Register `https://yourdomain.com` in Google Search Console and submit `sitemap.xml`.
-
-
+   - Sitemap: `https://artificial-quotient.com/sitemap.xml`
+   - Crawl Directives: `https://artificial-quotient.com/robots.txt`
+   - Web App Manifest: `https://artificial-quotient.com/manifest.webmanifest`
+4. Register `https://artificial-quotient.com` in **Google Search Console** and submit `sitemap.xml`.
