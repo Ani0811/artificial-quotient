@@ -4,6 +4,7 @@ import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Lock, ArrowLeft, ShieldAlert, KeyRound, Eye, EyeOff, RotateCcw, CheckCircle2, Mail, UserX } from "lucide-react";
 import Link from "next/link";
+import { LogoImage } from "@/components/ui/logo-image";
 
 function AdminLoginForm() {
   const searchParams = useSearchParams();
@@ -144,20 +145,9 @@ function AdminLoginForm() {
         <div className="flex flex-col items-center justify-center mb-8">
           {/* Logo container */}
           <div className="w-16 h-16 rounded-2xl overflow-hidden bg-brand-dark dark:bg-zinc-800 flex items-center justify-center transition-transform hover:rotate-6 duration-300 shadow-md border border-brand-border dark:border-zinc-700/50 mb-4 p-1">
-            <img
-              src="/logo/logo-removebg-preview.png"
+            <LogoImage
               alt="Artificial Quotient Logo"
               className="w-full h-full object-contain"
-              onError={(e) => {
-                const t = e.currentTarget;
-                if (t.src.includes("/logo/logo-removebg-preview.png")) {
-                  t.src = "/logo-removebg-preview.png";
-                } else if (t.src.includes("/logo-removebg-preview.png")) {
-                  t.src = "/logo.png";
-                } else if (t.src.includes("/logo.png")) {
-                  t.src = "/logo.jpeg";
-                }
-              }}
             />
           </div>
 

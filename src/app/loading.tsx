@@ -1,5 +1,7 @@
 "use client";
 
+import { LogoImage } from "@/components/ui/logo-image";
+
 export default function Loading() {
   return (
     <div className="w-full min-h-[calc(100vh-8rem)] flex flex-col items-center justify-center p-6 relative overflow-hidden bg-brand-bg dark:bg-[#061612] transition-colors duration-200">
@@ -10,18 +12,9 @@ export default function Loading() {
         {/* Animated logo loader */}
         <div className="relative flex items-center justify-center">
           <div className="w-16 h-16 rounded-2xl bg-brand-card dark:bg-[#0c201a] overflow-hidden flex items-center justify-center shadow-lg border border-brand-border dark:border-[#16382e]">
-            <img 
-              src="/logo/logo-removebg-preview.png" 
+            <LogoImage 
               alt="Artificial Quotient Logo" 
               className="w-full h-full object-cover"
-              onError={(e) => {
-                const t = e.currentTarget;
-                if (t.src.includes("/logo/logo-removebg-preview.png")) {
-                  t.src = "/logo-removebg-preview.png";
-                } else if (t.src.includes("/logo-removebg-preview.png")) {
-                  t.src = "/logo.png";
-                }
-              }}
             />
           </div>
           <div className="absolute -inset-2 rounded-3xl border-2 border-emerald-500/30 border-t-emerald-500 animate-spin [animation-duration:1.2s]"></div>

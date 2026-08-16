@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Lock, Menu, X, Sparkles, BarChart3, PlayCircle, Mail, ChevronRight } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
+import { LogoImage } from "@/components/ui/logo-image";
 
 import { handleSmoothScroll } from "@/lib/scroll";
 
@@ -74,22 +75,11 @@ function MobileDrawer({
               className="flex items-center gap-2"
             >
               <div className="w-8 h-8 rounded-xl overflow-hidden border border-emerald-500/30 flex items-center justify-center bg-brand-dark dark:bg-zinc-800 flex-shrink-0 shadow-sm">
-                <img 
-                  src="/logo/logo-removebg-preview.png" 
+                <LogoImage 
                   alt="AQ Logo" 
                   width={32} 
                   height={32} 
-                  loading="eager" 
-                  decoding="async" 
                   className="w-full h-full object-contain p-0.5"
-                  onError={(e) => {
-                    const t = e.currentTarget;
-                    if (t.src.includes("/logo/logo-removebg-preview.png")) {
-                      t.src = "/logo-removebg-preview.png";
-                    } else if (t.src.includes("/logo-removebg-preview.png")) {
-                      t.src = "/logo.png";
-                    }
-                  }}
                 />
               </div>
               <span className="font-heading font-bold text-sm tracking-tight text-white">
@@ -186,22 +176,11 @@ export default function Navbar({ isAdmin = false }: NavbarProps) {
             className="flex items-center gap-3 group"
           >
             <div className="w-10 h-10 rounded-xl overflow-hidden border border-emerald-500/30 flex items-center justify-center bg-brand-dark dark:bg-zinc-800 transition-transform group-hover:scale-105 shadow-sm">
-              <img 
-                src="/logo/logo-removebg-preview.png" 
+              <LogoImage 
                 alt="Artificial Quotient Logo" 
                 width={40} 
                 height={40} 
-                loading="eager" 
-                decoding="async" 
                 className="w-full h-full object-contain p-0.5"
-                onError={(e) => {
-                  const t = e.currentTarget;
-                  if (t.src.includes("/logo/logo-removebg-preview.png")) {
-                    t.src = "/logo-removebg-preview.png";
-                  } else if (t.src.includes("/logo-removebg-preview.png")) {
-                    t.src = "/logo.png";
-                  }
-                }}
               />
             </div>
             <span className="font-heading font-bold text-lg tracking-tight text-brand-text dark:text-white">

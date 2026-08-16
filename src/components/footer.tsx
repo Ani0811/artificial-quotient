@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Mail, Sparkles } from "lucide-react";
 import { handleSmoothScroll } from "@/lib/scroll";
+import { LogoImage } from "@/components/ui/logo-image";
 
 export default function Footer() {
   return (
@@ -18,22 +19,11 @@ export default function Footer() {
           <div className="col-span-2 sm:col-span-3 lg:col-span-2 flex flex-col gap-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl overflow-hidden border border-emerald-500/30 shadow-md flex items-center justify-center bg-brand-dark dark:bg-zinc-800">
-                <img 
-                  src="/logo/logo-removebg-preview.png" 
+                <LogoImage 
                   alt="Artificial Quotient Logo" 
                   width={40} 
                   height={40} 
-                  loading="lazy" 
-                  decoding="async" 
                   className="w-full h-full object-contain p-0.5"
-                  onError={(e) => {
-                    const t = e.currentTarget;
-                    if (t.src.includes("/logo/logo-removebg-preview.png")) {
-                      t.src = "/logo-removebg-preview.png";
-                    } else if (t.src.includes("/logo-removebg-preview.png")) {
-                      t.src = "/logo.png";
-                    }
-                  }}
                 />
               </div>
               <span className="font-heading font-bold text-xl text-brand-text dark:text-white tracking-tight">

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "NEXT_PRIVATE_WORKERS=1 next build --webpack",
+    "build": "npx cross-env NEXT_PRIVATE_WORKERS=1 next build --webpack",
     "start": "next start",
     "lint": "next lint"
   },

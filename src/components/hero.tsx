@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Play, Users, TrendingUp, Sparkles, CheckCircle2 } from "lucide-react";
 import { handleSmoothScroll } from "@/lib/scroll";
+import { LogoImage } from "@/components/ui/logo-image";
 
 export default function Hero() {
   return (
@@ -62,22 +63,11 @@ export default function Hero() {
               <div className="flex items-center gap-3 min-w-0">
                 <div className="relative flex-shrink-0">
                   <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-2xl overflow-hidden border-2 border-emerald-500/40 shadow-lg bg-zinc-900 flex items-center justify-center transition-transform group-hover:scale-105">
-                    <img 
-                      src="/logo/logo-removebg-preview.png" 
+                    <LogoImage 
                       alt="Artificial Quotient Official Logo" 
                       width={56}
                       height={56}
-                      loading="eager"
-                      decoding="async"
                       className="w-full h-full object-contain p-1"
-                      onError={(e) => {
-                        const t = e.currentTarget;
-                        if (t.src.includes("/logo/logo-removebg-preview.png")) {
-                          t.src = "/logo-removebg-preview.png";
-                        } else if (t.src.includes("/logo-removebg-preview.png")) {
-                          t.src = "/logo.png";
-                        }
-                      }}
                     />
                   </div>
                   <div className="absolute -bottom-1 -right-1 bg-emerald-500 text-zinc-950 p-1 rounded-full border-2 border-zinc-950 shadow-md">
