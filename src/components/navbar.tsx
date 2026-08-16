@@ -61,7 +61,18 @@ function MobileDrawer({
         {/* Header */}
         <div>
           <div className="flex items-center justify-between pb-4 mb-2 border-b border-white/8">
-            <Link href="/" onClick={onClose} className="flex items-center gap-2">
+            <Link
+              href="/"
+              onClick={(e) => {
+                onClose();
+                if (window.location.pathname === "/") {
+                  e.preventDefault();
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                  window.history.pushState(null, "", "/");
+                }
+              }}
+              className="flex items-center gap-2"
+            >
               <div className="w-8 h-8 rounded-xl overflow-hidden border border-emerald-500/30 flex items-center justify-center bg-brand-dark dark:bg-zinc-800 flex-shrink-0 shadow-sm">
                 <img 
                   src="/logo/logo-removebg-preview.png" 
@@ -163,7 +174,17 @@ export default function Navbar({ isAdmin = false }: NavbarProps) {
       <nav className="w-full border-b border-brand-border dark:border-zinc-800 bg-brand-bg/80 dark:bg-zinc-950/80 backdrop-blur-md sticky top-0 z-50 transition-colors">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 group">
+          <Link
+            href="/"
+            onClick={(e) => {
+              if (window.location.pathname === "/") {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                window.history.pushState(null, "", "/");
+              }
+            }}
+            className="flex items-center gap-3 group"
+          >
             <div className="w-10 h-10 rounded-xl overflow-hidden border border-emerald-500/30 flex items-center justify-center bg-brand-dark dark:bg-zinc-800 transition-transform group-hover:scale-105 shadow-sm">
               <img 
                 src="/logo/logo-removebg-preview.png" 
