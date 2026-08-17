@@ -1,8 +1,8 @@
 "use client";
 
-import { BarChart3, Globe, ShieldCheck, Users, Eye, TrendingUp, PlaySquare, Heart, ShoppingBag } from "lucide-react";
+import { BarChart3, Globe, ShieldCheck, Users, Eye, TrendingUp, PlaySquare } from "lucide-react";
 import { useEffect, useState } from "react";
-import { InterestItem, CountryItem, ChannelGeographies } from "@/types";
+import { CountryItem, ChannelGeographies } from "@/types";
 
 // Country SVG Flags
 const USAFlag = () => (
@@ -197,19 +197,7 @@ interface SiteData {
     desc?: string;
     badges?: string[];
   };
-  audienceInterests?: InterestItem[];
-  shoppingInterests?: InterestItem[];
 }
-
-const getInterestWidth = (level: string) => {
-  switch (level) {
-    case "Low": return "25%";
-    case "Medium": return "50%";
-    case "High": return "75%";
-    case "Very High": return "95%";
-    default: return "50%";
-  }
-};
 
 interface AudienceSnapshotProps {
   siteData?: any;
@@ -262,8 +250,6 @@ export default function AudienceSnapshot({ siteData, isLoading }: AudienceSnapsh
   const demographics = data.demographics || {};
   const geographies = data.geographies || {};
   const buyerIntent = data.buyerIntent || {};
-  const audienceInterests = data.audienceInterests || [];
-  const shoppingInterests = data.shoppingInterests || [];
 
   const channelMetrics = [
     {
@@ -476,57 +462,6 @@ export default function AudienceSnapshot({ siteData, isLoading }: AudienceSnapsh
                   </span>
                 ))}
               </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Interests Grid */}
-        <div className="grid md:grid-cols-2 gap-6 sm:gap-8 mt-6 sm:mt-8">
-          {/* Audience Interests Card */}
-          <div className="group relative bg-brand-bg dark:bg-[#0c201a] rounded-2xl p-5 sm:p-8 border border-brand-border dark:border-[#16382e] shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-500/5 hover:border-emerald-500/40 dark:hover:border-emerald-500/40 overflow-hidden">
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
-            <h3 className="font-heading text-xl font-bold mb-6 flex items-center gap-2 text-brand-text dark:text-white">
-              <Heart className="w-5 h-5 text-emerald-500 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6" />
-              Audience Interests
-            </h3>
-            
-            <div className="space-y-5">
-              {audienceInterests.map((interest, idx) => (
-                <div key={idx} className="transition-transform duration-300 group-hover:translate-x-0.5">
-                  <div className="flex justify-between text-sm font-medium mb-1.5 text-brand-text dark:text-zinc-300">
-                    <span>{interest.name}</span>
-                    <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">{interest.level}</span>
-                  </div>
-                  <div className="w-full bg-gray-200 dark:bg-[#16382e] rounded-full h-2 overflow-hidden">
-                    <div className="bg-emerald-500 h-2 rounded-full transition-all duration-1000 ease-out group-hover:shadow-[0_0_10px_rgba(16,185,129,0.5)]" style={{ width: getInterestWidth(interest.level) }}></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Shopping Interests Card */}
-          <div className="group relative bg-brand-bg dark:bg-[#0c201a] rounded-2xl p-5 sm:p-8 border border-brand-border dark:border-[#16382e] shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-500/5 hover:border-emerald-500/40 dark:hover:border-emerald-500/40 overflow-hidden">
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
-            <h3 className="font-heading text-xl font-bold mb-6 flex items-center gap-2 text-brand-text dark:text-white">
-              <ShoppingBag className="w-5 h-5 text-emerald-500 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6" />
-              Shopping Interests
-            </h3>
-            
-            <div className="space-y-5">
-              {shoppingInterests.map((interest, idx) => (
-                <div key={idx} className="transition-transform duration-300 group-hover:translate-x-0.5">
-                  <div className="flex justify-between text-sm font-medium mb-1.5 text-brand-text dark:text-zinc-300">
-                    <span>{interest.name}</span>
-                    <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">{interest.level}</span>
-                  </div>
-                  <div className="w-full bg-gray-200 dark:bg-[#16382e] rounded-full h-2 overflow-hidden">
-                    <div className="bg-emerald-500 h-2 rounded-full transition-all duration-1000 ease-out group-hover:shadow-[0_0_10px_rgba(16,185,129,0.5)]" style={{ width: getInterestWidth(interest.level) }}></div>
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         </div>
