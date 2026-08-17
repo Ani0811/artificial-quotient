@@ -167,54 +167,54 @@ ON DUPLICATE KEY UPDATE
 
 
 -- 4. Seed What Performs Cards
-INSERT INTO what_performs_cards
+INSERT INTO what_performs_cards 
   (id, title, views, clicks, type, thumb, thumbnail, yt_url, highlight, display_order)
 VALUES 
   (
     '1', 
-    'Revid.AI', 
-    '18.2k', 
-    '1.4k+', 
+    'How To Keep Character Voices Consistent In Grok AI Lip Sync! (FREE & Easy)', 
+    '5.2k', 
+    '480+', 
     'Dedicated Video', 
-    '🎬', 
-    '/uploads/1786181270594_Screenshot__1_.png', 
-    'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 
-    'High Conversion', 
+    '🎤', 
+    'https://img.youtube.com/vi/N9iVUmvgWzU/maxresdefault.jpg', 
+    'https://youtu.be/N9iVUmvgWzU?si=7bJlv0ZR7b7GWO7K', 
+    'Voice Consistency', 
     0
   ),
   (
     '2', 
-    'Flashloop AI', 
-    '12.5k', 
-    '950+', 
-    'Integration', 
-    '⚡', 
-    '', 
-    'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 
-    'Solid ROI', 
+    'How To Create MOVIE Recap/Explanation Videos Without Copyright (ChatGPT + Elevenlabs!)', 
+    '11.0k', 
+    '1.2k+', 
+    'Dedicated Video', 
+    '🎬', 
+    'https://img.youtube.com/vi/6d0sSSXXTqA/maxresdefault.jpg', 
+    'https://youtu.be/6d0sSSXXTqA?si=Fvd5scO2V-8dZN_h', 
+    'Viral Reach', 
     1
   ),
   (
     '3', 
-    'Marky Agent', 
-    '21.1k', 
-    '2.1k+', 
+    'Poppy AI Review (+ Free Alternative): Best YouTube Script Generator In 2026?', 
+    '5.4k', 
+    '620+', 
     'Dedicated Video', 
     '🤖', 
-    '', 
-    'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 
-    'Viral Reach', 
+    'https://img.youtube.com/vi/B80v1fzWYxE/maxresdefault.jpg', 
+    'https://youtu.be/B80v1fzWYxE?si=fF7FZvXdjRgvV1J0', 
+    'SaaS Review', 
     2
   )
-ON DUPLICATE KEY UPDATE
-  title=VALUES(title),
-  views=VALUES(views),
-  clicks=VALUES(clicks),
-  type=VALUES(type),
-  thumb=VALUES(thumb),
-  thumbnail=VALUES(thumbnail),
-  yt_url=VALUES(yt_url),
-  highlight=VALUES(highlight),
+ON DUPLICATE KEY UPDATE 
+  title=VALUES(title), 
+  views=VALUES(views), 
+  clicks=VALUES(clicks), 
+  type=VALUES(type), 
+  thumb=VALUES(thumb), 
+  thumbnail=VALUES(thumbnail), 
+  yt_url=VALUES(yt_url), 
+  highlight=VALUES(highlight), 
   display_order=VALUES(display_order);
 
 

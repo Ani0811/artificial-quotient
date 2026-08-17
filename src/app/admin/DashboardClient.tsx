@@ -11,6 +11,7 @@ import { ToolItem, PerformItem, SponsorItem, AdminUser, BrandItem, InterestItem,
 import { LogoImage } from "@/components/ui/logo-image";
 import { CountryFlag, parseGeographies } from "@/components/audience-snapshot";
 import { ALL_COUNTRIES } from "@/lib/countries";
+import defaultSiteData from "@/data/site-data.json";
 
 function getYoutubeId(url?: string) {
   if (!url) return null;
@@ -128,7 +129,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
   useEffect(() => {
     async function loadData() {
       try {
-        const res = await fetch("/api/admin/data");
+        const res = await fetch("/api/admin/data", { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
           if (data.stats) setStatsForm(data.stats);
@@ -1470,25 +1471,39 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                   {/* TAB 3: WHAT PERFORMS */}
                   {activeTab === "what-performs" && (
                     <div className="space-y-6">
-                      <div className="flex justify-between items-center">
+                      <div className="flex justify-between items-center flex-wrap gap-2">
                         <h3 className="font-heading font-bold text-sm text-brand-text dark:text-emerald-400 uppercase tracking-wider">What Performs Cards</h3>
-                        <button
-                          type="button"
-                          onClick={() => setWhatPerforms([...whatPerforms, {
-                            id: Date.now().toString(),
-                            title: "New Highlight",
-                            views: "10.0k",
-                            clicks: "800+",
-                            type: "Integration",
-                            thumb: "🚀",
-                            highlight: "High CTR",
-                            ytUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-                            thumbnail: ""
-                          }])}
-                          className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold px-4 py-2 rounded-xl text-xs sm:text-sm flex items-center gap-1.5 border border-emerald-500/30"
-                        >
-                          <Plus className="w-4 h-4" /> Add Perform Card
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            disabled={isViewer}
+                            onClick={() => {
+                              if (window.confirm("Reset What Performs cards to the latest 3 default seeded videos?")) {
+                                setWhatPerforms(defaultSiteData.whatPerforms as any);
+                              }
+                            }}
+                            className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 border border-emerald-500/30 disabled:opacity-50 transition-colors cursor-pointer"
+                          >
+                            <Sparkles className="w-3.5 h-3.5" /> Reset to Default Seed Data
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setWhatPerforms([...whatPerforms, {
+                              id: Date.now().toString(),
+                              title: "New Highlight",
+                              views: "10.0k",
+                              clicks: "800+",
+                              type: "Dedicated Video",
+                              thumb: "🚀",
+                              highlight: "High CTR",
+                              ytUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                              thumbnail: ""
+                            }])}
+                            className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold px-3.5 py-2 rounded-xl text-xs flex items-center gap-1.5 border border-emerald-500/30 transition-colors cursor-pointer"
+                          >
+                            <Plus className="w-4 h-4" /> Add Perform Card
+                          </button>
+                        </div>
                       </div>
 
                       <div className="space-y-5">

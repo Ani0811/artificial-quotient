@@ -29,6 +29,8 @@ export async function OPTIONS() {
   });
 }
 
+import defaultSiteData from "@/data/site-data.json";
+
 const filePath = path.join(process.cwd(), "src", "data", "site-data.json");
 const backupDir = path.join(process.cwd(), "src", "data", "backups");
 
@@ -45,10 +47,15 @@ export async function GET() {
       let tools = await getToolItems();
       let brandItems = await getBrandItems();
 
-      // Auto-sync missing/outdated seed data from site-data.json into MySQL database
+      // Auto-sync missing/outdated seed data into MySQL database
       try {
-        const fileContents = await fs.readFile(filePath, "utf8");
-        const fileData = JSON.parse(fileContents);
+        let fileData: any = defaultSiteData;
+        try {
+          const fileContents = await fs.readFile(filePath, "utf8");
+          fileData = JSON.parse(fileContents);
+        } catch {
+          // Use bundled defaultSiteData
+        }
 
         if (fileData.sponsorResults && Array.isArray(fileData.sponsorResults)) {
           const hasAllCases = fileData.sponsorResults.every((fileCs: any) =>
@@ -73,11 +80,14 @@ export async function GET() {
         }
 
         if (fileData.whatPerforms && Array.isArray(fileData.whatPerforms)) {
+          const hasOutdatedData = whatPerforms.some(
+            (dbW: any) => dbW.title === "Revid.AI" || dbW.title === "Flashloop AI" || dbW.title === "Marky Agent"
+          );
           const hasAllWhatPerforms = fileData.whatPerforms.every((fileW: any) =>
             whatPerforms.some((dbW: any) => dbW.id === fileW.id && dbW.title === fileW.title && dbW.views === fileW.views)
           ) && whatPerforms.length === fileData.whatPerforms.length;
 
-          if (!hasAllWhatPerforms) {
+          if (hasOutdatedData || !hasAllWhatPerforms) {
             await syncWhatPerforms(fileData.whatPerforms);
             whatPerforms = await getWhatPerforms();
           }
@@ -93,8 +103,8 @@ export async function GET() {
             tools = await getToolItems();
           }
         }
-      } catch {
-        // Ignore file sync check error
+      } catch (e) {
+        console.warn("Auto-sync warning in GET /api/admin/data:", e);
       }
 
       return NextResponse.json(
@@ -114,25 +124,33 @@ export async function GET() {
         },
         {
           headers: {
-            "Cache-Control": "public, s-maxage=30, stale-while-revalidate=59",
+            "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0",
           },
         }
       );
     }
 
-    // Fallback to JSON if database rows empty
-    const fileContents = await fs.readFile(filePath, "utf8");
-    const data = JSON.parse(fileContents);
-    return NextResponse.json({ ...data, dbStatus: "Fallback JSON Data Store" });
+    // Fallback to bundled JSON if database rows empty
+    return NextResponse.json(
+      { ...defaultSiteData, dbStatus: "Fallback JSON Data Store" },
+      {
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+        },
+      }
+    );
   } catch (err: any) {
     console.error("GET site data error:", err);
-    try {
-      const fileContents = await fs.readFile(filePath, "utf8");
-      const data = JSON.parse(fileContents);
-      return NextResponse.json({ ...data, dbStatus: "Fallback JSON (MySQL Error)" });
-    } catch {
-      return NextResponse.json({ error: "Failed to read site data" }, { status: 500 });
-    }
+    return NextResponse.json(
+      { ...defaultSiteData, dbStatus: "Fallback Bundled JSON (MySQL Error)" },
+      {
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+        },
+      }
+    );
   }
 }
 

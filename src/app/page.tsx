@@ -17,7 +17,7 @@ export default function Home() {
     let active = true;
     async function load() {
       try {
-        const res = await fetch("/api/admin/data");
+        const res = await fetch("/api/admin/data", { cache: "no-store" });
         if (res.ok && active) {
           const json = await res.json();
           setData(json);

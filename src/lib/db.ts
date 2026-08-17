@@ -90,6 +90,9 @@ import {
   upsertSiteConfig
 } from "@/schema";
 
+import defaultSiteData from "@/data/site-data.json";
+import defaultAdminUsers from "@/data/admin-users.json";
+
 export async function initDatabase(): Promise<boolean> {
   if (isInitialized) return true;
 
@@ -113,6 +116,19 @@ export async function initDatabase(): Promise<boolean> {
     const configCount = await k("site_config").count("id as cnt").first();
     if (Number(configCount?.cnt || 0) === 0) {
       await seedSiteDataFromJSON();
+    } else {
+      // Check if what_performs_cards table has outdated placeholder entries (e.g. Revid.AI, Flashloop AI, Marky Agent)
+      try {
+        const currentWp = await k("what_performs_cards").select("id", "title");
+        const hasOutdatedData = currentWp.some(
+          (r: any) => r.title === "Revid.AI" || r.title === "Flashloop AI" || r.title === "Marky Agent"
+        );
+        if (hasOutdatedData || currentWp.length === 0) {
+          await syncWhatPerforms(defaultSiteData.whatPerforms);
+        }
+      } catch (err) {
+        console.warn("Could not check/sync what_performs_cards:", err);
+      }
     }
 
     isInitialized = true;
@@ -126,9 +142,15 @@ export async function initDatabase(): Promise<boolean> {
 export async function seedAdminUsersFromJSON(): Promise<void> {
   try {
     const k = getKnex();
-    const filePath = path.join(process.cwd(), "src", "data", "admin-users.json");
-    const jsonStr = await fs.readFile(filePath, "utf8");
-    const users = JSON.parse(jsonStr);
+    let users = defaultAdminUsers;
+
+    try {
+      const filePath = path.join(process.cwd(), "src", "data", "admin-users.json");
+      const jsonStr = await fs.readFile(filePath, "utf8");
+      users = JSON.parse(jsonStr);
+    } catch {
+      // Use imported defaultAdminUsers
+    }
 
     for (const u of users) {
       await k("admin_users")
@@ -153,9 +175,14 @@ export async function seedAdminUsersFromJSON(): Promise<void> {
 
 export async function seedSiteDataFromJSON(): Promise<void> {
   try {
-    const filePath = path.join(process.cwd(), "src", "data", "site-data.json");
-    const jsonStr = await fs.readFile(filePath, "utf8");
-    const data = JSON.parse(jsonStr);
+    let data: any = defaultSiteData;
+    try {
+      const filePath = path.join(process.cwd(), "src", "data", "site-data.json");
+      const jsonStr = await fs.readFile(filePath, "utf8");
+      data = JSON.parse(jsonStr);
+    } catch {
+      // Use imported defaultSiteData
+    }
 
     await upsertSiteConfig(data);
     await syncSponsorCaseStudies(data.sponsorResults);
