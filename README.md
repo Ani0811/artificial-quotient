@@ -472,6 +472,29 @@ Reduced vertical padding and internal gaps across all homepage sections on mobil
 
 ---
 
+### 📅 Day 15 — Case Study Video Thumbnails, Audience Interests Cleanup & Responsive Non-Automatic What Performs Slideshow
+
+#### 1. Sponsor Case Study Video Thumbnails & Admin Media Controls (`src/components/sponsor-results.tsx`, `src/app/admin/DashboardClient.tsx`)
+- **Card Media Banners**: Added 16:9 video thumbnail banners with subtle borders and centered play button overlays to all Sponsor Case Study cards.
+- **YouTube Thumbnail Auto-Resolution**: Automatically extracts high-definition thumbnails from YouTube URLs (`ytUrl`) with fallback support.
+- **Admin Upsert & Removal Controls**: Added inline thumbnail upload buttons, custom URL input, "Remove Thumbnail" button (`thumbnailUrl: "none"`), and "Auto-fetch from YouTube" restore options in the Admin Dashboard Case Studies tab.
+- **Database Schema Persistence**: Added `thumbnail_url VARCHAR(255)` column handling to `sponsor_case_studies` Knex schema, raw SQL migrations (`src/schema/sponsor-case-studies.ts`), and JSON backup handlers.
+
+#### 2. Complete Removal of Audience & Shopping Interests
+- Removed the Audience Interests and Shopping Interests cards from the public site (`src/components/audience-snapshot.tsx`) and admin portal form controls (`src/app/admin/DashboardClient.tsx`).
+
+#### 3. Responsive Non-Automatic What Performs Slideshow (`src/components/what-performs.tsx`, `src/data/site-data.json`)
+- **New Video Dataset**: Replaced previous data with 3 new channel videos:
+  1. *How To Keep Character Voices Consistent In Grok AI Lip Sync! (FREE & Easy)*
+  2. *How To Create MOVIE Recap/Explanation Videos Without Copyright (ChatGPT + Elevenlabs!)*
+  3. *Poppy AI Review (+ Free Alternative): Best YouTube Script Generator In 2026?*
+- **Non-Automatic Responsive Carousel**:
+  - Manual navigation only via Next/Previous controls, pagination dots, or touch swipe. No auto-play timers.
+  - Adaptive viewport: 1 card on mobile (`<640px`), 2 cards on tablet (`640px–1024px`), 3 cards on desktop (`>=1024px`).
+  - High-definition 16:9 thumbnail banners, play overlays, category pills, views & clicks badges, and direct YouTube watch buttons.
+
+---
+
 ## 📂 Project Structure
 
 ```
