@@ -40,6 +40,7 @@ export interface SponsorItem {
   publishDate?: string;
   logoUrl?: string;
   websiteUrl?: string;
+  thumbnailUrl?: string;
 }
 
 export interface AdminUser {

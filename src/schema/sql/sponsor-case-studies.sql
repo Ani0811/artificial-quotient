@@ -4,7 +4,7 @@
 CREATE TABLE IF NOT EXISTS sponsor_case_studies (
   id VARCHAR(64) PRIMARY KEY,
   partner_name VARCHAR(128) NOT NULL,
-  campaign_type VARCHAR(64) NOT NULL,
+  campaign_type VARCHAR(128) NOT NULL,
   quote TEXT NOT NULL,
   quote_font VARCHAR(64),
   stat1_label VARCHAR(64) NOT NULL,
@@ -14,9 +14,11 @@ CREATE TABLE IF NOT EXISTS sponsor_case_studies (
   description TEXT,
   deliverables TEXT,
   yt_url VARCHAR(255),
-  roi_breakdown VARCHAR(128),
+  roi_breakdown TEXT,
   publish_date VARCHAR(64),
   logo_url VARCHAR(255),
+  website_url VARCHAR(255),
+  thumbnail_url VARCHAR(255),
   display_order INT DEFAULT 0,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -29,5 +31,5 @@ TRUNCATE TABLE sponsor_case_studies;
 
 -- 4. Insert Case Study (Parameterized)
 INSERT INTO sponsor_case_studies
-  (id, partner_name, campaign_type, quote, quote_font, stat1_label, stat1_value, stat2_label, stat2_value, description, deliverables, yt_url, roi_breakdown, publish_date, logo_url, display_order)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+  (id, partner_name, campaign_type, quote, quote_font, stat1_label, stat1_value, stat2_label, stat2_value, description, deliverables, yt_url, roi_breakdown, publish_date, logo_url, website_url, thumbnail_url, display_order)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);

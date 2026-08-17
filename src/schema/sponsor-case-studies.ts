@@ -17,6 +17,7 @@ export interface SponsorCaseStudy {
   publishDate?: string;
   logoUrl?: string;
   websiteUrl?: string;
+  thumbnailUrl?: string;
 }
 
 /**
@@ -41,6 +42,7 @@ export const RAW_SQL = {
       publish_date VARCHAR(64),
       logo_url VARCHAR(255),
       website_url VARCHAR(255),
+      thumbnail_url VARCHAR(255),
       display_order INT DEFAULT 0,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     );
@@ -49,8 +51,8 @@ export const RAW_SQL = {
   TRUNCATE: `TRUNCATE TABLE sponsor_case_studies;`,
   INSERT: `
     INSERT INTO sponsor_case_studies
-      (id, partner_name, campaign_type, quote, quote_font, stat1_label, stat1_value, stat2_label, stat2_value, description, deliverables, yt_url, roi_breakdown, publish_date, logo_url, website_url, display_order)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+      (id, partner_name, campaign_type, quote, quote_font, stat1_label, stat1_value, stat2_label, stat2_value, description, deliverables, yt_url, roi_breakdown, publish_date, logo_url, website_url, thumbnail_url, display_order)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
   `,
 };
 
@@ -74,6 +76,7 @@ export async function createSponsorCaseStudiesTable() {
       t.string("publish_date", 64);
       t.string("logo_url", 255);
       t.string("website_url", 255);
+      t.string("thumbnail_url", 255);
       t.integer("display_order").defaultTo(0);
       t.timestamp("updated_at").defaultTo(k.raw("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"));
     });
@@ -83,6 +86,11 @@ export async function createSponsorCaseStudiesTable() {
       if (!(await k.schema.hasColumn("sponsor_case_studies", "website_url"))) {
         await k.schema.alterTable("sponsor_case_studies", (t) => {
           t.string("website_url", 255);
+        });
+      }
+      if (!(await k.schema.hasColumn("sponsor_case_studies", "thumbnail_url"))) {
+        await k.schema.alterTable("sponsor_case_studies", (t) => {
+          t.string("thumbnail_url", 255);
         });
       }
       await k.schema.alterTable("sponsor_case_studies", (t) => {
@@ -116,6 +124,7 @@ export async function getSponsorCaseStudies(): Promise<SponsorCaseStudy[]> {
     publishDate: r.publish_date,
     logoUrl: r.logo_url || "",
     websiteUrl: r.website_url,
+    thumbnailUrl: r.thumbnail_url || "",
   }));
 }
 
@@ -141,6 +150,7 @@ export async function syncSponsorCaseStudies(items: any[]) {
       publish_date: item.publishDate || "",
       logo_url: item.logoUrl || "",
       website_url: item.websiteUrl || "",
+      thumbnail_url: item.thumbnailUrl || "",
       display_order: i,
     }));
 

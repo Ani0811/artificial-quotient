@@ -22,6 +22,14 @@ export interface SponsorResult {
   publishDate?: string;
   logoUrl?: string;
   websiteUrl?: string;
+  thumbnailUrl?: string;
+}
+
+function getYoutubeId(url?: string) {
+  if (!url) return null;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : null;
 }
 
 function getYoutubeEmbedUrl(url?: string) {
@@ -48,8 +56,8 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
       setResults(sponsorResults || []);
       setLoading(isLoading !== undefined ? isLoading : false);
       if (sponsorResults) {
-        sponsorResults.forEach((item: SponsorResult) => {
-          if (item.quoteFont) loadGoogleFont(item.quoteFont);
+        sponsorResults.forEach((s) => {
+          if (s.quoteFont) loadGoogleFont(s.quoteFont);
         });
       }
       return;
@@ -62,8 +70,8 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
           const data = await res.json();
           if (data.sponsorResults) {
             setResults(data.sponsorResults);
-            data.sponsorResults.forEach((item: SponsorResult) => {
-              if (item.quoteFont) loadGoogleFont(item.quoteFont);
+            data.sponsorResults.forEach((s: SponsorResult) => {
+              if (s.quoteFont) loadGoogleFont(s.quoteFont);
             });
           }
         }
@@ -79,7 +87,7 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
   useEffect(() => {
     if (!loading && typeof window !== "undefined" && window.location.hash === "#case-studies") {
       const timer = setTimeout(() => {
-        const elem = document.getElementById("case-studies");
+        const elem = document.getElementById("case-studies-section");
         if (elem) {
           elem.scrollIntoView({ behavior: "smooth" });
         }
@@ -88,14 +96,23 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
     }
   }, [loading]);
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    const section = document.getElementById("case-studies-section");
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   if (loading) {
     return (
-      <section id="case-studies" className="w-full py-20 px-4 border-t border-brand-border dark:border-zinc-800 transition-colors scroll-mt-16">
+      <section className="w-full py-20 px-4 bg-brand-bg dark:bg-[#061612] border-t border-brand-border dark:border-[#14352b] transition-colors">
         <div className="max-w-6xl mx-auto space-y-8 animate-pulse">
-          <div className="h-8 bg-emerald-500/10 rounded-lg w-56"></div>
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="h-64 bg-brand-card dark:bg-zinc-900 border border-brand-border dark:border-zinc-800 rounded-2xl"></div>
-            <div className="h-64 bg-brand-card dark:bg-zinc-900 border border-brand-border dark:border-zinc-800 rounded-2xl"></div>
+          <div className="h-8 bg-emerald-500/10 rounded-lg w-64"></div>
+          <div className="grid md:grid-cols-3 gap-6 sm:gap-8">
+            <div className="h-64 bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] rounded-2xl"></div>
+            <div className="h-64 bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] rounded-2xl"></div>
+            <div className="h-64 bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] rounded-2xl"></div>
           </div>
         </div>
       </section>
@@ -108,106 +125,115 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedResults = results.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
-  const handlePageChange = (page: number) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-      const sectionElem = document.getElementById("case-studies");
-      if (sectionElem) {
-        sectionElem.scrollIntoView({ behavior: "smooth" });
-      }
-    }
-  };
-
   const getGridLayout = (count: number) => {
-    if (count === 1) return "grid grid-cols-1 max-w-xl mx-auto gap-4 sm:gap-6";
-    if (count === 2) return "grid grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto gap-4 sm:gap-6";
-    return "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6";
+    if (count === 1) return "grid grid-cols-1 max-w-lg mx-auto gap-6 sm:gap-8";
+    if (count === 2) return "grid grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto gap-6 sm:gap-8";
+    return "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8";
   };
 
   return (
-    <section id="case-studies" className="w-full py-12 sm:py-16 px-4 border-t border-brand-border dark:border-zinc-800 transition-colors scroll-mt-16">
+    <section id="case-studies-section" className="w-full py-16 sm:py-20 px-4 bg-brand-bg dark:bg-[#061612] border-t border-brand-border dark:border-[#14352b] transition-colors">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col gap-2 mb-12 text-center md:text-left">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-semibold text-xs w-fit mx-auto md:mx-0">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Interactive Success Stories</span>
-          </div>
           <h2 className="font-heading text-3xl md:text-4xl font-bold text-brand-text dark:text-white">
-            Sponsor Case Studies &amp; Performance
+            Sponsor Case Studies
           </h2>
           <p className="text-brand-muted dark:text-zinc-400 font-medium text-lg">
-            Click on any partner card below to explore full campaign deliverables and performance breakdown.
+            Real outcomes from forward-thinking tech &amp; AI brand integrations.
           </p>
         </div>
 
         <div className={getGridLayout(paginatedResults.length)}>
-          {paginatedResults.map((item, idx) => (
-            <div 
-              key={item.id || idx} 
-              onClick={() => setSelectedCaseStudy(item)}
-              className="group relative bg-white dark:bg-zinc-900 rounded-2xl p-5 sm:p-6 border border-brand-border dark:border-zinc-800 shadow-sm flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-500/5 hover:border-emerald-500/40 dark:hover:border-emerald-500/40 overflow-hidden cursor-pointer"
-            >
-              {/* Ambient top border glow line */}
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          {paginatedResults.map((item, idx) => {
+            const ytId = getYoutubeId(item.ytUrl);
+            const thumbImg = item.thumbnailUrl === "none" ? null : (item.thumbnailUrl || (ytId ? `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg` : null));
 
-              <div>
-                <div className="flex items-center justify-between gap-2 mb-6">
-                  {item.websiteUrl ? (
-                    <a
-                      href={item.websiteUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      className="inline-flex items-center gap-1.5 bg-brand-bg dark:bg-zinc-950 px-2.5 sm:px-3 py-1.5 rounded-xl border border-brand-border dark:border-zinc-800 font-bold text-xs sm:text-sm text-brand-text dark:text-white transition-all duration-300 hover:border-emerald-500/50 hover:bg-emerald-500/10 hover:text-emerald-400 group/link shrink-0 min-w-0"
-                      title={`Visit ${item.partnerName} Website`}
-                    >
-                      {item.logoUrl ? (
-                        <img src={item.logoUrl} alt={item.partnerName} width={18} height={18} loading="lazy" decoding="async" className="w-4 h-4 sm:w-4.5 sm:h-4.5 object-contain rounded shrink-0" />
-                      ) : null}
-                      <span className="whitespace-nowrap truncate">{item.partnerName}</span>
-                      <ExternalLink className="w-3 h-3 text-emerald-500 opacity-70 group-hover/link:opacity-100 group-hover/link:translate-x-0.5 transition-all shrink-0" />
-                    </a>
-                  ) : (
-                    <div className="bg-brand-bg dark:bg-zinc-950 px-2.5 sm:px-3 py-1.5 rounded-xl border border-brand-border dark:border-zinc-800 font-bold text-xs sm:text-sm text-brand-text dark:text-white flex items-center gap-1.5 shrink-0 min-w-0">
-                      {item.logoUrl ? (
-                        <img src={item.logoUrl} alt={item.partnerName} width={18} height={18} loading="lazy" decoding="async" className="w-4 h-4 sm:w-4.5 sm:h-4.5 object-contain rounded shrink-0" />
-                      ) : null}
-                      <span className="whitespace-nowrap truncate">{item.partnerName}</span>
+            return (
+              <div 
+                key={item.id || idx} 
+                onClick={() => setSelectedCaseStudy(item)}
+                className="group relative bg-white dark:bg-zinc-900 rounded-2xl p-5 sm:p-6 border border-brand-border dark:border-zinc-800 shadow-sm flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-500/5 hover:border-emerald-500/40 dark:hover:border-emerald-500/40 overflow-hidden cursor-pointer"
+              >
+                {/* Ambient top border glow line */}
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+                <div>
+                  {/* Thumbnail Image Banner */}
+                  {thumbImg && (
+                    <div className="relative aspect-video w-full rounded-xl overflow-hidden mb-5 bg-zinc-950 border border-brand-border/80 dark:border-zinc-800/80 shadow-sm group/thumb">
+                      <img 
+                        src={thumbImg} 
+                        alt={`${item.partnerName} Case Study Thumbnail`}
+                        loading="lazy" 
+                        decoding="async" 
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                      />
+                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                        <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-black/60 backdrop-blur-md border border-white/30 text-white flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-110 group-hover:bg-emerald-600/90 group-hover:border-emerald-400">
+                          <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-current ml-0.5" />
+                        </div>
+                      </div>
                     </div>
                   )}
 
-                  <span className="text-[10px] sm:text-xs font-bold px-2.5 py-1 bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 rounded-full border border-emerald-500/20 leading-tight whitespace-nowrap shrink-0">
-                    {item.campaignType}
-                  </span>
-                </div>
-                {item.quote && (
-                  <p 
-                    style={{ fontFamily: item.quoteFont ? `'${item.quoteFont}', cursive, sans-serif` : undefined }}
-                    className="font-handwritten text-2xl text-brand-text dark:text-zinc-200 mb-6 transition-colors duration-300 group-hover:text-brand-text dark:group-hover:text-white"
-                  >
-                    &quot;{item.quote}&quot;
-                  </p>
-                )}
-              </div>
-              
-              <div>
-                <div className="border-t border-brand-border dark:border-zinc-800 pt-5 transition-colors duration-300 group-hover:border-emerald-500/20 dark:group-hover:border-zinc-700 mb-4">
-                  <div className="p-2.5 rounded-xl bg-brand-bg/60 dark:bg-zinc-950/40 border border-brand-border/60 dark:border-zinc-800/60 transition-all duration-300 hover:bg-emerald-500/5 dark:hover:bg-zinc-800/50">
-                    <p className="text-xs text-brand-muted dark:text-zinc-400 mb-1 font-medium">{item.stat1Label}</p>
-                    <p className="text-xl font-bold text-brand-text dark:text-white flex items-center justify-between">
-                      <span>{item.stat1Value}</span>
-                      <ArrowUpRight className="w-4 h-4 text-emerald-500" />
+                  <div className="flex items-center justify-between gap-2 mb-6">
+                    {item.websiteUrl ? (
+                      <a
+                        href={item.websiteUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="inline-flex items-center gap-1.5 bg-brand-bg dark:bg-zinc-950 px-2.5 sm:px-3 py-1.5 rounded-xl border border-brand-border dark:border-zinc-800 font-bold text-xs sm:text-sm text-brand-text dark:text-white transition-all duration-300 hover:border-emerald-500/50 hover:bg-emerald-500/10 hover:text-emerald-400 group/link shrink-0 min-w-0"
+                        title={`Visit ${item.partnerName} Website`}
+                      >
+                        {item.logoUrl ? (
+                          <img src={item.logoUrl} alt={item.partnerName} width={18} height={18} loading="lazy" decoding="async" className="w-4 h-4 sm:w-4.5 sm:h-4.5 object-contain rounded shrink-0" />
+                        ) : null}
+                        <span className="whitespace-nowrap truncate">{item.partnerName}</span>
+                        <ExternalLink className="w-3 h-3 text-emerald-500 opacity-70 group-hover/link:opacity-100 group-hover/link:translate-x-0.5 transition-all shrink-0" />
+                      </a>
+                    ) : (
+                      <div className="bg-brand-bg dark:bg-zinc-950 px-2.5 sm:px-3 py-1.5 rounded-xl border border-brand-border dark:border-zinc-800 font-bold text-xs sm:text-sm text-brand-text dark:text-white flex items-center gap-1.5 shrink-0 min-w-0">
+                        {item.logoUrl ? (
+                          <img src={item.logoUrl} alt={item.partnerName} width={18} height={18} loading="lazy" decoding="async" className="w-4 h-4 sm:w-4.5 sm:h-4.5 object-contain rounded shrink-0" />
+                        ) : null}
+                        <span className="whitespace-nowrap truncate">{item.partnerName}</span>
+                      </div>
+                    )}
+
+                    <span className="text-[10px] sm:text-xs font-bold px-2.5 py-1 bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 rounded-full border border-emerald-500/20 leading-tight whitespace-nowrap shrink-0">
+                      {item.campaignType}
+                    </span>
+                  </div>
+                  {item.quote && (
+                    <p 
+                      style={{ fontFamily: item.quoteFont ? `'${item.quoteFont}', cursive, sans-serif` : undefined }}
+                      className="font-handwritten text-2xl text-brand-text dark:text-zinc-200 mb-6 transition-colors duration-300 group-hover:text-brand-text dark:group-hover:text-white"
+                    >
+                      &quot;{item.quote}&quot;
                     </p>
+                  )}
+                </div>
+                
+                <div>
+                  <div className="border-t border-brand-border dark:border-zinc-800 pt-5 transition-colors duration-300 group-hover:border-emerald-500/20 dark:group-hover:border-zinc-700 mb-4">
+                    <div className="p-2.5 rounded-xl bg-brand-bg/60 dark:bg-zinc-950/40 border border-brand-border/60 dark:border-zinc-800/60 transition-all duration-300 hover:bg-emerald-500/5 dark:hover:bg-zinc-800/50">
+                      <p className="text-xs text-brand-muted dark:text-zinc-400 mb-1 font-medium">{item.stat1Label}</p>
+                      <p className="text-xl font-bold text-brand-text dark:text-white flex items-center justify-between">
+                        <span>{item.stat1Value}</span>
+                        <ArrowUpRight className="w-4 h-4 text-emerald-500" />
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between text-xs font-bold text-emerald-600 dark:text-emerald-400 group-hover:translate-x-1 transition-transform pt-1">
+                    <span>View Detailed Case Study &amp; Video &rarr;</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
                   </div>
                 </div>
-
-                <div className="flex items-center justify-between text-xs font-bold text-emerald-600 dark:text-emerald-400 group-hover:translate-x-1 transition-transform pt-1">
-                  <span>View Detailed Case Study &amp; Video &rarr;</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Pagination Bar */}
@@ -299,7 +325,7 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
               </button>
             </div>
 
-            {/* YouTube Video Embed if available */}
+            {/* YouTube Video Embed or Thumbnail Preview */}
             {getYoutubeEmbedUrl(selectedCaseStudy.ytUrl) ? (
               <div className="w-full aspect-video rounded-2xl overflow-hidden border border-brand-border dark:border-[#16382e] shadow-md bg-black">
                 <iframe
@@ -309,6 +335,26 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                 ></iframe>
+              </div>
+            ) : (selectedCaseStudy.thumbnailUrl && selectedCaseStudy.thumbnailUrl !== "none") ? (
+              <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-brand-border dark:border-[#16382e] shadow-md bg-black group/modal-thumb">
+                <img 
+                  src={selectedCaseStudy.thumbnailUrl} 
+                  alt={`${selectedCaseStudy.partnerName} Thumbnail`}
+                  className="w-full h-full object-cover" 
+                />
+                {selectedCaseStudy.ytUrl && (
+                  <a
+                    href={selectedCaseStudy.ytUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="absolute inset-0 bg-black/40 hover:bg-black/20 flex items-center justify-center transition-all"
+                  >
+                    <div className="w-14 h-14 rounded-full bg-emerald-600/90 text-white flex items-center justify-center shadow-xl border border-emerald-400">
+                      <Play className="w-6 h-6 fill-current ml-1" />
+                    </div>
+                  </a>
+                )}
               </div>
             ) : selectedCaseStudy.ytUrl ? (
               <a

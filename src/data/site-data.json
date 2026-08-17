@@ -114,7 +114,8 @@
       "roiBreakdown": "Results:\n• Videos ranking on relevant keywords\n• Links getting clicks\n• Insightful visitor feedback",
       "publishDate": "Contract: 2 Videos @ $700",
       "logoUrl": "/logo/revid.png",
-      "websiteUrl": "https://www.revid.ai/"
+      "websiteUrl": "https://www.revid.ai/",
+      "thumbnailUrl": "https://img.youtube.com/vi/G_MW3vpfLxA/maxresdefault.jpg"
     },
     {
       "id": "2",
@@ -132,7 +133,8 @@
       "roiBreakdown": "Results:\n• Instant 1,200+ direct clicks with $0.25 effective CPC\n• High conversion rate to Flashloop free trial & paid subscription\n• Featured placement in Tool Vault & MCP ecosystem showcase",
       "publishDate": "Dedicated Video Integration",
       "logoUrl": "/logo/flashloop.png",
-      "websiteUrl": "https://www.flashloop.app/"
+      "websiteUrl": "https://www.flashloop.app/",
+      "thumbnailUrl": "https://img.youtube.com/vi/CO59xAteGRM/maxresdefault.jpg"
     },
     {
       "id": "3",
@@ -150,7 +152,8 @@
       "roiBreakdown": "Results:\n• 3.8x Return on Investment within 30 days\n• 680+ high-intent platform signups\n• High organic search visibility for AI workflow agents",
       "publishDate": "Dedicated Video Integration",
       "logoUrl": "",
-      "websiteUrl": "https://easy-peasy.ai/marky"
+      "websiteUrl": "https://easy-peasy.ai/marky",
+      "thumbnailUrl": "https://img.youtube.com/vi/Oo9H89i6SYk/maxresdefault.jpg"
     }
   ],
   "tools": [

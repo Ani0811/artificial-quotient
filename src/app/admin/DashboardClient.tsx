@@ -1155,6 +1155,95 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                               </div>
                             </div>
 
+                            {/* Video Thumbnail Control */}
+                            <div>
+                              <div className="flex items-center justify-between gap-2 mb-1.5">
+                                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80">
+                                  Video Thumbnail Image
+                                </label>
+                                <div className="flex items-center gap-2">
+                                  {item.thumbnailUrl === "none" ? (
+                                    <button
+                                      type="button"
+                                      disabled={isViewer}
+                                      onClick={() => {
+                                        const next = [...sponsorResults];
+                                        next[idx] = { ...next[idx], thumbnailUrl: "" };
+                                        setSponsorResults(next);
+                                      }}
+                                      className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 transition-colors disabled:opacity-50"
+                                    >
+                                      <Sparkles className="w-3 h-3" /> Auto-fetch from YouTube
+                                    </button>
+                                  ) : (
+                                    <button
+                                      type="button"
+                                      disabled={isViewer}
+                                      onClick={() => {
+                                        const next = [...sponsorResults];
+                                        next[idx] = { ...next[idx], thumbnailUrl: "none" };
+                                        setSponsorResults(next);
+                                      }}
+                                      className="text-[11px] font-bold text-red-500 hover:text-red-400 flex items-center gap-1 transition-colors disabled:opacity-50"
+                                    >
+                                      <Trash2 className="w-3 h-3" /> Remove Thumbnail
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+
+                              <div className="flex items-center gap-2.5">
+                                {(() => {
+                                  const ytId = getYoutubeId(item.ytUrl);
+                                  const effectiveThumb = item.thumbnailUrl === "none" ? null : (item.thumbnailUrl || (ytId ? `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg` : null));
+                                  return effectiveThumb ? (
+                                    <div className="w-16 h-10 rounded-lg bg-black border border-brand-border dark:border-[#16382e] shrink-0 overflow-hidden relative shadow-sm">
+                                      <img src={effectiveThumb} alt="Thumbnail preview" className="w-full h-full object-cover" />
+                                    </div>
+                                  ) : (
+                                    <div className="w-16 h-10 rounded-lg bg-brand-card dark:bg-[#0c201a] border border-dashed border-brand-border dark:border-[#16382e] shrink-0 flex items-center justify-center text-[10px] text-brand-muted dark:text-emerald-200/50">
+                                      No thumb
+                                    </div>
+                                  );
+                                })()}
+
+                                <input 
+                                  type="text" 
+                                  placeholder={item.thumbnailUrl === "none" ? "Thumbnail disabled (type URL or click Auto-fetch)" : "Auto from YouTube, or enter custom URL..."}
+                                  value={item.thumbnailUrl === "none" ? "" : (item.thumbnailUrl || "")} 
+                                  disabled={isViewer}
+                                  onChange={(e) => {
+                                    const next = [...sponsorResults];
+                                    next[idx] = { ...next[idx], thumbnailUrl: e.target.value };
+                                    setSponsorResults(next);
+                                  }}
+                                  className="flex-1 min-w-0 border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                                />
+
+                                <label 
+                                  htmlFor={`sponsor-thumb-input-${item.id}`}
+                                  className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold px-3 py-2 rounded-xl cursor-pointer text-xs flex items-center gap-1.5 border border-emerald-500/30 shrink-0 whitespace-nowrap shadow-sm"
+                                >
+                                  {uploadingField === `sponsor-thumb-${item.id}` ? "Saving..." : "Upload"}
+                                  <input 
+                                    id={`sponsor-thumb-input-${item.id}`}
+                                    type="file" 
+                                    accept="image/*" 
+                                    className="hidden" 
+                                    onChange={(e) => handleInlineMediaUpload(
+                                      e.target.files, 
+                                      (url) => {
+                                        const next = [...sponsorResults];
+                                        next[idx] = { ...next[idx], thumbnailUrl: url };
+                                        setSponsorResults(next);
+                                      },
+                                      `sponsor-thumb-${item.id}`
+                                    )}
+                                  />
+                                </label>
+                              </div>
+                            </div>
+
                             <div>
                               <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
                                 <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80">
@@ -2305,25 +2394,42 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                     <div className="space-y-5">
                       <div className="text-sm font-bold text-brand-text dark:text-white mb-2">Live Case Studies Preview</div>
                       <div className="space-y-4">
-                        {sponsorResults.map((item) => (
-                          <div key={item.id} className="p-4 rounded-xl border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] space-y-3">
-                            <div className="flex justify-between items-center flex-wrap gap-2">
-                              <span className="font-bold text-sm text-brand-text dark:text-white truncate min-w-0">{item.partnerName}</span>
-                              <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 shrink-0">{item.campaignType}</span>
+                        {sponsorResults.map((item) => {
+                          const ytId = getYoutubeId(item.ytUrl);
+                          const thumbImg = item.thumbnailUrl === "none" ? null : (item.thumbnailUrl || (ytId ? `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg` : null));
+
+                          return (
+                            <div key={item.id} className="p-4 rounded-xl border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] space-y-3">
+                              {/* Thumbnail preview banner */}
+                              {thumbImg && (
+                                <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-black border border-brand-border/60 dark:border-[#16382e]/60 shadow-inner">
+                                  <img src={thumbImg} alt="" className="w-full h-full object-cover" />
+                                  <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                                    <div className="w-8 h-8 rounded-full bg-black/60 backdrop-blur-sm text-white flex items-center justify-center">
+                                      <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
+                              <div className="flex justify-between items-center flex-wrap gap-2">
+                                <span className="font-bold text-sm text-brand-text dark:text-white truncate min-w-0">{item.partnerName}</span>
+                                <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 shrink-0">{item.campaignType}</span>
+                              </div>
+                              {item.quote && item.quote.trim() !== "" && (
+                                <p 
+                                  style={{ fontFamily: item.quoteFont ? `'${item.quoteFont}', cursive, sans-serif` : undefined }}
+                                  className="font-handwritten text-sm text-brand-muted dark:text-emerald-200/80 italic leading-relaxed"
+                                >
+                                  &quot;{item.quote}&quot;
+                                </p>
+                              )}
+                              <div className="flex justify-between items-center flex-wrap gap-2 text-xs font-bold border-t border-brand-border dark:border-[#16382e] pt-2">
+                                <span className="min-w-0">{item.stat1Label || "Metric"}: <span className="text-emerald-500">{item.stat1Value || "—"}</span></span>
+                              </div>
                             </div>
-                            {item.quote && item.quote.trim() !== "" && (
-                              <p 
-                                style={{ fontFamily: item.quoteFont ? `'${item.quoteFont}', cursive, sans-serif` : undefined }}
-                                className="font-handwritten text-sm text-brand-muted dark:text-emerald-200/80 italic leading-relaxed"
-                              >
-                                &quot;{item.quote}&quot;
-                              </p>
-                            )}
-                            <div className="flex justify-between items-center flex-wrap gap-2 text-xs font-bold border-t border-brand-border dark:border-[#16382e] pt-2">
-                              <span className="min-w-0">{item.stat1Label || "Metric"}: <span className="text-emerald-500">{item.stat1Value || "—"}</span></span>
-                            </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
                   )}
