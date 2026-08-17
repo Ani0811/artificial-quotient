@@ -50,7 +50,7 @@ export async function getWhatPerforms(): Promise<PerformItem[]> {
 
 export async function syncWhatPerforms(items: any[]) {
   const k = getKnex();
-  await k("what_performs_cards").truncate();
+  await k("what_performs_cards").delete();
 
   if (items && Array.isArray(items) && items.length > 0) {
     const rows = items.map((item: any, i: number) => ({

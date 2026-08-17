@@ -44,7 +44,7 @@ export async function getToolItems(): Promise<ToolItem[]> {
 
 export async function syncToolItems(items: any[]) {
   const k = getKnex();
-  await k("tool_items").truncate();
+  await k("tool_items").delete();
 
   if (items && Array.isArray(items) && items.length > 0) {
     const rows = items.map((item: any, i: number) => ({

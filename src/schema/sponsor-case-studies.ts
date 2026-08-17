@@ -130,7 +130,7 @@ export async function getSponsorCaseStudies(): Promise<SponsorCaseStudy[]> {
 
 export async function syncSponsorCaseStudies(items: any[]) {
   const k = getKnex();
-  await k("sponsor_case_studies").truncate();
+  await k("sponsor_case_studies").delete();
 
   if (items && Array.isArray(items) && items.length > 0) {
     const rows = items.map((item: any, i: number) => ({

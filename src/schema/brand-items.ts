@@ -46,7 +46,7 @@ export async function getBrandItems(): Promise<BrandItem[]> {
 
 export async function syncBrandItems(items: any[]) {
   const k = getKnex();
-  await k("brand_items").truncate();
+  await k("brand_items").delete();
 
   if (items && Array.isArray(items) && items.length > 0) {
     const rows = items.map((item: any, i: number) => ({

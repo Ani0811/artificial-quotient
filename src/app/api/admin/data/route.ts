@@ -82,6 +82,17 @@ export async function GET() {
             whatPerforms = await getWhatPerforms();
           }
         }
+
+        if (fileData.tools && Array.isArray(fileData.tools)) {
+          const hasAllTools = fileData.tools.every((fileT: any) =>
+            tools.some((dbT: any) => dbT.id === fileT.id && dbT.name === fileT.name)
+          ) && tools.length === fileData.tools.length;
+
+          if (!hasAllTools) {
+            await syncToolItems(fileData.tools);
+            tools = await getToolItems();
+          }
+        }
       } catch {
         // Ignore file sync check error
       }
