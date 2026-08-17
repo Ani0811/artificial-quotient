@@ -2437,30 +2437,31 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                   {/* PREVIEW TAB 3: WHAT PERFORMS */}
                   {activeTab === "what-performs" && (
                     <div className="space-y-5">
-                      <div className="text-sm font-bold text-brand-text dark:text-white mb-2">What Performs Preview</div>
+                      <div className="text-sm font-bold text-brand-text dark:text-white mb-2">What Performs Preview ({whatPerforms.length} Videos)</div>
                       <div className="grid grid-cols-1 gap-4">
                         {whatPerforms.map((item) => {
                           const ytId = getYoutubeId(item.ytUrl);
-                          const thumbImg = item.thumbnail || (ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : null);
+                          const thumbImg = item.thumbnail || (ytId ? `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg` : null);
 
                           return (
-                            <div key={item.id} className="p-4 rounded-xl border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] flex items-center justify-between gap-4">
-                              <div className="flex items-center gap-3.5">
-                                <div className="w-16 h-10 bg-zinc-800 rounded-lg overflow-hidden flex items-center justify-center text-sm shrink-0 border border-brand-border/40">
-                                  {thumbImg ? (
-                                    <img src={thumbImg} alt="" className="w-full h-full object-cover" />
-                                  ) : (
-                                    <span>{item.thumb || "🎬"}</span>
-                                  )}
+                            <div key={item.id} className="p-4 rounded-xl border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] space-y-3">
+                              {thumbImg && (
+                                <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-black border border-brand-border/60 dark:border-[#16382e]/60">
+                                  <img src={thumbImg} alt="" className="w-full h-full object-cover" />
+                                  <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                                    <div className="w-8 h-8 rounded-full bg-black/60 backdrop-blur-sm text-white flex items-center justify-center">
+                                      <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
+                                    </div>
+                                  </div>
+                                  <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/70 text-[10px] font-bold text-white">
+                                    {item.type || "Video"}
+                                  </div>
                                 </div>
-                                <div>
-                                  <div className="font-bold text-sm text-brand-text dark:text-white">{item.title}</div>
-                                  <div className="text-xs text-brand-muted dark:text-emerald-200/70">{item.type}</div>
-                                </div>
-                              </div>
-                              <div className="text-right text-xs font-bold shrink-0">
-                                <div className="text-brand-text dark:text-white">{item.views} views</div>
-                                <div className="text-emerald-500">{item.clicks} clicks</div>
+                              )}
+                              <div className="font-bold text-sm text-brand-text dark:text-white line-clamp-2">{item.title}</div>
+                              <div className="flex justify-between items-center text-xs font-bold border-t border-brand-border dark:border-[#16382e] pt-2">
+                                <span className="text-brand-muted dark:text-emerald-200/70">{item.views} views</span>
+                                <span className="text-emerald-500">{item.clicks} clicks</span>
                               </div>
                             </div>
                           );
