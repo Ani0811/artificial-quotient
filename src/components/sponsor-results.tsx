@@ -337,8 +337,8 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
               </div>
             )}
 
-            {/* Stat Badges Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* Stat Badges Stack */}
+            <div className="flex flex-col gap-3">
               <div className="p-3.5 rounded-2xl bg-brand-bg dark:bg-[#061612] border border-brand-border dark:border-[#16382e]">
                 <span className="text-xs font-bold text-brand-muted dark:text-emerald-200/60 uppercase block mb-1">
                   {selectedCaseStudy.stat1Label}

@@ -113,3 +113,28 @@ export interface InterestItem {
   level: string;
 }
 
+export interface HeroConfig {
+  badgeText?: string;
+  headline?: string;
+  headlineHighlight?: string;
+  subheadline?: string;
+  sponsorButtonText?: string;
+  sponsorButtonUrl?: string;
+  caseStudiesButtonText?: string;
+  channelName?: string;
+  channelHandle?: string;
+  channelCategory?: string;
+  channelLogo?: string;
+  subscribeUrl?: string;
+  subscribeButtonText?: string;
+  subscribersCount?: string;
+  subscribersBadge?: string;
+  monthlyViewsCount?: string;
+  monthlyViewsBadge?: string;
+  retentionPercent?: string;
+  retentionLabel?: string;
+  retentionLeftText?: string;
+  retentionRightText?: string;
+  enableRgbEffect?: boolean;
+}
+

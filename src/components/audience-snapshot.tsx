@@ -471,7 +471,7 @@ export default function AudienceSnapshot({ siteData, isLoading }: AudienceSnapsh
               </p>
               <div className="flex flex-wrap gap-2 relative z-10">
                 {(buyerIntent.badges || ["Automation Builders", "Tech Professionals", "Agency Owners"]).map((badge: string, bIdx: number) => (
-                  <span key={bIdx} className="text-xs font-bold px-3 py-1.5 bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 rounded-lg transition-all duration-200 hover:scale-105 hover:bg-emerald-500 hover:text-white dark:hover:bg-emerald-500 dark:hover:text-white cursor-pointer shadow-sm">
+                  <span key={bIdx} className="text-xs font-bold px-3 py-1.5 bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 rounded-lg shadow-sm">
                     {badge}
                   </span>
                 ))}

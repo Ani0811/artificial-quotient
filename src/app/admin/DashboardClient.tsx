@@ -2,12 +2,12 @@
 
 import { 
   Save, BarChart, BarChart3, DollarSign, Globe, ShoppingBag, Database, FileText, LogOut, Check, ExternalLink, 
-  UploadCloud, Eye, EyeOff, Edit3, Sparkles, Award, Plus, Trash2, ShieldCheck, Users, Layers
+  UploadCloud, Eye, EyeOff, Edit3, Sparkles, Award, Plus, Trash2, ShieldCheck, Users, Layers, Play, TrendingUp, CheckCircle2, Zap
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { QUOTE_FONT_OPTIONS, loadGoogleFont } from "@/components/font-provider";
-import { ToolItem, PerformItem, SponsorItem, AdminUser, BrandItem, InterestItem, CountryItem } from "@/types";
+import { ToolItem, PerformItem, SponsorItem, AdminUser, BrandItem, InterestItem, CountryItem, HeroConfig } from "@/types";
 import { LogoImage } from "@/components/ui/logo-image";
 import { CountryFlag, parseGeographies } from "@/components/audience-snapshot";
 import { ALL_COUNTRIES } from "@/lib/countries";
@@ -23,7 +23,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
   const isViewer = currentUser?.role === "Viewer";
   const canEditUsers = currentUser?.role !== "Viewer" && (currentUser?.role === "Super Admin" || currentUser?.permissions?.includes("users"));
   const canEditBackup = currentUser?.role !== "Viewer" && (currentUser?.role === "Super Admin" || currentUser?.permissions?.includes("backup"));
-  const [activeTab, setActiveTab] = useState<"stats" | "case-studies" | "what-performs" | "tools" | "brands" | "users" | "backup">("stats");
+  const [activeTab, setActiveTab] = useState<"hero" | "stats" | "case-studies" | "what-performs" | "tools" | "brands" | "users" | "backup">("hero");
   const [savedSuccess, setSavedSuccess] = useState(false);
   const topRef = useRef<HTMLDivElement>(null);
   const bannerRef = useRef<HTMLDivElement>(null);
@@ -97,6 +97,31 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
   const [uploadingField, setUploadingField] = useState<string | null>(null);
   const [audienceInterests, setAudienceInterests] = useState<InterestItem[]>([]);
   const [shoppingInterests, setShoppingInterests] = useState<InterestItem[]>([]);
+  const [heroForm, setHeroForm] = useState<HeroConfig>({
+    badgeText: "Open for Q3 Sponsorships",
+    headline: "Actionable AI Workflows",
+    headlineHighlight: "For Everyone",
+    subheadline: "Artificial Quotient turns AI software into step-by-step workflow tutorials for 10K+ subscribers and 55K+ monthly viewers who create with AI tools every day.",
+    sponsorButtonText: "Sponsor the Channel",
+    sponsorButtonUrl: "https://forms.gle/4uTUZkEi5o3iqYrs5",
+    caseStudiesButtonText: "View Case Studies",
+    channelName: "Artificial Quotient",
+    channelHandle: "@ArtificialQuotient",
+    channelCategory: "Tech & AI",
+    channelLogo: "",
+    subscribeUrl: "https://www.youtube.com/@ArtificialQuotient01",
+    subscribeButtonText: "Subscribe",
+    subscribersCount: "10.1k",
+    subscribersBadge: "Active",
+    monthlyViewsCount: "69.5k",
+    monthlyViewsBadge: "Growing",
+    retentionPercent: "27%",
+    retentionLabel: "Avg. Viewer Retention",
+    retentionLeftText: "Top Tier Engagement",
+    retentionRightText: "Targeted Tech Audience",
+    enableRgbEffect: true,
+  });
+
   const [availableCountries, setAvailableCountries] = useState<{ code: string; name: string }[]>(ALL_COUNTRIES);
 
   // Fetch initial site data from API on mount
@@ -107,6 +132,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
         if (res.ok) {
           const data = await res.json();
           if (data.stats) setStatsForm(data.stats);
+          if (data.heroConfig) setHeroForm((prev) => ({ ...prev, ...data.heroConfig }));
           if (data.rates) setRatesForm(data.rates);
           if (data.demographics) setDemoForm(data.demographics);
           if (data.geographies) setGeoForm(parseGeographies(data.geographies));
@@ -187,6 +213,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
   const handleSaveAll = async () => {
     if (isViewer) return;
     const payload = {
+      heroConfig: heroForm,
       stats: statsForm,
       rates: ratesForm,
       demographics: demoForm,
@@ -217,6 +244,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
 
   const handleDownloadBackup = async () => {
     const payload = {
+      heroConfig: heroForm,
       stats: statsForm,
       rates: ratesForm,
       demographics: demoForm,
@@ -252,6 +280,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
       const data = JSON.parse(text);
 
       if (data.stats) setStatsForm(data.stats);
+      if (data.heroConfig) setHeroForm(data.heroConfig);
       if (data.rates) setRatesForm(data.rates);
       if (data.demographics) setDemoForm(data.demographics);
       if (data.geographies) setGeoForm(parseGeographies(data.geographies));
@@ -405,7 +434,8 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
             {/* Mobile horizontal tab strip */}
             <div className="flex lg:hidden gap-2 overflow-x-auto pb-2 scrollbar-none">
               {[
-                { id: "stats", label: "Stats", Icon: BarChart },
+                { id: "hero", label: "Hero Card", Icon: Zap },
+                { id: "stats", label: "Stats & Rates", Icon: BarChart },
                 { id: "case-studies", label: "Case Studies", Icon: Award },
                 { id: "what-performs", label: "Performs", Icon: Sparkles },
                 { id: "tools", label: "Tools", Icon: Database },
@@ -429,6 +459,16 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
 
             {/* Desktop vertical sidebar */}
             <div className="hidden lg:flex flex-col gap-2.5">
+              <button
+                onClick={() => setActiveTab("hero")}
+                className={`flex items-center gap-3.5 px-5 py-3.5 rounded-xl text-left font-bold text-sm transition-all shadow-sm ${
+                  activeTab === "hero"
+                    ? "bg-emerald-600 text-white shadow-emerald-600/20"
+                    : "bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] text-brand-muted dark:text-emerald-200/70 hover:text-white hover:bg-emerald-50 dark:hover:bg-[#102922]"
+                }`}
+              >
+                <Zap className="w-4 h-4 text-emerald-400" /> Hero Snapshot Card
+              </button>
               <button
                 onClick={() => setActiveTab("stats")}
                 className={`flex items-center gap-3.5 px-5 py-3.5 rounded-xl text-left font-bold text-sm transition-all shadow-sm ${
@@ -523,6 +563,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                   <div className="flex items-center justify-between pb-5 mb-6 border-b border-brand-border dark:border-[#16382e]">
                     <h2 className="font-heading text-lg font-bold text-brand-text dark:text-white flex items-center gap-2.5">
                       <Edit3 className="w-5 h-5 text-emerald-500" />
+                      {activeTab === "hero" && "Manage Hero Snapshot & Dynamic RGB Frame"}
                       {activeTab === "stats" && "Edit Channel Stats & Pricing"}
                       {activeTab === "case-studies" && "Manage Sponsor Case Studies"}
                       {activeTab === "what-performs" && "Manage What Performs Cards"}
@@ -540,15 +581,371 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                     </div>
                   )}
 
+                  {/* TAB: HERO SNAPSHOT CARD */}
+                  {activeTab === "hero" && (
+                    <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+                      <div className="space-y-5 p-5 sm:p-6 rounded-2xl bg-brand-bg/80 dark:bg-[#061612] border border-emerald-500/30 shadow-sm relative overflow-hidden">
+                        <div className="flex items-center justify-between pb-3 border-b border-brand-border dark:border-[#16382e] flex-wrap gap-2">
+                          <div className="flex items-center gap-2">
+                            <Zap className="w-4 h-4 text-emerald-500 animate-pulse" />
+                            <div>
+                              <h3 className="font-heading font-bold text-sm text-brand-text dark:text-emerald-300 uppercase tracking-wider">
+                                Hero Snapshot Card &amp; Dynamic RGB Framing
+                              </h3>
+                              <p className="text-[11px] text-brand-muted dark:text-emerald-200/60 mt-0.5">
+                                Customize the animated RGB glow, 3D interactive tilt, and all live stats displayed inside the Hero card picture.
+                              </p>
+                            </div>
+                          </div>
+
+                          <label className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs font-bold text-emerald-600 dark:text-emerald-300 cursor-pointer select-none">
+                            <input
+                              type="checkbox"
+                              checked={heroForm.enableRgbEffect !== false}
+                              disabled={isViewer}
+                              onChange={(e) => setHeroForm({ ...heroForm, enableRgbEffect: e.target.checked })}
+                              className="rounded accent-emerald-500 w-4 h-4"
+                            />
+                            <span>RGB Glow Effect Active</span>
+                          </label>
+                        </div>
+
+                        {/* Card Branding */}
+                        <div className="space-y-2">
+                          <div className="text-xs font-bold text-emerald-500 uppercase tracking-wider flex items-center gap-1.5">
+                            <span>Channel Branding &amp; Identity</span>
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div>
+                              <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">
+                                Channel Name
+                              </label>
+                              <input 
+                                type="text" 
+                                value={heroForm.channelName || ""} 
+                                disabled={isViewer}
+                                placeholder="Artificial Quotient"
+                                onChange={(e) => setHeroForm({ ...heroForm, channelName: e.target.value })}
+                                className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">
+                                Channel Handle
+                              </label>
+                              <input 
+                                type="text" 
+                                value={heroForm.channelHandle || ""} 
+                                disabled={isViewer}
+                                placeholder="@ArtificialQuotient"
+                                onChange={(e) => setHeroForm({ ...heroForm, channelHandle: e.target.value })}
+                                className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">
+                                Category / Tagline
+                              </label>
+                              <input 
+                                type="text" 
+                                value={heroForm.channelCategory || ""} 
+                                disabled={isViewer}
+                                placeholder="Tech & AI"
+                                onChange={(e) => setHeroForm({ ...heroForm, channelCategory: e.target.value })}
+                                className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                              />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                            <div>
+                              <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">
+                                YouTube Subscribe URL
+                              </label>
+                              <input 
+                                type="text" 
+                                value={heroForm.subscribeUrl || ""} 
+                                disabled={isViewer}
+                                placeholder="https://www.youtube.com/@..."
+                                onChange={(e) => setHeroForm({ ...heroForm, subscribeUrl: e.target.value })}
+                                className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">
+                                Channel Custom Logo URL
+                              </label>
+                              <div className="flex items-center gap-2">
+                                <input 
+                                  type="text" 
+                                  value={heroForm.channelLogo || ""} 
+                                  disabled={isViewer}
+                                  placeholder="/logo.png or uploaded image"
+                                  onChange={(e) => setHeroForm({ ...heroForm, channelLogo: e.target.value })}
+                                  className="flex-1 min-w-0 border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                                />
+                                <label 
+                                  htmlFor="hero-channel-logo-upload"
+                                  className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold px-3 py-2 rounded-xl cursor-pointer text-xs flex items-center gap-1.5 border border-emerald-500/30 shrink-0 whitespace-nowrap"
+                                >
+                                  {uploadingField === "hero-channel-logo" ? "Saving..." : "Upload Logo"}
+                                  <input 
+                                    id="hero-channel-logo-upload"
+                                    type="file" 
+                                    accept="image/*" 
+                                    className="hidden" 
+                                    onChange={(e) => handleInlineMediaUpload(
+                                      e.target.files, 
+                                      (url) => setHeroForm({ ...heroForm, channelLogo: url }),
+                                      "hero-channel-logo"
+                                    )}
+                                  />
+                                </label>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Stats inside Picture */}
+                        <div className="space-y-2 pt-2 border-t border-brand-border dark:border-[#16382e]">
+                          <div className="text-xs font-bold text-emerald-500 uppercase tracking-wider flex items-center gap-1.5">
+                            <span>Stats Inside Card Picture</span>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div className="p-3 bg-brand-card dark:bg-[#0c201a] rounded-xl border border-brand-border dark:border-[#16382e] space-y-2">
+                              <span className="text-[11px] font-bold uppercase text-emerald-400 block">Metric 1 (Subscribers)</span>
+                              <div className="grid grid-cols-2 gap-2">
+                                <div>
+                                  <label className="block text-[10px] font-bold text-brand-muted dark:text-emerald-200/60 mb-1">Value (e.g. 10.1k)</label>
+                                  <input 
+                                    type="text" 
+                                    value={heroForm.subscribersCount || ""} 
+                                    disabled={isViewer}
+                                    placeholder="10.1k"
+                                    onChange={(e) => setHeroForm({ ...heroForm, subscribersCount: e.target.value })}
+                                    className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-[10px] font-bold text-brand-muted dark:text-emerald-200/60 mb-1">Badge (e.g. Active)</label>
+                                  <input 
+                                    type="text" 
+                                    value={heroForm.subscribersBadge || ""} 
+                                    disabled={isViewer}
+                                    placeholder="Active"
+                                    onChange={(e) => setHeroForm({ ...heroForm, subscribersBadge: e.target.value })}
+                                    className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                                  />
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="p-3 bg-brand-card dark:bg-[#0c201a] rounded-xl border border-brand-border dark:border-[#16382e] space-y-2">
+                              <span className="text-[11px] font-bold uppercase text-cyan-400 block">Metric 2 (Monthly Views)</span>
+                              <div className="grid grid-cols-2 gap-2">
+                                <div>
+                                  <label className="block text-[10px] font-bold text-brand-muted dark:text-emerald-200/60 mb-1">Value (e.g. 69.5k)</label>
+                                  <input 
+                                    type="text" 
+                                    value={heroForm.monthlyViewsCount || ""} 
+                                    disabled={isViewer}
+                                    placeholder="69.5k"
+                                    onChange={(e) => setHeroForm({ ...heroForm, monthlyViewsCount: e.target.value })}
+                                    className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-[10px] font-bold text-brand-muted dark:text-emerald-200/60 mb-1">Badge (e.g. Growing)</label>
+                                  <input 
+                                    type="text" 
+                                    value={heroForm.monthlyViewsBadge || ""} 
+                                    disabled={isViewer}
+                                    placeholder="Growing"
+                                    onChange={(e) => setHeroForm({ ...heroForm, monthlyViewsBadge: e.target.value })}
+                                    className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="p-3.5 bg-brand-card dark:bg-[#0c201a] rounded-xl border border-brand-border dark:border-[#16382e] space-y-2.5">
+                            <span className="text-[11px] font-bold uppercase text-emerald-400 block">Metric 3 (Viewer Retention Gauge &amp; Subtext)</span>
+                            <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
+                              <div>
+                                <label className="block text-[10px] font-bold text-brand-muted dark:text-emerald-200/60 mb-1">Gauge % (e.g. 27%)</label>
+                                <input 
+                                  type="text" 
+                                  value={heroForm.retentionPercent || ""} 
+                                  disabled={isViewer}
+                                  placeholder="27%"
+                                  onChange={(e) => setHeroForm({ ...heroForm, retentionPercent: e.target.value })}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-[10px] font-bold text-brand-muted dark:text-emerald-200/60 mb-1">Gauge Title</label>
+                                <input 
+                                  type="text" 
+                                  value={heroForm.retentionLabel || ""} 
+                                  disabled={isViewer}
+                                  placeholder="Avg. Viewer Retention"
+                                  onChange={(e) => setHeroForm({ ...heroForm, retentionLabel: e.target.value })}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-[10px] font-bold text-brand-muted dark:text-emerald-200/60 mb-1">Bottom Left Subtext</label>
+                                <input 
+                                  type="text" 
+                                  value={heroForm.retentionLeftText || ""} 
+                                  disabled={isViewer}
+                                  placeholder="Top Tier Engagement"
+                                  onChange={(e) => setHeroForm({ ...heroForm, retentionLeftText: e.target.value })}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-[10px] font-bold text-brand-muted dark:text-emerald-200/60 mb-1">Bottom Right Subtext</label>
+                                <input 
+                                  type="text" 
+                                  value={heroForm.retentionRightText || ""} 
+                                  disabled={isViewer}
+                                  placeholder="Targeted Tech Audience"
+                                  onChange={(e) => setHeroForm({ ...heroForm, retentionRightText: e.target.value })}
+                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Hero Section Copy */}
+                        <div className="space-y-2 pt-2 border-t border-brand-border dark:border-[#16382e]">
+                          <div className="text-xs font-bold text-emerald-500 uppercase tracking-wider flex items-center gap-1.5">
+                            <span>Hero Copy &amp; Headline</span>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div>
+                              <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">
+                                Top Badge Text
+                              </label>
+                              <input 
+                                type="text" 
+                                value={heroForm.badgeText || ""} 
+                                disabled={isViewer}
+                                placeholder="Open for Q3 Sponsorships"
+                                onChange={(e) => setHeroForm({ ...heroForm, badgeText: e.target.value })}
+                                className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">
+                                Main Headline
+                              </label>
+                              <input 
+                                type="text" 
+                                value={heroForm.headline || ""} 
+                                disabled={isViewer}
+                                placeholder="Actionable AI Workflows"
+                                onChange={(e) => setHeroForm({ ...heroForm, headline: e.target.value })}
+                                className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">
+                                Headline Highlight
+                              </label>
+                              <input 
+                                type="text" 
+                                value={heroForm.headlineHighlight || ""} 
+                                disabled={isViewer}
+                                placeholder="For Everyone"
+                                onChange={(e) => setHeroForm({ ...heroForm, headlineHighlight: e.target.value })}
+                                className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                              />
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">
+                              Hero Subtitle Description
+                            </label>
+                            <textarea 
+                              rows={2}
+                              value={heroForm.subheadline || ""} 
+                              disabled={isViewer}
+                              placeholder="Artificial Quotient turns AI software into step-by-step workflow tutorials..."
+                              onChange={(e) => setHeroForm({ ...heroForm, subheadline: e.target.value })}
+                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">
+                                Primary CTA Button Text &amp; URL
+                              </label>
+                              <div className="grid grid-cols-2 gap-2">
+                                <input 
+                                  type="text" 
+                                  value={heroForm.sponsorButtonText || ""} 
+                                  disabled={isViewer}
+                                  placeholder="Sponsor the Channel"
+                                  onChange={(e) => setHeroForm({ ...heroForm, sponsorButtonText: e.target.value })}
+                                  className="border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                                />
+                                <input 
+                                  type="text" 
+                                  value={heroForm.sponsorButtonUrl || ""} 
+                                  disabled={isViewer}
+                                  placeholder="https://forms.gle/..."
+                                  onChange={(e) => setHeroForm({ ...heroForm, sponsorButtonUrl: e.target.value })}
+                                  className="border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                                />
+                              </div>
+                            </div>
+                            <div>
+                              <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">
+                                Secondary CTA Button Text
+                              </label>
+                              <input 
+                                type="text" 
+                                value={heroForm.caseStudiesButtonText || ""} 
+                                disabled={isViewer}
+                                placeholder="View Case Studies"
+                                onChange={(e) => setHeroForm({ ...heroForm, caseStudiesButtonText: e.target.value })}
+                                className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex justify-end pt-4 border-t border-brand-border dark:border-[#16382e]">
+                        <button
+                          type="button"
+                          onClick={handleSaveAll}
+                          disabled={isViewer}
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-md text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <Save className="w-4 h-4" /> Save Hero Configuration
+                        </button>
+                      </div>
+                    </form>
+                  )}
+
                   {/* TAB 1: STATS & PRICING */}
                   {activeTab === "stats" && (
-                    <form className="space-y-8">
+                    <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
                       {/* SECTION 1: Channel Performance Metrics */}
                       <div className="space-y-4">
                         <div className="flex items-center gap-2 pb-2.5 border-b border-brand-border dark:border-[#16382e]">
                           <BarChart3 className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
                           <h3 className="font-heading font-bold text-sm text-brand-text dark:text-emerald-400 uppercase tracking-wider">
-                            Channel Performance Metrics
+                            Audience Snapshot Stats &amp; YouTube Analytics
                           </h3>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
@@ -1712,7 +2109,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                               email: `admin${adminUsers.length + 1}@artificialquotient.com`,
                               password: "",
                               role: "Editor",
-                              permissions: ["case-studies", "what-performs", "tools"],
+                              permissions: ["hero", "case-studies", "what-performs", "tools"],
                               recoveryKey: `AQ-SEC-${Math.floor(1000 + Math.random() * 9000)}`,
                               status: "Active",
                               lastLogin: new Date().toISOString(),
@@ -1837,11 +2234,11 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                                     const newRole = e.target.value as "Super Admin" | "Editor" | "Viewer";
                                     next[idx].role = newRole;
                                     if (newRole === "Super Admin") {
-                                      next[idx].permissions = ["stats", "case-studies", "what-performs", "tools", "backup", "users"];
+                                      next[idx].permissions = ["hero", "stats", "case-studies", "what-performs", "tools", "backup", "users"];
                                     } else if (newRole === "Editor") {
-                                      next[idx].permissions = ["case-studies", "what-performs", "tools"];
+                                      next[idx].permissions = ["hero", "case-studies", "what-performs", "tools"];
                                     } else {
-                                      next[idx].permissions = ["stats"];
+                                      next[idx].permissions = ["hero", "stats"];
                                     }
                                     setAdminUsers(next);
                                   }}
@@ -1965,6 +2362,113 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                       Real-time
                     </span>
                   </div>
+
+                  {/* PREVIEW TAB: HERO SNAPSHOT CARD */}
+                  {activeTab === "hero" && (
+                    <div className="space-y-4">
+                      <div className="text-xs font-bold text-emerald-500 uppercase tracking-wider flex items-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5" /> Live Hero Snapshot Card Preview
+                      </div>
+
+                      <div className="relative group p-[2px] rounded-3xl shadow-xl transition-all duration-300">
+                        {heroForm.enableRgbEffect !== false && (
+                          <div className="absolute -inset-1.5 rounded-3xl rgb-aura-glow opacity-80 pointer-events-none -z-10"></div>
+                        )}
+
+                        <div className={`p-[2px] rounded-[24px] ${heroForm.enableRgbEffect !== false ? "rgb-border-card" : "bg-emerald-500/40"}`}>
+                          <div className="bg-[#091512] rounded-[22px] p-4 sm:p-5 text-white relative overflow-hidden">
+                            {/* Corner Accents */}
+                            <div className="absolute top-2 left-2 w-2.5 h-2.5 border-t-2 border-l-2 border-emerald-400/60 rounded-tl-sm pointer-events-none"></div>
+                            <div className="absolute top-2 right-2 w-2.5 h-2.5 border-t-2 border-r-2 border-cyan-400/60 rounded-tr-sm pointer-events-none"></div>
+                            <div className="absolute bottom-2 left-2 w-2.5 h-2.5 border-b-2 border-l-2 border-teal-400/60 rounded-bl-sm pointer-events-none"></div>
+                            <div className="absolute bottom-2 right-2 w-2.5 h-2.5 border-b-2 border-r-2 border-blue-400/60 rounded-br-sm pointer-events-none"></div>
+
+                            {/* Card Header */}
+                            <div className="flex justify-between items-start mb-4 gap-2">
+                              <div className="flex items-center gap-2.5 min-w-0">
+                                <div className="relative shrink-0">
+                                  <div className="w-10 h-10 rounded-xl overflow-hidden border border-emerald-500/50 bg-zinc-900 flex items-center justify-center">
+                                    {heroForm.channelLogo ? (
+                                      <img src={heroForm.channelLogo} alt="Logo" className="w-full h-full object-contain p-1" />
+                                    ) : (
+                                      <LogoImage alt="Logo" width={40} height={40} className="w-full h-full object-contain p-1" />
+                                    )}
+                                  </div>
+                                  <div className="absolute -bottom-1 -right-1 bg-emerald-500 text-zinc-950 p-0.5 rounded-full border border-zinc-950">
+                                    <CheckCircle2 className="w-2.5 h-2.5 stroke-[3]" />
+                                  </div>
+                                </div>
+
+                                <div className="min-w-0">
+                                  <h4 className="font-heading font-bold text-xs sm:text-sm text-white truncate">
+                                    {heroForm.channelName || "Artificial Quotient"}
+                                  </h4>
+                                  <p className="text-zinc-400 text-[10px] flex items-center gap-1 truncate">
+                                    <span>{heroForm.channelHandle || "@ArtificialQuotient"}</span>
+                                    <span className="text-emerald-400 font-semibold">• {heroForm.channelCategory || "Tech & AI"}</span>
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="bg-gradient-to-r from-red-600 to-red-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg uppercase tracking-wider shrink-0 flex items-center gap-1 shadow-sm shadow-red-600/30">
+                                <Play className="w-2.5 h-2.5 fill-current" />
+                                <span>{heroForm.subscribeButtonText || "Subscribe"}</span>
+                              </div>
+                            </div>
+
+                            {/* Card Metrics */}
+                            <div className="grid grid-cols-2 gap-2 mb-3">
+                              <div className="bg-[#0d221c] p-2.5 rounded-xl border border-emerald-500/20">
+                                <div className="text-[10px] text-emerald-200/70 flex items-center gap-1">
+                                  <Users className="w-3 h-3 text-emerald-400" /> Subscribers
+                                </div>
+                                <div className="flex items-baseline gap-1 mt-0.5">
+                                  <span className="text-base font-extrabold text-white">{heroForm.subscribersCount || "10.1k"}</span>
+                                  <span className="text-[9px] font-bold text-emerald-400 flex items-center">
+                                    <TrendingUp className="w-2.5 h-2.5 mr-0.5" /> {heroForm.subscribersBadge || "Active"}
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div className="bg-[#0d221c] p-2.5 rounded-xl border border-cyan-500/20">
+                                <div className="text-[10px] text-cyan-200/70 flex items-center gap-1">
+                                  <Play className="w-3 h-3 text-cyan-400" /> Monthly Views
+                                </div>
+                                <div className="flex items-baseline gap-1 mt-0.5">
+                                  <span className="text-base font-extrabold text-white">{heroForm.monthlyViewsCount || "69.5k"}</span>
+                                  <span className="text-[9px] font-bold text-cyan-400 flex items-center">
+                                    <Sparkles className="w-2.5 h-2.5 mr-0.5" /> {heroForm.monthlyViewsBadge || "Growing"}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Retention Gauge */}
+                            <div className="bg-[#0d221c]/60 p-2.5 rounded-xl border border-emerald-500/15">
+                              <div className="flex justify-between items-center text-[10px] mb-1.5">
+                                <span className="text-emerald-200/80 font-medium">
+                                  {heroForm.retentionLabel || "Avg. Viewer Retention"}
+                                </span>
+                                <span className="font-bold text-white bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded text-[9px] border border-emerald-500/30">
+                                  {heroForm.retentionPercent || "27%"}
+                                </span>
+                              </div>
+                              <div className="w-full bg-zinc-900 rounded-full h-2 overflow-hidden p-0.5 border border-emerald-500/20">
+                                <div 
+                                  className="bg-gradient-to-r from-emerald-500 to-cyan-400 h-full rounded-full"
+                                  style={{ width: `${Math.min(100, Math.max(5, parseInt((heroForm.retentionPercent || "27").replace(/[^0-9]/g, ""), 10) || 27))}%` }}
+                                ></div>
+                              </div>
+                              <div className="text-[9px] text-emerald-200/60 mt-1.5 flex justify-between">
+                                <span>{heroForm.retentionLeftText || "Top Tier Engagement"}</span>
+                                <span className="text-emerald-200/80 font-semibold">{heroForm.retentionRightText || "Targeted Tech Audience"}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   {/* PREVIEW TAB 1: STATS & PRICING */}
                   {activeTab === "stats" && (

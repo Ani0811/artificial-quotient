@@ -16,6 +16,30 @@
     "avgPercentageViewed": "27.1%",
     "returningViewers": "6.6%"
   },
+  "heroConfig": {
+    "badgeText": "Open for Q3 Sponsorships",
+    "headline": "Actionable AI Workflows",
+    "headlineHighlight": "For Everyone",
+    "subheadline": "Artificial Quotient turns AI software into step-by-step workflow tutorials for 10K+ subscribers and 55K+ monthly viewers who create with AI tools every day.",
+    "sponsorButtonText": "Sponsor the Channel",
+    "sponsorButtonUrl": "https://forms.gle/4uTUZkEi5o3iqYrs5",
+    "caseStudiesButtonText": "View Case Studies",
+    "channelName": "Artificial Quotient",
+    "channelHandle": "@ArtificialQuotient",
+    "channelCategory": "Tech & AI",
+    "channelLogo": "",
+    "subscribeUrl": "https://www.youtube.com/@ArtificialQuotient01",
+    "subscribeButtonText": "Subscribe",
+    "subscribersCount": "10.1k",
+    "subscribersBadge": "Active",
+    "monthlyViewsCount": "69.5k",
+    "monthlyViewsBadge": "Growing",
+    "retentionPercent": "27%",
+    "retentionLabel": "Avg. Viewer Retention",
+    "retentionLeftText": "Top Tier Engagement",
+    "retentionRightText": "Targeted Tech Audience",
+    "enableRgbEffect": true
+  },
   "rates": {
     "dedicatedRate": "$500",
     "integrationRate": "$300"

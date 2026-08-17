@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS site_config (
   avg_view_duration VARCHAR(64),
   avg_percentage_viewed VARCHAR(64),
   returning_viewers VARCHAR(64),
+  hero_config_json TEXT,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
@@ -34,14 +35,15 @@ ALTER TABLE site_config ADD COLUMN IF NOT EXISTS watch_time_hours VARCHAR(64);
 ALTER TABLE site_config ADD COLUMN IF NOT EXISTS avg_view_duration VARCHAR(64);
 ALTER TABLE site_config ADD COLUMN IF NOT EXISTS avg_percentage_viewed VARCHAR(64);
 ALTER TABLE site_config ADD COLUMN IF NOT EXISTS returning_viewers VARCHAR(64);
+ALTER TABLE site_config ADD COLUMN IF NOT EXISTS hero_config_json TEXT;
 
 -- 3. Select Site Config
 SELECT * FROM site_config WHERE id = 'default';
 
 -- 4. Upsert Site Config (Parameterized)
 INSERT INTO site_config
-  (id, subscribers, subscribers_sub, monthly_views, monthly_views_sub, new_subs, new_subs_sub, videos_count, videos_count_sub, retention, channel_banner, demographics_json, geographies_json, rates_json, audience_interests_json, shopping_interests_json, unique_viewers, watch_time_hours, avg_view_duration, avg_percentage_viewed, returning_viewers)
-VALUES ('default', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  (id, subscribers, subscribers_sub, monthly_views, monthly_views_sub, new_subs, new_subs_sub, videos_count, videos_count_sub, retention, channel_banner, demographics_json, geographies_json, rates_json, audience_interests_json, shopping_interests_json, unique_viewers, watch_time_hours, avg_view_duration, avg_percentage_viewed, returning_viewers, hero_config_json)
+VALUES ('default', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 ON DUPLICATE KEY UPDATE
   subscribers = VALUES(subscribers),
   subscribers_sub = VALUES(subscribers_sub),
@@ -62,5 +64,6 @@ ON DUPLICATE KEY UPDATE
   watch_time_hours = VALUES(watch_time_hours),
   avg_view_duration = VALUES(avg_view_duration),
   avg_percentage_viewed = VALUES(avg_percentage_viewed),
-  returning_viewers = VALUES(returning_viewers);
+  returning_viewers = VALUES(returning_viewers),
+  hero_config_json = VALUES(hero_config_json);
 

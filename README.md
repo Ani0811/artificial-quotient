@@ -443,6 +443,35 @@ Reduced vertical padding and internal gaps across all homepage sections on mobil
 
 ---
 
+### 📅 Day 14 — Dynamic RGB Hero Snapshot Card, 3D Perspective Tilt, Top-to-Bottom Case Study Modals & Dedicated Admin Hero Card Manager
+
+#### 1. Dynamic Conic-Gradient RGB Framing & Ambient Aura Glow (`src/app/globals.css`, `src/components/hero.tsx`)
+- **CSS Houdini Conic Gradient Engine (`@property --rgb-angle`)**: Implemented smooth 360-degree rotating RGB conic gradients cycling across emerald, cyan, blue, purple, magenta, rose, and amber color spectra.
+- **Multi-Layer Ambient Aura Glow (`.rgb-aura-glow`)**: Added breathing neon ambient back-lighting with pulsing diffusion behind the Hero card.
+- **Interactive 3D Mouse Perspective Tilt**: Built physics-based mouse-tilt perspective (`onMouseMove`) with specular lighting reflection and smooth spring reset on pointer exit.
+- **Cybernetic Corner Framing & Shimmer**: Integrated illuminated corner brackets across all 4 edges and subtle animated light shimmer sweeps across the card face.
+
+#### 2. Dedicated Hero Snapshot Card Tab in Admin Dashboard (`src/app/admin/DashboardClient.tsx`)
+- **Independent Tab Architecture (`activeTab === "hero"`)**: Separated the Hero Card manager into its own primary tab (`Hero Snapshot Card` with `Zap` icon) on both desktop sidebar and mobile tab navigation.
+- **Full Picture Stats Editability**:
+  - *Metric 1*: Subscribers count (e.g. `10.1k`) and badge (e.g. `Active`).
+  - *Metric 2*: Monthly views count (e.g. `69.5k`) and badge (e.g. `Growing`).
+  - *Metric 3*: Retention gauge % (e.g. `27%`), title (`Avg. Viewer Retention`), and left/right engagement labels (`Top Tier Engagement`, `Targeted Tech Audience`).
+- **Channel Identity & Hero Copy Controls**:
+  - Channel Name, Handle, Tagline/Category, YouTube Subscribe URL, and Logo Image file upload with inline media handler.
+  - Top Badge text, Main Headline, Highlight text, Subheadline, and CTA Button text/URLs.
+  - Real-time RGB dynamic lighting toggle.
+- **Live Interactive Pre-Publish Preview**: Renders the exact 3D tiltable RGB Hero card updating in real time as values are edited.
+- **Schema & Database Persistence**: Added `hero_config_json` to `site_config` Knex schema (`src/schema/site-config.ts`), raw SQL definitions (`site-config.sql`), API backup generation, and JSON fallback store (`site-data.json`).
+
+#### 3. Top-to-Bottom Case Studies Modal Layout (`src/components/sponsor-results.tsx`)
+- Converted the campaign impact breakdown and primary metric badge inside the case study detail modal from side-by-side grid columns into a clean vertical stack (`flex flex-col gap-3`) for improved readability.
+
+#### 4. Cleaned Buyer Intent Audience Badges (`src/components/audience-snapshot.tsx`)
+- Removed unwanted hover scale/zoom effects and pointer cursor from the "High Buyer Intent" audience badges, ensuring clear distinction from clickable navigation elements.
+
+---
+
 ## 📂 Project Structure
 
 ```

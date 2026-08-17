@@ -36,7 +36,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col">
-      <Hero />
+      <Hero heroConfig={data?.heroConfig} stats={data?.stats} isLoading={loading} />
       <div id="brands" className="scroll-mt-16">
         <BrandCarousel brands={data?.brandItems} />
       </div>
