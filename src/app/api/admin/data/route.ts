@@ -71,6 +71,17 @@ export async function GET() {
             brandItems = await getBrandItems();
           }
         }
+
+        if (fileData.whatPerforms && Array.isArray(fileData.whatPerforms)) {
+          const hasAllWhatPerforms = fileData.whatPerforms.every((fileW: any) =>
+            whatPerforms.some((dbW: any) => dbW.id === fileW.id && dbW.title === fileW.title && dbW.views === fileW.views)
+          ) && whatPerforms.length === fileData.whatPerforms.length;
+
+          if (!hasAllWhatPerforms) {
+            await syncWhatPerforms(fileData.whatPerforms);
+            whatPerforms = await getWhatPerforms();
+          }
+        }
       } catch {
         // Ignore file sync check error
       }
