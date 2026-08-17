@@ -15,6 +15,7 @@ export const DEFAULT_FONTS: FontConfig = {
 };
 
 export const QUOTE_FONT_OPTIONS = [
+  { label: "Roboto (Clean Geometric)", value: "Roboto" },
   { label: "Caveat (Default Casual)", value: "Caveat" },
   { label: "Dancing Script (Fluid Cursive)", value: "Dancing Script" },
   { label: "Pacifico (Fun Bold Brush)", value: "Pacifico" },
@@ -24,6 +25,9 @@ export const QUOTE_FONT_OPTIONS = [
   { label: "Playfair Display (Serif)", value: "Playfair Display" },
   { label: "Outfit (Modern Clean)", value: "Outfit" },
   { label: "Inter (Standard Tech)", value: "Inter" },
+  { label: "Roboto Serif (Editorial Serif)", value: "Roboto Serif" },
+  { label: "Roboto Slab (Modern Slab)", value: "Roboto Slab" },
+  { label: "Roboto Mono (Monospace)", value: "Roboto Mono" },
 ];
 
 export function loadGoogleFont(fontName: string) {
@@ -34,7 +38,7 @@ export function loadGoogleFont(fontName: string) {
   const link = document.createElement("link");
   link.id = id;
   link.rel = "stylesheet";
-  link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(fontName)}:wght@400;600;700&display=swap`;
+  link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(fontName)}:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap`;
   document.head.appendChild(link);
 }
 

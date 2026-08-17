@@ -411,6 +411,38 @@ Reduced vertical padding and internal gaps across all homepage sections on mobil
 
 ---
 
+### 📅 Day 13 — Mobile GPU Marquee Engine, Preloaded Brand Logo, Dynamic World Geographies, Database Countries Datalist, Streamlined Case Studies & Legal Suite (Terms & Privacy)
+
+#### 1. Hardware GPU-Accelerated Mobile Marquee Engine (`src/components/brand-carousel.tsx`, `src/app/globals.css`)
+- **Resolved Mobile Animation Lag**: Fixed frame-rate drops on high-refresh mobile devices (e.g. 120Hz ProMotion screens) caused by main-thread layout thrashing from continuous JavaScript `requestAnimationFrame` mutations on `scrollLeft`.
+- **Pure CSS 3D GPU Transforms**: Replaced the JS loop with hardware-composited `@keyframes marquee-scroll` using `translate3d(0, 0, 0)` → `translate3d(-50%, 0, 0)`, `will-change: transform`, and `transform: translateZ(0)`.
+- **66% DOM Reduction**: Reduced duplicate card sets from 6 sets down to 2 perfectly looping seamless tracks.
+- **Mobile Touch Freeze & Direction Toggle**: Added touch/hover freeze (`pause-marquee` on `onTouchStart` / `onTouchEnd`) and directional chevron navigation controls.
+
+#### 2. First-Time Logo Preloading & Instant Delivery (`src/components/ui/logo-image.tsx`)
+- **Next.js `<Image priority>` Optimization**: Replaced multi-step state cycling with Next.js `next/image` with `priority={true}`, generating `<link rel="preload">` in the initial HTML `<head>` for instant, failure-free asset delivery on cold visits.
+
+#### 3. Database-Backed Global Countries Engine (`src/schema/countries.ts`, `src/lib/countries.ts`, `/api/admin/countries`)
+- **MySQL `countries` Table**: Created dedicated MySQL table (`code VARCHAR(10) PRIMARY KEY`, `name VARCHAR(100) NOT NULL INDEX`, `flag_emoji VARCHAR(10)`, `display_order INT`) with automated schema initialization and startup seeding of ~240 countries from `src/data/countries.json`.
+- **Database Countries REST API**: Created `/api/admin/countries` and included country datasets in `/api/admin/data` payload.
+- **Admin Autocomplete Datalist**: Integrated `<datalist id="countries-autocomplete-list">` dynamically populated from MySQL, allowing admins to search, select, upsert, and delete any country worldwide with real-time percentage and flag preview.
+- **Cross-Platform Flag Rendering (`CountryFlag`)**: Upgraded `CountryFlag` in `src/components/audience-snapshot.tsx` to serve high-res flag images (FlagCDN with Retina 2x) for all 240+ countries alongside custom SVG flags, eliminating Windows OS emoji rendering limitations.
+
+#### 4. Streamlined Case Study Metrics & Direct Sponsorship Gateway (`src/components/sponsor-results.tsx`, `src/app/admin/DashboardClient.tsx`)
+- **Simplified Card & Modal Architecture**: Removed the secondary contract/cost metrics from both the Case Study cards and the detailed breakdown modal, highlighting the core primary performance metric.
+- **Sponsorship Application Gateway**: Linked the "Book Similar Campaign" action button directly to the official Google Sponsorship Application Form (`https://forms.gle/4uTUZkEi5o3iqYrs5`).
+- **Admin Case Studies Editor**: Streamlined the admin editor to two clear inputs: Primary Metric Label and Primary Metric Value.
+
+#### 5. Roboto Typography Suite for Case Studies (`src/components/font-provider.tsx`)
+- Added **Roboto (Clean Geometric)**, **Roboto Serif (Editorial Serif)**, **Roboto Slab (Modern Slab)**, and **Roboto Mono (Monospace)** to the quote font options with dynamic Google Font font-face loader.
+
+#### 6. Comprehensive Legal & Compliance Suite (`/terms`, `/privacy`, `src/components/footer.tsx`, `src/app/sitemap.ts`)
+- **Terms & Conditions Page (`/terms`)**: Built a full legal document covering creator sponsorship scopes (Dedicated Videos, Integrations, Packages), booking timelines, FTC endorsement compliance, editorial independence, revision policy, payment terms, and intellectual property.
+- **Privacy Policy Page (`/privacy`)**: Implemented a privacy-first policy tailored for the portfolio and admin hub, outlining data protection, zero-sale commitment, third-party service disclosures, and user rights.
+- **Footer & SEO Indexing**: Integrated **Legal & Admin** column and bottom copyright links in `footer.tsx`, and registered `/terms` and `/privacy` in `sitemap.ts`.
+
+---
+
 ## 📂 Project Structure
 
 ```
@@ -434,21 +466,20 @@ artificial-quotient/
 │   │   │   ├── DashboardClient.tsx   # Theme-Corrected Admin Management Portal
 │   │   │   └── page.tsx              # Server Auth & RBAC Check
 │   │   ├── api/
-│   │   │   ├── admin/data/           # JSON Data Read, Save & Auto Backup API (with CORS & OPTIONS)
+│   │   │   ├── admin/countries/      # Database World Countries CRUD API
+│   │   │   ├── admin/data/           # Dynamic Site Data & Backup API (CORS & OPTIONS)
 │   │   │   ├── admin/upload/         # Media File Upload API
 │   │   │   ├── admin/users/          # Admin User Management API
 │   │   │   ├── auth/                 # Login, Logout, 2FA & Reset Password APIs
-│   │   │   └── contact/              # Sponsorship Inquiry API (Brevo/SMTP with CORS & OPTIONS)
-│   │   ├── contact/
-│   │   │   ├── layout.tsx            # Contact Page SEO Layout & Meta
-│   │   │   └── page.tsx              # Contact & Sponsorship Booking Page
+│   │   │   └── contact/              # Sponsorship Inquiry API (Brevo/SMTP)
+│   │   ├── contact/                  # Contact & Sponsorship Booking Page
+│   │   ├── privacy/                  # Privacy Policy Page
+│   │   ├── terms/                    # Terms & Conditions Page
 │   │   ├── sponsor/                  # Sponsorship Subpage
 │   │   ├── stats/                    # Audience Stats Subpage
 │   │   ├── case-studies/             # Case Studies Subpage
-│   │   ├── tools/
-│   │   │   ├── layout.tsx            # AI Tools SEO Layout & Meta
-│   │   │   └── page.tsx              # AI Tool Vault Directory
-│   │   ├── globals.css               # Global CSS & Dot Matrix Utilities
+│   │   ├── tools/                    # AI Tool Vault Directory
+│   │   ├── globals.css               # Global CSS & GPU Marquee Keyframes
 │   │   ├── layout.tsx                # Root Layout, Analytics, Async Cookies & Ambient Glows
 │   │   ├── loading.tsx               # Global Loading Screen & Animated Logo
 │   │   ├── manifest.ts               # Dynamic Web App Manifest (/manifest.webmanifest)
@@ -462,28 +493,31 @@ artificial-quotient/
 │   │   ├── seo/
 │   │   │   └── structured-data.tsx   # Schema.org JSON-LD Structured Data Components
 │   │   ├── ui/
-│   │   │   └── logo-image.tsx        # Multi-Tier Fallback Cascading Brand Logo Component
-│   │   ├── audience-snapshot.tsx     # Dynamic Stats & Interactive SVG Flags
-│   │   ├── brand-carousel.tsx        # Glitch-Free Infinite Wrap Brands & Partner Marquee
+│   │   │   └── logo-image.tsx        # Preloaded Multi-Tier Cascading Brand Logo Component
+│   │   ├── audience-snapshot.tsx     # Dynamic Stats, World Geographies & Cross-Platform Flags
+│   │   ├── brand-carousel.tsx        # Hardware GPU Marquee Engine with Touch Freeze
 │   │   ├── campaign-workflow.tsx     # 5-Step Campaign Process Cards
-│   │   ├── footer.tsx                # Modern Multi-Column Glassmorphic Footer
-│   │   ├── hero.tsx                  # Redesigned Glassmorphic YouTube Channel Card
-│   │   ├── navbar.tsx                # Dynamic Lock Gateway Header with Smooth Scroll-To-Top
+│   │   ├── font-provider.tsx         # Google Fonts Provider (Roboto, Caveat, etc.)
+│   │   ├── footer.tsx                # Multi-Column Footer with Legal & Admin Links
+│   │   ├── hero.tsx                  # Glassmorphic YouTube Channel Card
+│   │   ├── navbar.tsx                # Header Navigation with Smooth Scroll-To-Top
 │   │   ├── rate-card.tsx             # Pricing Packages with Google Form Gateway Links
-│   │   ├── scroll-to-top.tsx         # Floating Glassmorphic Scroll Restoration Button
+│   │   ├── scroll-to-top.tsx         # Floating Scroll Restoration Button
 │   │   ├── skeletons.tsx             # Skeleton Loaders for Homepage Sections
-│   │   ├── sponsor-results.tsx       # Dynamic Sponsor Case Study Cards with Pagination & Modal
+│   │   ├── sponsor-results.tsx       # Streamlined Case Studies with Modal & Pagination
 │   │   ├── theme-provider.tsx        # Dark/Light Theme Context
 │   │   ├── theme-toggle.tsx          # Interactive Theme Switch Button
-│   │   └── what-performs.tsx         # Dynamic Video Performance Cards with YouTube Links
+│   │   └── what-performs.tsx         # Video Performance Cards with YouTube Links
 │   ├── data/
 │   │   ├── admin-users.json          # Seed Admin User Accounts
+│   │   ├── countries.json            # ISO World Countries & Flag Emoji Dataset
 │   │   ├── site-data.json            # Primary Dynamic Site Data Store
 │   │   └── backups/                  # Server-Side Rolling Snapshot Backups
 │   ├── emails/
 │   │   └── contact-template.ts       # Responsive Dark Email Template with Inline CID Logo
 │   ├── lib/
 │   │   ├── auth-store.ts             # Admin Password & Role State Manager
+│   │   ├── countries.ts              # Country Code & Alias Resolution Engine
 │   │   ├── db.ts                     # Knex MySQL Connection Pool & Schema Initializer
 │   │   ├── email-service.ts          # Brevo Multi-Key Pool & Nodemailer SMTP Engine
 │   │   ├── otp-store.ts              # In-Memory 2FA One-Time Password Store
@@ -493,6 +527,7 @@ artificial-quotient/
 │   ├── schema/                       # Knex.js Domain Models & Auto-Table Initializers
 │   │   ├── admin-users.ts
 │   │   ├── brand-items.ts
+│   │   ├── countries.ts              # MySQL Countries Table Schema & Queries
 │   │   ├── index.ts
 │   │   ├── site-config.ts
 │   │   ├── sponsor-case-studies.ts

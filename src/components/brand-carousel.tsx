@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Sparkles, ChevronLeft, ChevronRight, ExternalLink, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { BrandItem } from "@/types";
@@ -18,18 +18,15 @@ const ACCENT_PALETTE = [
   "from-sky-400 to-indigo-500",
 ];
 
-const SETS_COUNT = 6;
-
 interface BrandCarouselProps {
   brands?: BrandItem[];
 }
 
 export default function BrandCarousel({ brands }: BrandCarouselProps) {
-  const scrollRef = useRef<HTMLDivElement>(null);
   const [items, setItems] = useState<BrandItem[]>(brands ?? []);
   const [isPaused, setIsPaused] = useState(false);
-  const isNormalizingRef = useRef(false);
-  const autoScrollResumeTimer = useRef<NodeJS.Timeout | null>(null);
+  const [direction, setDirection] = useState<"forward" | "reverse">("forward");
+  const touchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Fetch from API if no brands passed as props
   useEffect(() => {
@@ -47,92 +44,34 @@ export default function BrandCarousel({ brands }: BrandCarouselProps) {
       .catch(() => {});
   }, [brands]);
 
-  // Multiply items by SETS_COUNT to ensure an infinite seamless buffer
-  const displayItems = items.length > 0
-    ? Array.from({ length: SETS_COUNT }, () => items).flat()
-    : [];
-
-  // Normalize scroll position seamlessly to prevent hitting edges or running into blank space
-  const normalizeScroll = useCallback(() => {
-    const el = scrollRef.current;
-    if (!el || isNormalizingRef.current || items.length === 0) return;
-
-    const setWidth = el.scrollWidth / SETS_COUNT;
-    if (!setWidth || setWidth <= 0) return;
-
-    // If scrolled past set 4, wrap back by 2 sets
-    if (el.scrollLeft >= setWidth * 4) {
-      isNormalizingRef.current = true;
-      el.scrollLeft -= setWidth * 2;
-      requestAnimationFrame(() => {
-        isNormalizingRef.current = false;
-      });
-    }
-    // If scrolled back before set 1, wrap forward by 2 sets
-    else if (el.scrollLeft <= setWidth * 1) {
-      isNormalizingRef.current = true;
-      el.scrollLeft += setWidth * 2;
-      requestAnimationFrame(() => {
-        isNormalizingRef.current = false;
-      });
-    }
-  }, [items.length]);
-
-  // Center scroll position in the middle sets on load
+  // Clean up touch pause timer on unmount
   useEffect(() => {
-    const el = scrollRef.current;
-    if (!el || items.length === 0) return;
-
-    const setWidth = el.scrollWidth / SETS_COUNT;
-    if (setWidth > 0) {
-      el.scrollLeft = setWidth * 2;
-    }
-  }, [items]);
-
-  // Smooth continuous marquee glide via requestAnimationFrame
-  useEffect(() => {
-    if (isPaused || items.length === 0) return;
-
-    let animId: number;
-    let lastTime = performance.now();
-
-    const step = (time: number) => {
-      const delta = (time - lastTime) / 1000;
-      lastTime = time;
-
-      const el = scrollRef.current;
-      if (el && !isPaused) {
-        // Continuous smooth glide at ~35px per second
-        el.scrollLeft += delta * 35;
-        normalizeScroll();
-      }
-      animId = requestAnimationFrame(step);
+    return () => {
+      if (touchTimeoutRef.current) clearTimeout(touchTimeoutRef.current);
     };
+  }, []);
 
-    animId = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(animId);
-  }, [isPaused, items.length, normalizeScroll]);
-
-  // Manual scroll with Previous / Next buttons
-  const handleManualScroll = (direction: "left" | "right") => {
-    if (!scrollRef.current) return;
+  const handleTouchStart = () => {
+    if (touchTimeoutRef.current) clearTimeout(touchTimeoutRef.current);
     setIsPaused(true);
+  };
 
-    // Clear any existing resume timer
-    if (autoScrollResumeTimer.current) {
-      clearTimeout(autoScrollResumeTimer.current);
-    }
-
-    const el = scrollRef.current;
-    const scrollAmount = direction === "left" ? -344 : 344;
-    el.scrollBy({ left: scrollAmount, behavior: "smooth" });
-
-    // Normalize immediately and schedule auto-scroll resumption after user stops clicking
-    normalizeScroll();
-    autoScrollResumeTimer.current = setTimeout(() => {
-      normalizeScroll();
+  const handleTouchEnd = () => {
+    if (touchTimeoutRef.current) clearTimeout(touchTimeoutRef.current);
+    touchTimeoutRef.current = setTimeout(() => {
       setIsPaused(false);
-    }, 2500);
+    }, 2000);
+  };
+
+  // Toggle or switch direction with previous / next buttons
+  const handleDirectionChange = (newDirection: "forward" | "reverse") => {
+    setDirection(newDirection);
+    // Momentary pause to give clean visual feedback before resuming in new direction
+    setIsPaused(true);
+    if (touchTimeoutRef.current) clearTimeout(touchTimeoutRef.current);
+    touchTimeoutRef.current = setTimeout(() => {
+      setIsPaused(false);
+    }, 400);
   };
 
   if (items.length === 0) {
@@ -144,6 +83,12 @@ export default function BrandCarousel({ brands }: BrandCarouselProps) {
       </section>
     );
   }
+
+  // Double the items array for a seamless 2-track infinite loop (reduces DOM by 66% vs 6 sets)
+  const displayItems = [...items, ...items];
+
+  // Dynamic animation duration based on item count (approx 4.2 seconds per card)
+  const animationDuration = `${Math.max(items.length * 4.2, 28)}s`;
 
   return (
     <section id="brands" className="w-full py-12 sm:py-16 px-4 border-t border-brand-border dark:border-zinc-800/80 transition-colors relative overflow-hidden bg-brand-bg/50 dark:bg-zinc-950/40">
@@ -170,50 +115,59 @@ export default function BrandCarousel({ brands }: BrandCarouselProps) {
           {/* Carousel Controls */}
           <div className="flex items-center justify-center gap-2">
             <button
-              onClick={() => handleManualScroll("left")}
-              className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-900 border border-brand-border dark:border-zinc-800 text-brand-text dark:text-white flex items-center justify-center hover:bg-emerald-500 hover:text-white dark:hover:bg-emerald-500 dark:hover:border-emerald-500 transition-all shadow-sm active:scale-95 z-30 cursor-pointer"
-              aria-label="Previous Brands"
+              onClick={() => handleDirectionChange("reverse")}
+              className={`w-10 h-10 rounded-xl border transition-all shadow-sm active:scale-95 z-30 cursor-pointer flex items-center justify-center ${
+                direction === "reverse"
+                  ? "bg-emerald-500 text-white border-emerald-500"
+                  : "bg-white dark:bg-zinc-900 border-brand-border dark:border-zinc-800 text-brand-text dark:text-white hover:bg-emerald-500 hover:text-white dark:hover:bg-emerald-500 dark:hover:border-emerald-500"
+              }`}
+              aria-label="Previous Brands (Reverse Flow)"
+              title="Reverse Marquee Flow"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button
-              onClick={() => handleManualScroll("right")}
-              className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-900 border border-brand-border dark:border-zinc-800 text-brand-text dark:text-white flex items-center justify-center hover:bg-emerald-500 hover:text-white dark:hover:bg-emerald-500 dark:hover:border-emerald-500 transition-all shadow-sm active:scale-95 z-30 cursor-pointer"
-              aria-label="Next Brands"
+              onClick={() => handleDirectionChange("forward")}
+              className={`w-10 h-10 rounded-xl border transition-all shadow-sm active:scale-95 z-30 cursor-pointer flex items-center justify-center ${
+                direction === "forward"
+                  ? "bg-emerald-500 text-white border-emerald-500"
+                  : "bg-white dark:bg-zinc-900 border-brand-border dark:border-zinc-800 text-brand-text dark:text-white hover:bg-emerald-500 hover:text-white dark:hover:bg-emerald-500 dark:hover:border-emerald-500"
+              }`}
+              aria-label="Next Brands (Forward Flow)"
+              title="Forward Marquee Flow"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
           </div>
         </div>
 
-        {/* Seamless Infinite Marquee Carousel */}
+        {/* Hardware-Accelerated Infinite Marquee Carousel */}
         <div 
-          className="relative group/container overflow-hidden rounded-2xl"
+          className="relative group/container overflow-hidden rounded-2xl select-none"
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
-          onTouchStart={() => setIsPaused(true)}
-          onTouchEnd={() => {
-            if (autoScrollResumeTimer.current) clearTimeout(autoScrollResumeTimer.current);
-            autoScrollResumeTimer.current = setTimeout(() => setIsPaused(false), 2000);
-          }}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          onTouchCancel={handleTouchEnd}
         >
           {/* Left & Right Gradient Mask Fades */}
-          <div className="absolute top-0 bottom-0 left-0 w-16 bg-gradient-to-r from-brand-bg dark:from-zinc-950 to-transparent z-20 pointer-events-none"></div>
-          <div className="absolute top-0 bottom-0 right-0 w-16 bg-gradient-to-l from-brand-bg dark:from-zinc-950 to-transparent z-20 pointer-events-none"></div>
+          <div className="absolute top-0 bottom-0 left-0 w-12 sm:w-20 bg-gradient-to-r from-brand-bg dark:from-zinc-950 to-transparent z-20 pointer-events-none"></div>
+          <div className="absolute top-0 bottom-0 right-0 w-12 sm:w-20 bg-gradient-to-l from-brand-bg dark:from-zinc-950 to-transparent z-20 pointer-events-none"></div>
 
-          <div
-            ref={scrollRef}
-            onScroll={normalizeScroll}
-            className="overflow-x-auto scrollbar-none py-2 select-none"
-            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-          >
-            <div className="flex gap-6 py-1 w-max">
+          {/* GPU Composited Track */}
+          <div className="overflow-hidden py-3">
+            <div 
+              className={`flex gap-6 py-1 w-max ${
+                direction === "forward" ? "animate-marquee-smooth" : "animate-marquee-reverse"
+              } ${isPaused ? "pause-marquee" : ""}`}
+              style={{ animationDuration }}
+            >
               {displayItems.map((brand, idx) => {
                 const accent = ACCENT_PALETTE[idx % ACCENT_PALETTE.length];
                 return (
                   <div
                     key={`${brand.id}-${idx}`}
-                    className="shrink-0 w-[290px] sm:w-[320px] bg-white dark:bg-zinc-900/90 rounded-2xl p-6 border border-brand-border dark:border-zinc-800/80 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col justify-between hover:border-emerald-500/40 relative overflow-hidden"
+                    className="shrink-0 w-[285px] sm:w-[320px] bg-white dark:bg-zinc-900/90 rounded-2xl p-6 border border-brand-border dark:border-zinc-800/80 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col justify-between hover:border-emerald-500/40 relative overflow-hidden transform-gpu"
                   >
                     {/* Top Gradient Line on Hover */}
                     <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${accent} opacity-70 group-hover:opacity-100 transition-opacity`}></div>

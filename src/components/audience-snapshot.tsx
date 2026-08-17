@@ -2,7 +2,7 @@
 
 import { BarChart3, Globe, ShieldCheck, Users, Eye, TrendingUp, PlaySquare, Heart, ShoppingBag } from "lucide-react";
 import { useEffect, useState } from "react";
-import { InterestItem } from "@/types";
+import { InterestItem, CountryItem, ChannelGeographies } from "@/types";
 
 // Country SVG Flags
 const USAFlag = () => (
@@ -75,6 +75,95 @@ const BangladeshFlag = () => (
   </svg>
 );
 
+const CanadaFlag = () => (
+  <svg className="w-5 h-3.5 rounded-[2px] shadow-sm flex-shrink-0 object-cover" viewBox="0 0 640 480">
+    <path fill="#f00" d="M0 0h160v480H0zm480 0h160v480H480z"/>
+    <path fill="#fff" d="M160 0h320v480H160z"/>
+    <path fill="#f00" d="m320 110 15 45h35l-25 25 10 45-35-25-35 25 10-45-25-25h35z"/>
+  </svg>
+);
+
+const AustraliaFlag = () => (
+  <svg className="w-5 h-3.5 rounded-[2px] shadow-sm flex-shrink-0 object-cover" viewBox="0 0 640 480">
+    <path fill="#00008b" d="M0 0h640v480H0z"/>
+    <path stroke="#fff" strokeWidth="30" d="m0 0 320 240M320 0 0 240"/>
+    <path stroke="#C8102E" strokeWidth="20" d="m0 0 320 240M320 0 0 240"/>
+    <path stroke="#fff" strokeWidth="50" d="M160 0v240M0 120h320"/>
+    <path stroke="#C8102E" strokeWidth="30" d="M160 0v240M0 120h320"/>
+    <circle cx="160" cy="360" r="28" fill="#fff"/>
+    <circle cx="480" cy="140" r="14" fill="#fff"/>
+    <circle cx="530" cy="200" r="14" fill="#fff"/>
+    <circle cx="480" cy="320" r="14" fill="#fff"/>
+    <circle cx="420" cy="220" r="14" fill="#fff"/>
+  </svg>
+);
+
+import { getCountryCode } from "@/lib/countries";
+
+export function CountryFlag({ name }: { name: string }) {
+  const norm = (name || "").toLowerCase().trim();
+  if (norm === "india" || norm === "in") return <IndiaFlag />;
+  if (norm === "usa" || norm === "united states" || norm === "us" || norm === "united states of america") return <USAFlag />;
+  if (norm === "uk" || norm === "united kingdom" || norm === "gb" || norm === "great britain") return <UKFlag />;
+  if (norm === "germany" || norm === "de") return <GermanyFlag />;
+  if (norm === "pakistan" || norm === "pk") return <PakistanFlag />;
+  if (norm === "nigeria" || norm === "ng") return <NigeriaFlag />;
+  if (norm === "bangladesh" || norm === "bd") return <BangladeshFlag />;
+  if (norm === "canada" || norm === "ca") return <CanadaFlag />;
+  if (norm === "australia" || norm === "au") return <AustraliaFlag />;
+
+  const code = getCountryCode(name);
+  if (code && code.length === 2) {
+    return (
+      <img
+        src={`https://flagcdn.com/w40/${code.toLowerCase()}.png`}
+        srcSet={`https://flagcdn.com/w80/${code.toLowerCase()}.png 2x`}
+        alt={name || code}
+        className="w-5 h-3.5 object-cover rounded-[2px] shadow-sm flex-shrink-0 inline-block align-middle"
+        loading="lazy"
+      />
+    );
+  }
+
+  return (
+    <span className="w-5 h-3.5 inline-flex items-center justify-center text-xs flex-shrink-0 select-none">
+      🌐
+    </span>
+  );
+}
+
+export function parseGeographies(geoData: any): CountryItem[] {
+  if (!geoData) return [];
+  if (Array.isArray(geoData)) {
+    return geoData
+      .filter((item: any) => item && (item.name || item.percent))
+      .map((item: any, idx: number) => ({
+        id: item.id || `geo-${idx}`,
+        name: item.name || "Unknown",
+        percent: item.percent || "0%",
+      }));
+  }
+  if (typeof geoData === "object") {
+    const nameMap: Record<string, string> = {
+      india: "India",
+      usa: "USA",
+      pakistan: "Pakistan",
+      nigeria: "Nigeria",
+      bangladesh: "Bangladesh",
+      uk: "United Kingdom",
+      germany: "Germany",
+    };
+    return Object.entries(geoData)
+      .filter(([_, val]) => typeof val === "string" && val !== "0%" && val.trim() !== "")
+      .map(([key, val], idx) => ({
+        id: `geo-legacy-${idx}`,
+        name: nameMap[key.toLowerCase()] || (key.charAt(0).toUpperCase() + key.slice(1)),
+        percent: val as string,
+      }));
+  }
+  return [];
+}
+
 interface SiteData {
   stats?: {
     subscribers?: string;
@@ -102,15 +191,7 @@ interface SiteData {
     malePercent?: string;
     femalePercent?: string;
   };
-  geographies?: {
-    usa?: string;
-    india?: string;
-    uk?: string;
-    germany?: string;
-    pakistan?: string;
-    nigeria?: string;
-    bangladesh?: string;
-  };
+  geographies?: ChannelGeographies;
   buyerIntent?: {
     title?: string;
     desc?: string;
@@ -350,51 +431,28 @@ export default function AudienceSnapshot({ siteData, isLoading }: AudienceSnapsh
               </h3>
               
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
-                <div className="group/item flex flex-col p-3 bg-white dark:bg-[#102922] rounded-xl border border-brand-border dark:border-[#16382e] shadow-sm text-brand-text dark:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:border-emerald-500/40 hover:bg-emerald-500/5 dark:hover:bg-[#14332a] hover:shadow-md cursor-pointer">
-                  <span className="flex items-center gap-2 mb-2 font-medium">
-                    <span className="transition-transform duration-200 group-hover/item:scale-125 inline-block">
-                      <IndiaFlag />
-                    </span>
-                    <span className="font-semibold text-xs truncate">India</span>
-                  </span>
-                  <span className="font-bold text-emerald-500 text-sm transition-transform duration-200 group-hover/item:scale-110">{geographies.india || "0%"}</span>
-                </div>
-                <div className="group/item flex flex-col p-3 bg-white dark:bg-[#102922] rounded-xl border border-brand-border dark:border-[#16382e] shadow-sm text-brand-text dark:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:border-emerald-500/40 hover:bg-emerald-500/5 dark:hover:bg-[#14332a] hover:shadow-md cursor-pointer">
-                  <span className="flex items-center gap-2 mb-2 font-medium">
-                    <span className="transition-transform duration-200 group-hover/item:scale-125 inline-block">
-                      <USAFlag />
-                    </span>
-                    <span className="font-semibold text-xs truncate">USA</span>
-                  </span>
-                  <span className="font-bold text-emerald-500 text-sm transition-transform duration-200 group-hover/item:scale-110">{geographies.usa || "0%"}</span>
-                </div>
-                <div className="group/item flex flex-col p-3 bg-white dark:bg-[#102922] rounded-xl border border-brand-border dark:border-[#16382e] shadow-sm text-brand-text dark:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:border-emerald-500/40 hover:bg-emerald-500/5 dark:hover:bg-[#14332a] hover:shadow-md cursor-pointer">
-                  <span className="flex items-center gap-2 mb-2 font-medium">
-                    <span className="transition-transform duration-200 group-hover/item:scale-125 inline-block">
-                      <PakistanFlag />
-                    </span>
-                    <span className="font-semibold text-xs truncate">Pakistan</span>
-                  </span>
-                  <span className="font-bold text-emerald-500 text-sm transition-transform duration-200 group-hover/item:scale-110">{geographies.pakistan || "0%"}</span>
-                </div>
-                <div className="group/item flex flex-col p-3 bg-white dark:bg-[#102922] rounded-xl border border-brand-border dark:border-[#16382e] shadow-sm text-brand-text dark:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:border-emerald-500/40 hover:bg-emerald-500/5 dark:hover:bg-[#14332a] hover:shadow-md cursor-pointer">
-                  <span className="flex items-center gap-2 mb-2 font-medium">
-                    <span className="transition-transform duration-200 group-hover/item:scale-125 inline-block">
-                      <NigeriaFlag />
-                    </span>
-                    <span className="font-semibold text-xs truncate">Nigeria</span>
-                  </span>
-                  <span className="font-bold text-emerald-500 text-sm transition-transform duration-200 group-hover/item:scale-110">{geographies.nigeria || "0%"}</span>
-                </div>
-                <div className="group/item flex flex-col p-3 bg-white dark:bg-[#102922] rounded-xl border border-brand-border dark:border-[#16382e] shadow-sm text-brand-text dark:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:border-emerald-500/40 hover:bg-emerald-500/5 dark:hover:bg-[#14332a] hover:shadow-md cursor-pointer">
-                  <span className="flex items-center gap-2 mb-2 font-medium">
-                    <span className="transition-transform duration-200 group-hover/item:scale-125 inline-block">
-                      <BangladeshFlag />
-                    </span>
-                    <span className="font-semibold text-xs truncate">Bangladesh</span>
-                  </span>
-                  <span className="font-bold text-emerald-500 text-sm transition-transform duration-200 group-hover/item:scale-110">{geographies.bangladesh || "0%"}</span>
-                </div>
+                {parseGeographies(geographies).length > 0 ? (
+                  parseGeographies(geographies).map((country, idx) => (
+                    <div 
+                      key={country.id || `${country.name}-${idx}`} 
+                      className="group/item flex flex-col p-3 bg-white dark:bg-[#102922] rounded-xl border border-brand-border dark:border-[#16382e] shadow-sm text-brand-text dark:text-white transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:border-emerald-500/40 hover:bg-emerald-500/5 dark:hover:bg-[#14332a] hover:shadow-md cursor-pointer"
+                    >
+                      <span className="flex items-center gap-2 mb-2 font-medium min-w-0">
+                        <span className="transition-transform duration-200 group-hover/item:scale-125 inline-block">
+                          <CountryFlag name={country.name} />
+                        </span>
+                        <span className="font-semibold text-xs truncate" title={country.name}>{country.name}</span>
+                      </span>
+                      <span className="font-bold text-emerald-500 text-sm transition-transform duration-200 group-hover/item:scale-110">
+                        {country.percent}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="col-span-full py-4 text-center text-xs text-brand-muted dark:text-emerald-200/60 font-medium">
+                    No top countries configured.
+                  </div>
+                )}
               </div>
             </div>
 

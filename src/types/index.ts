@@ -99,17 +99,17 @@ export interface ChannelDemographics {
   femalePercent: string;
 }
 
-export interface ChannelGeographies {
-  usa: string;
-  india: string;
-  uk: string;
-  germany: string;
-  pakistan: string;
-  nigeria: string;
-  bangladesh: string;
+export interface CountryItem {
+  id?: string;
+  name: string;
+  percent: string;
+  code?: string;
 }
+
+export type ChannelGeographies = CountryItem[] | Record<string, string>;
 
 export interface InterestItem {
   name: string;
   level: string;
 }
+

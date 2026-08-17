@@ -7,8 +7,10 @@ import {
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { QUOTE_FONT_OPTIONS, loadGoogleFont } from "@/components/font-provider";
-import { ToolItem, PerformItem, SponsorItem, AdminUser, BrandItem, InterestItem } from "@/types";
+import { ToolItem, PerformItem, SponsorItem, AdminUser, BrandItem, InterestItem, CountryItem } from "@/types";
 import { LogoImage } from "@/components/ui/logo-image";
+import { CountryFlag, parseGeographies } from "@/components/audience-snapshot";
+import { ALL_COUNTRIES } from "@/lib/countries";
 
 function getYoutubeId(url?: string) {
   if (!url) return null;
@@ -86,15 +88,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
     femalePercent: "",
   });
 
-  const [geoForm, setGeoForm] = useState({
-    usa: "",
-    india: "",
-    uk: "",
-    germany: "",
-    pakistan: "",
-    nigeria: "",
-    bangladesh: "",
-  });
+  const [geoForm, setGeoForm] = useState<CountryItem[]>([]);
 
   const [whatPerforms, setWhatPerforms] = useState<PerformItem[]>([]);
   const [sponsorResults, setSponsorResults] = useState<SponsorItem[]>([]);
@@ -103,6 +97,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
   const [uploadingField, setUploadingField] = useState<string | null>(null);
   const [audienceInterests, setAudienceInterests] = useState<InterestItem[]>([]);
   const [shoppingInterests, setShoppingInterests] = useState<InterestItem[]>([]);
+  const [availableCountries, setAvailableCountries] = useState<{ code: string; name: string }[]>(ALL_COUNTRIES);
 
   // Fetch initial site data from API on mount
   useEffect(() => {
@@ -114,7 +109,8 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
           if (data.stats) setStatsForm(data.stats);
           if (data.rates) setRatesForm(data.rates);
           if (data.demographics) setDemoForm(data.demographics);
-          if (data.geographies) setGeoForm(data.geographies);
+          if (data.geographies) setGeoForm(parseGeographies(data.geographies));
+          if (data.countries && data.countries.length > 0) setAvailableCountries(data.countries);
           if (data.whatPerforms) setWhatPerforms(data.whatPerforms);
           if (data.sponsorResults) {
             setSponsorResults(data.sponsorResults);
@@ -258,7 +254,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
       if (data.stats) setStatsForm(data.stats);
       if (data.rates) setRatesForm(data.rates);
       if (data.demographics) setDemoForm(data.demographics);
-      if (data.geographies) setGeoForm(data.geographies);
+      if (data.geographies) setGeoForm(parseGeographies(data.geographies));
       if (data.whatPerforms) setWhatPerforms(data.whatPerforms);
       if (data.sponsorResults) {
         setSponsorResults(data.sponsorResults);
@@ -268,6 +264,8 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
       }
       if (data.tools) setToolsList(data.tools);
       if (data.brandItems) setBrandsList(data.brandItems);
+      if (data.audienceInterests) setAudienceInterests(data.audienceInterests);
+      if (data.shoppingInterests) setShoppingInterests(data.shoppingInterests);
 
       // Persist restored backup
       const res = await fetch("/api/admin/data", {
@@ -712,84 +710,75 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                       </div>
 
                       {/* SECTION 3: Geography Top Countries */}
+                      {/* SECTION 3: Geography Top Countries */}
                       <div className="space-y-4 pt-2">
-                        <div className="flex items-center gap-2 pb-2.5 border-b border-brand-border dark:border-[#16382e]">
-                          <Globe className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
-                          <h3 className="font-heading font-bold text-sm text-brand-text dark:text-emerald-400 uppercase tracking-wider">
-                            Geography Top Countries
+                        <div className="flex items-center justify-between pb-2.5 border-b border-brand-border dark:border-[#16382e]">
+                          <h3 className="font-heading font-bold text-sm text-brand-text dark:text-emerald-400 uppercase tracking-wider flex items-center gap-2">
+                            <Globe className="w-4 h-4 text-emerald-500 dark:text-emerald-400" /> Geography Top Countries
                           </h3>
+                          <button
+                            type="button"
+                            disabled={isViewer}
+                            onClick={() => setGeoForm([...geoForm, { id: `geo-${Date.now()}`, name: "", percent: "" }])}
+                            className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold px-3 py-1 rounded-lg text-xs flex items-center gap-1 border border-emerald-500/30 disabled:opacity-50 transition-colors shadow-sm cursor-pointer"
+                          >
+                            <Plus className="w-3.5 h-3.5" /> Add Country
+                          </button>
                         </div>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3.5">
-                          <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5 truncate">United States</label>
-                            <input 
-                              type="text" 
-                              value={geoForm.usa} 
-                              disabled={isViewer}
-                              onChange={(e) => setGeoForm({ ...geoForm, usa: e.target.value })}
-                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5 truncate">India</label>
-                            <input 
-                              type="text" 
-                              value={geoForm.india} 
-                              disabled={isViewer}
-                              onChange={(e) => setGeoForm({ ...geoForm, india: e.target.value })}
-                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5 truncate">Pakistan</label>
-                            <input 
-                              type="text" 
-                              value={geoForm.pakistan} 
-                              disabled={isViewer}
-                              onChange={(e) => setGeoForm({ ...geoForm, pakistan: e.target.value })}
-                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5 truncate">Nigeria</label>
-                            <input 
-                              type="text" 
-                              value={geoForm.nigeria} 
-                              disabled={isViewer}
-                              onChange={(e) => setGeoForm({ ...geoForm, nigeria: e.target.value })}
-                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5 truncate">Bangladesh</label>
-                            <input 
-                              type="text" 
-                              value={geoForm.bangladesh} 
-                              disabled={isViewer}
-                              onChange={(e) => setGeoForm({ ...geoForm, bangladesh: e.target.value })}
-                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5 truncate">United Kingdom</label>
-                            <input 
-                              type="text" 
-                              value={geoForm.uk} 
-                              disabled={isViewer}
-                              onChange={(e) => setGeoForm({ ...geoForm, uk: e.target.value })}
-                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5 truncate">Germany</label>
-                            <input 
-                              type="text" 
-                              value={geoForm.germany} 
-                              disabled={isViewer}
-                              onChange={(e) => setGeoForm({ ...geoForm, germany: e.target.value })}
-                              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
-                            />
-                          </div>
+
+                        <datalist id="countries-autocomplete-list">
+                          {availableCountries.map((c) => (
+                            <option key={c.code} value={c.name} />
+                          ))}
+                        </datalist>
+
+                        <div className="space-y-2.5">
+                          {geoForm.map((country, idx) => (
+                            <div key={country.id || idx} className="flex items-center gap-2">
+                              <div className="w-9 h-9 rounded-xl bg-brand-bg dark:bg-[#061612] border border-brand-border dark:border-[#16382e] flex items-center justify-center shrink-0">
+                                <CountryFlag name={country.name} />
+                              </div>
+                              <input 
+                                type="text" 
+                                list="countries-autocomplete-list"
+                                placeholder="Country Name (e.g. United States, India)"
+                                value={country.name} 
+                                disabled={isViewer}
+                                onChange={(e) => {
+                                  const next = [...geoForm];
+                                  next[idx] = { ...next[idx], name: e.target.value };
+                                  setGeoForm(next);
+                                }}
+                                className="flex-1 min-w-0 border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+                              />
+                              <input 
+                                type="text" 
+                                placeholder="Share (e.g. 21.8%)"
+                                value={country.percent} 
+                                disabled={isViewer}
+                                onChange={(e) => {
+                                  const next = [...geoForm];
+                                  next[idx] = { ...next[idx], percent: e.target.value };
+                                  setGeoForm(next);
+                                }}
+                                className="w-28 sm:w-32 border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50 shrink-0" 
+                              />
+                              <button
+                                type="button"
+                                disabled={isViewer}
+                                onClick={() => setGeoForm(geoForm.filter((_, i) => i !== idx))}
+                                className="text-red-500 hover:bg-red-500/10 p-2 rounded-lg transition-colors disabled:opacity-50 shrink-0 cursor-pointer"
+                                title="Delete Country"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ))}
+                          {geoForm.length === 0 && (
+                            <div className="text-center py-4 text-xs text-brand-muted dark:text-emerald-200/60 font-medium">
+                              No countries added yet. Click &quot;Add Country&quot; above to add one.
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -1030,9 +1019,9 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                               />
                             </div>
 
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                               <div>
-                                <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">Stat 1 Label</label>
+                                <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">Primary Metric Label (e.g. Videos Created, Link Clicks)</label>
                                 <input 
                                   type="text" 
                                   value={item.stat1Label} 
@@ -1045,39 +1034,13 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                                 />
                               </div>
                               <div>
-                                <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">Stat 1 Value</label>
+                                <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">Primary Metric Value (e.g. 2 Videos, 1,200+)</label>
                                 <input 
                                   type="text" 
                                   value={item.stat1Value} 
                                   onChange={(e) => {
                                     const next = [...sponsorResults];
                                     next[idx].stat1Value = e.target.value;
-                                    setSponsorResults(next);
-                                  }}
-                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs" 
-                                />
-                              </div>
-                              <div>
-                                <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">Stat 2 Label</label>
-                                <input 
-                                  type="text" 
-                                  value={item.stat2Label} 
-                                  onChange={(e) => {
-                                    const next = [...sponsorResults];
-                                    next[idx].stat2Label = e.target.value;
-                                    setSponsorResults(next);
-                                  }}
-                                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs" 
-                                />
-                              </div>
-                              <div>
-                                <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">Stat 2 Value</label>
-                                <input 
-                                  type="text" 
-                                  value={item.stat2Value} 
-                                  onChange={(e) => {
-                                    const next = [...sponsorResults];
-                                    next[idx].stat2Value = e.target.value;
                                     setSponsorResults(next);
                                   }}
                                   className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs" 
@@ -2028,6 +1991,29 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                           <div className="text-xl font-bold text-brand-text dark:text-white mt-1">{ratesForm.integrationRate}</div>
                         </div>
                       </div>
+
+                      {/* Top Geographies Real-time Preview */}
+                      <div className="p-4 rounded-xl bg-brand-bg dark:bg-[#061612] border border-brand-border dark:border-[#16382e] space-y-3">
+                        <div className="flex items-center gap-2 text-xs font-bold text-emerald-500 uppercase tracking-wider">
+                          <Globe className="w-3.5 h-3.5" /> Top Geographies ({geoForm.length})
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                          {geoForm.map((country, idx) => (
+                            <div key={country.id || idx} className="p-2.5 bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] rounded-xl">
+                              <div className="flex items-center gap-1.5 mb-1 min-w-0">
+                                <CountryFlag name={country.name} />
+                                <span className="text-xs font-semibold truncate text-brand-text dark:text-white" title={country.name}>{country.name || "Unnamed"}</span>
+                              </div>
+                              <div className="text-xs font-bold text-emerald-500">{country.percent || "0%"}</div>
+                            </div>
+                          ))}
+                          {geoForm.length === 0 && (
+                            <div className="col-span-full py-2 text-center text-xs text-brand-muted dark:text-emerald-200/60">
+                              No countries configured.
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   )}
 
@@ -2051,8 +2037,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                               </p>
                             )}
                             <div className="flex justify-between items-center flex-wrap gap-2 text-xs font-bold border-t border-brand-border dark:border-[#16382e] pt-2">
-                              <span className="min-w-0">{item.stat1Label}: <span className="text-emerald-500">{item.stat1Value}</span></span>
-                              <span className="min-w-0">{item.stat2Label}: <span className="text-emerald-500">{item.stat2Value}</span></span>
+                              <span className="min-w-0">{item.stat1Label || "Metric"}: <span className="text-emerald-500">{item.stat1Value || "—"}</span></span>
                             </div>
                           </div>
                         ))}

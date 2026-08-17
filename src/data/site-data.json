@@ -31,15 +31,13 @@
     "malePercent": "84.4%",
     "femalePercent": "15.6%"
   },
-  "geographies": {
-    "india": "21.8%",
-    "usa": "10.7%",
-    "pakistan": "4.5%",
-    "nigeria": "2.7%",
-    "bangladesh": "2.5%",
-    "uk": "0%",
-    "germany": "0%"
-  },
+  "geographies": [
+    { "id": "geo-1", "name": "India", "percent": "21.8%" },
+    { "id": "geo-2", "name": "United States", "percent": "10.7%" },
+    { "id": "geo-3", "name": "Pakistan", "percent": "4.5%" },
+    { "id": "geo-4", "name": "Nigeria", "percent": "2.7%" },
+    { "id": "geo-5", "name": "Bangladesh", "percent": "2.5%" }
+  ],
   "whatPerforms": [
     {
       "id": "1",

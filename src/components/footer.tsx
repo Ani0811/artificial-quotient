@@ -108,16 +108,19 @@ export default function Footer() {
           {/* Admin & Legal Column */}
           <div className="col-span-1 flex flex-col gap-3">
             <h3 className="font-heading font-bold text-sm text-brand-text dark:text-white uppercase tracking-wider">
-              Management
+              Legal &amp; Admin
             </h3>
-            <Link href="/admin" className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors">
-              Admin Portal
+            <Link href="/terms" className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors">
+              Terms &amp; Conditions
             </Link>
-            <Link href="/admin/login" className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors">
-              Admin Login
+            <Link href="/privacy" className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors">
+              Privacy Policy
             </Link>
             <Link href="/contact" className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors">
               Support &amp; Contact
+            </Link>
+            <Link href="/admin" className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors">
+              Admin Portal
             </Link>
           </div>
 
@@ -125,7 +128,11 @@ export default function Footer() {
 
         <div className="pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-brand-muted dark:text-zinc-500">
           <p>&copy; {new Date().getFullYear()} Artificial Quotient. All rights reserved.</p>
-          <p>Built for AI Creators &amp; SaaS Partners.</p>
+          <div className="flex items-center gap-4">
+            <Link href="/terms" className="hover:text-emerald-500 transition-colors">Terms of Service</Link>
+            <span>&bull;</span>
+            <Link href="/privacy" className="hover:text-emerald-500 transition-colors">Privacy Policy</Link>
+          </div>
         </div>
       </div>
     </footer>

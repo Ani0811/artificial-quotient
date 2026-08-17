@@ -81,6 +81,8 @@ import {
   createWhatPerformsTable, 
   createToolItemsTable,
   createBrandItemsTable,
+  createCountriesTable,
+  seedCountriesTable,
   syncWhatPerforms,
   syncSponsorCaseStudies,
   syncToolItems,
@@ -102,9 +104,11 @@ export async function initDatabase(): Promise<boolean> {
     await createWhatPerformsTable();
     await createToolItemsTable();
     await createBrandItemsTable();
+    await createCountriesTable();
 
-    // 2. Always sync/seed admin users and site data from JSON if needed
+    // 2. Always sync/seed admin users, countries, and site data from JSON if needed
     await seedAdminUsersFromJSON();
+    await seedCountriesTable();
 
     const configCount = await k("site_config").count("id as cnt").first();
     if (Number(configCount?.cnt || 0) === 0) {

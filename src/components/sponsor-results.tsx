@@ -191,17 +191,13 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
               </div>
               
               <div>
-                <div className="grid grid-cols-2 gap-4 border-t border-brand-border dark:border-zinc-800 pt-6 transition-colors duration-300 group-hover:border-emerald-500/20 dark:group-hover:border-zinc-700 mb-4">
-                  <div className="p-2 rounded-xl transition-all duration-300 hover:bg-emerald-500/5 dark:hover:bg-zinc-800/50">
+                <div className="border-t border-brand-border dark:border-zinc-800 pt-5 transition-colors duration-300 group-hover:border-emerald-500/20 dark:group-hover:border-zinc-700 mb-4">
+                  <div className="p-2.5 rounded-xl bg-brand-bg/60 dark:bg-zinc-950/40 border border-brand-border/60 dark:border-zinc-800/60 transition-all duration-300 hover:bg-emerald-500/5 dark:hover:bg-zinc-800/50">
                     <p className="text-xs text-brand-muted dark:text-zinc-400 mb-1 font-medium">{item.stat1Label}</p>
-                    <p className="text-xl font-bold text-brand-text dark:text-white flex items-center gap-1.5">
+                    <p className="text-xl font-bold text-brand-text dark:text-white flex items-center justify-between">
                       <span>{item.stat1Value}</span>
                       <ArrowUpRight className="w-4 h-4 text-emerald-500" />
                     </p>
-                  </div>
-                  <div className="p-2 rounded-xl transition-all duration-300 hover:bg-emerald-500/5 dark:hover:bg-zinc-800/50">
-                    <p className="text-xs text-brand-muted dark:text-zinc-400 mb-1 font-medium">{item.stat2Label}</p>
-                    <p className="text-xl font-bold text-emerald-500">{item.stat2Value}</p>
                   </div>
                 </div>
 
@@ -342,7 +338,7 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
             )}
 
             {/* Stat Badges Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="p-3.5 rounded-2xl bg-brand-bg dark:bg-[#061612] border border-brand-border dark:border-[#16382e]">
                 <span className="text-xs font-bold text-brand-muted dark:text-emerald-200/60 uppercase block mb-1">
                   {selectedCaseStudy.stat1Label}
@@ -352,17 +348,8 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
                 </span>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-brand-bg dark:bg-[#061612] border border-brand-border dark:border-[#16382e]">
-                <span className="text-xs font-bold text-brand-muted dark:text-emerald-200/60 uppercase block mb-1">
-                  {selectedCaseStudy.stat2Label}
-                </span>
-                <span className="text-xl sm:text-2xl font-extrabold text-emerald-500">
-                  {selectedCaseStudy.stat2Value}
-                </span>
-              </div>
-
               {selectedCaseStudy.roiBreakdown && (
-                <div className="sm:col-span-2 md:col-span-1 p-3.5 rounded-2xl bg-brand-bg dark:bg-[#061612] border border-brand-border dark:border-[#16382e]">
+                <div className="p-3.5 rounded-2xl bg-brand-bg dark:bg-[#061612] border border-brand-border dark:border-[#16382e]">
                   <span className="text-xs font-bold text-brand-muted dark:text-emerald-200/60 uppercase block mb-1">
                     Campaign Impact
                   </span>
@@ -424,7 +411,7 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
               <button
                 type="button"
                 onClick={() => setSelectedCaseStudy(null)}
-                className="px-4 py-2.5 rounded-xl border border-brand-border dark:border-[#16382e] text-xs font-bold text-brand-muted dark:text-emerald-200/70 hover:text-white transition-colors text-center"
+                className="px-4 py-2.5 rounded-xl border border-brand-border dark:border-[#16382e] text-xs font-bold text-brand-muted dark:text-emerald-200/70 hover:text-white transition-colors text-center cursor-pointer"
               >
                 Close Breakdown
               </button>
@@ -442,12 +429,14 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
                   </a>
                 )}
 
-                <Link
-                  href="/contact"
+                <a
+                  href="https://forms.gle/4uTUZkEi5o3iqYrs5"
+                  target="_blank"
+                  rel="noreferrer"
                   className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2.5 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md transition-all text-center"
                 >
                   Book Similar Campaign &rarr;
-                </Link>
+                </a>
               </div>
             </div>
 

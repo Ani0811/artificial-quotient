@@ -10,7 +10,8 @@ import {
   getToolItems, 
   syncToolItems,
   getBrandItems,
-  syncBrandItems
+  syncBrandItems,
+  getCountriesFromDb
 } from "@/schema";
 import fs from "fs/promises";
 import path from "path";
@@ -36,6 +37,8 @@ export async function GET() {
     await initDatabase();
 
     const siteConfigData = await getSiteConfig();
+    const allDbCountries = await getCountriesFromDb();
+
     if (siteConfigData) {
       let sponsorResults = await getSponsorCaseStudies();
       let whatPerforms = await getWhatPerforms();
@@ -84,6 +87,7 @@ export async function GET() {
           whatPerforms,
           tools,
           brandItems,
+          countries: allDbCountries,
           dbStatus: "Connected to MySQL (AQ-Dashboard) via Knex",
         },
         {
