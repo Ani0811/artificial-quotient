@@ -6,11 +6,11 @@
     "password": "admin123",
     "role": "Super Admin",
     "permissions": [
+      "hero",
       "stats",
       "case-studies",
       "what-performs",
-      "tools",
-      "blog",
+      "brands",
       "backup",
       "users"
     ],

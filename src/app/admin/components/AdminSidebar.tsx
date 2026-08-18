@@ -4,7 +4,7 @@ import React from "react";
 import { Zap, BarChart, Award, Sparkles, Database, Layers, Users, ShieldCheck } from "lucide-react";
 import { AdminUser } from "@/types";
 
-export type AdminTabType = "hero" | "stats" | "case-studies" | "what-performs" | "tools" | "brands" | "users" | "backup";
+export type AdminTabType = "hero" | "stats" | "case-studies" | "what-performs" | "brands" | "users" | "backup";
 
 interface AdminSidebarProps {
   activeTab: AdminTabType;
@@ -26,7 +26,6 @@ export function AdminSidebar({
     { id: "stats" as const, label: "Stats & Rates", longLabel: "Channel Stats & Rates", Icon: BarChart, iconClass: "text-emerald-400" },
     { id: "case-studies" as const, label: "Case Studies", longLabel: "Sponsor Case Studies", Icon: Award, iconClass: "text-emerald-400" },
     { id: "what-performs" as const, label: "Performs", longLabel: "What Performs", Icon: Sparkles, iconClass: "text-emerald-400" },
-    { id: "tools" as const, label: "Tools", longLabel: "AI Tool Vault", Icon: Database, iconClass: "text-emerald-400" },
     { id: "brands" as const, label: "Brands", longLabel: "Brands & Partners", Icon: Layers, iconClass: "text-emerald-400" },
     ...(canEditUsers
       ? [{ id: "users" as const, label: `Admins (${adminUsers.filter((u) => u.status === "Active").length})`, longLabel: `Admins & Permissions (${adminUsers.filter((u) => u.status === "Active").length})`, Icon: Users, iconClass: "text-emerald-400" }]

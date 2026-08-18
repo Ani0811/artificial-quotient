@@ -66,8 +66,8 @@ export default function StructuredData() {
           "@type": "Offer",
           itemOffered: {
             "@type": "Service",
-            name: "AI Tools Vault Sponsorship",
-            description: "Featured placement and deal promotion in the Artificial Quotient verified AI Tools Directory."
+            name: "60-Second Mid-Roll Video Sponsorship",
+            description: "High-impact 60s sponsor segment integrated directly into targeted AI automation tutorials."
           }
         },
         {

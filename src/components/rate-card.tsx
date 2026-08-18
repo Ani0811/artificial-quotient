@@ -119,7 +119,7 @@ export default function RateCard({ ratesData }: RateCardProps) {
               </li>
               <li className="flex items-start gap-3">
                 <CheckCircle2 className="w-5 h-5 text-brand-blue flex-shrink-0 mt-0.5" />
-                <span>Permanent spot in Tool Vault</span>
+                <span>Pinned YouTube comment with tracked link</span>
               </li>
             </ul>
             

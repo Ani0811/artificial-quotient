@@ -511,17 +511,19 @@ Reduced vertical padding and internal gaps across all homepage sections on mobil
   - `tabs/StatsTab.tsx` — Channel stats, demographics, sponsorship rates, geographies with country picker, and interests.
   - `tabs/CaseStudiesTab.tsx` — Sponsor case studies, Google font loader, quote styling, and video thumbnail controls.
   - `tabs/WhatPerformsTab.tsx` — What Performs cards, YouTube link bindings, and view counters.
-  - `tabs/ToolsTab.tsx` — AI Tool Vault directory, promo codes, and try URLs.
   - `tabs/BrandsTab.tsx` — Brands & Partners directory, custom logo uploads, and taglines.
   - `tabs/UsersTab.tsx` — Admin user management, roles (`Super Admin`, `Editor`, `Viewer`), passwords, and recovery PINs.
   - `tabs/BackupTab.tsx` — Data backup JSON export and snapshot restore engine.
   - `preview/AdminPreviewPanel.tsx` — Real-time interactive pre-publish preview router.
 
-#### 3. Touch & Mouse Drag Marquee Carousel (`src/components/brand-carousel.tsx`)
+#### 3. Complete Purge of AI Tool Vault
+- Completely removed the `/tools` subpage (`src/app/tools/`), the `ToolsTab` form, and all directory references from Navbar, Footer, Sitemap (`/sitemap.xml`), Robots.txt (`/robots.txt`), Rate Card bullets, Contact FAQs, and Admin Dashboard.
+
+#### 4. Touch & Mouse Drag Marquee Carousel (`src/components/brand-carousel.tsx`)
 - Completely refactored the Brands & Partners carousel with fluid pointer drag support (`onMouseDown`, `onMouseMove`, `onMouseUp`, `onTouchStart`, `onTouchMove`, `onTouchEnd`) and infinite wrap boundaries, providing a smooth, glitch-free experience on both mobile touchscreens and desktop browsers.
 
-#### 4. EasyPeasy Tool Branding & Updated Video Highlights
-- **EasyPeasy Branding**: Renamed tool listings and partner references to EasyPeasy across the AI Tool Vault and partner directory.
+#### 5. EasyPeasy Tool Branding & Updated Video Highlights
+- **EasyPeasy Branding**: Renamed partner references to EasyPeasy across case studies and partner directory.
 - **New What Performs Videos**: Configured latest top-performing tutorials in `site-data.json` and database seed scripts:
   1. *Grok AI Lip Sync Voice Consistency* (`https://youtu.be/FMnBEyQSPGQ`)
   2. *Speechma AI Movie Recap & Explanation Videos* (`https://youtu.be/oai9C43hqXw`)
@@ -549,7 +551,7 @@ artificial-quotient/
 │   ├── app/
 │   │   ├── admin/
 │   │   │   ├── components/           # Modular Admin Subcomponents
-│   │   │   │   ├── tabs/             # 8 Dedicated Tab Editors
+│   │   │   │   ├── tabs/             # 7 Dedicated Tab Editors
 │   │   │   │   ├── preview/          # Live Preview Routers
 │   │   │   │   ├── AdminHeader.tsx   # Top Navigation & Sync Button
 │   │   │   │   └── AdminSidebar.tsx  # Responsive Sidebar Navigation

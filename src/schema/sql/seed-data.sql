@@ -124,7 +124,7 @@ VALUES
     'Goal: Show content creators and digital agencies how to use Flashloop AI (https://www.flashloop.app/) to recreate viral AI trends (old cartoon styles, sports anime, talking character drama) and instantly generate high-converting short-form video content using state-of-the-art models like Veo 3 and Kling 3.0.', 
     'Videos Made:\n1. Flashloop AI Review: How To Generate Viral AI Animations & Talking Avatars\n2. Recreating Trending AI Cartoons & Anime Styles in Minutes with Flashloop AI\n3. Full Mid-Roll Integration & Pinned Comment Tracked Link on YouTube', 
     'https://youtu.be/CO59xAteGRM?si=JMLIywF1ydT1MOsJ', 
-    'Results:\n• Instant 1,200+ direct clicks with $0.25 effective CPC\n• High conversion rate to Flashloop free trial & paid subscription\n• Featured placement in Tool Vault & MCP ecosystem showcase', 
+    'Results:\n• Instant 1,200+ direct clicks with $0.25 effective CPC\n• High conversion rate to Flashloop free trial & paid subscription\n• Featured placement in channel workflow & MCP ecosystem showcase', 
     'Dedicated Video Integration', 
     'https://www.flashloop.app/',
     1

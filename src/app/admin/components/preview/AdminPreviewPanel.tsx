@@ -5,7 +5,7 @@ import { Eye, Sparkles, CheckCircle2, Play, Users, TrendingUp, Globe, ShieldChec
 import { LogoImage } from "@/components/ui/logo-image";
 import { CountryFlag } from "@/components/audience-snapshot";
 import { AdminTabType } from "../AdminSidebar";
-import { HeroConfig, CountryItem, SponsorItem, PerformItem, ToolItem, BrandItem, AdminUser } from "@/types";
+import { HeroConfig, CountryItem, SponsorItem, PerformItem, BrandItem, AdminUser } from "@/types";
 import { getYoutubeId } from "../../utils";
 
 interface AdminPreviewPanelProps {
@@ -23,7 +23,6 @@ interface AdminPreviewPanelProps {
   geoForm: CountryItem[];
   sponsorResults: SponsorItem[];
   whatPerforms: PerformItem[];
-  toolsList: ToolItem[];
   brandsList: BrandItem[];
   adminUsers: AdminUser[];
 }
@@ -36,7 +35,6 @@ export function AdminPreviewPanel({
   geoForm,
   sponsorResults,
   whatPerforms,
-  toolsList,
   brandsList,
   adminUsers,
 }: AdminPreviewPanelProps) {
@@ -293,28 +291,7 @@ export function AdminPreviewPanel({
         </div>
       )}
 
-      {/* PREVIEW TAB 4: TOOL VAULT */}
-      {activeTab === "tools" && (
-        <div className="space-y-4">
-          <div className="text-sm font-bold text-brand-text dark:text-white mb-2">AI Tool Vault Directory</div>
-          {toolsList.map(tool => (
-            <div key={tool.id} className="bg-brand-bg dark:bg-[#061612] rounded-xl border border-brand-border dark:border-[#16382e] p-5 shadow-sm">
-              <div className="flex justify-between items-start mb-2">
-                <h4 className="font-heading font-bold text-base text-brand-text dark:text-white">{tool.name}</h4>
-                {tool.discount && (
-                  <span className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold px-2.5 py-0.5 rounded-full border border-emerald-500/20">
-                    {tool.discount}
-                  </span>
-                )}
-              </div>
-              <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mb-2 block">{tool.category}</span>
-              <p className="text-xs sm:text-sm text-brand-muted dark:text-emerald-200/70 mb-3 leading-relaxed">{tool.desc}</p>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* PREVIEW TAB 5: BRANDS & PARTNERS */}
+      {/* PREVIEW TAB 4: BRANDS & PARTNERS */}
       {activeTab === "brands" && (
         <div className="space-y-4">
           <div className="flex items-center justify-between flex-wrap gap-2">

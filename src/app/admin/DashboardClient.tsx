@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Check, Edit3, ShieldCheck } from "lucide-react";
-import { ToolItem, PerformItem, SponsorItem, AdminUser, BrandItem, InterestItem, CountryItem, HeroConfig } from "@/types";
+import { PerformItem, SponsorItem, AdminUser, BrandItem, InterestItem, CountryItem, HeroConfig } from "@/types";
 import { parseGeographies } from "@/components/audience-snapshot";
 import { ALL_COUNTRIES } from "@/lib/countries";
 import { loadGoogleFont } from "@/components/font-provider";
@@ -14,7 +14,6 @@ import { HeroTab } from "./components/tabs/HeroTab";
 import { StatsTab } from "./components/tabs/StatsTab";
 import { CaseStudiesTab } from "./components/tabs/CaseStudiesTab";
 import { WhatPerformsTab } from "./components/tabs/WhatPerformsTab";
-import { ToolsTab } from "./components/tabs/ToolsTab";
 import { BrandsTab } from "./components/tabs/BrandsTab";
 import { UsersTab } from "./components/tabs/UsersTab";
 import { BackupTab } from "./components/tabs/BackupTab";
@@ -41,7 +40,6 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
   const [geoForm, setGeoForm] = useState<CountryItem[]>([]);
   const [whatPerforms, setWhatPerforms] = useState<PerformItem[]>([]);
   const [sponsorResults, setSponsorResults] = useState<SponsorItem[]>([]);
-  const [toolsList, setToolsList] = useState<ToolItem[]>([]);
   const [brandsList, setBrandsList] = useState<BrandItem[]>([]);
   const [audienceInterests, setAudienceInterests] = useState<InterestItem[]>([]);
   const [shoppingInterests, setShoppingInterests] = useState<InterestItem[]>([]);
@@ -150,7 +148,6 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
               if (s.quoteFont) loadGoogleFont(s.quoteFont);
             });
           }
-          if (data.tools && data.tools.length > 0) setToolsList(data.tools);
           if (data.brandItems && data.brandItems.length > 0) setBrandsList(data.brandItems);
           if (data.audienceInterests && data.audienceInterests.length > 0) setAudienceInterests(data.audienceInterests);
           if (data.shoppingInterests && data.shoppingInterests.length > 0) setShoppingInterests(data.shoppingInterests);
@@ -232,7 +229,6 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
       geographies: geoForm,
       whatPerforms,
       sponsorResults,
-      tools: toolsList,
       brandItems: brandsList,
       audienceInterests,
       shoppingInterests,
@@ -282,7 +278,6 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
       geographies: geoForm,
       whatPerforms,
       sponsorResults,
-      tools: toolsList,
       brandItems: brandsList,
       audienceInterests,
       shoppingInterests,
@@ -319,7 +314,6 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
       if (backupData.geographies) setGeoForm(parseGeographies(backupData.geographies));
       if (backupData.whatPerforms) setWhatPerforms(backupData.whatPerforms);
       if (backupData.sponsorResults) setSponsorResults(backupData.sponsorResults);
-      if (backupData.tools) setToolsList(backupData.tools);
       if (backupData.brandItems) setBrandsList(backupData.brandItems);
       if (backupData.audienceInterests) setAudienceInterests(backupData.audienceInterests);
       if (backupData.shoppingInterests) setShoppingInterests(backupData.shoppingInterests);
@@ -360,7 +354,6 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
     stats: "Edit Channel Stats & Pricing",
     "case-studies": "Manage Sponsor Case Studies",
     "what-performs": "Manage What Performs Cards",
-    tools: "Manage AI Tool Vault",
     brands: "Manage Brands & Partners",
     users: "Manage Administrators & Access Permissions",
     backup: "System Backup & Data Operations",
@@ -472,15 +465,6 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                     />
                   )}
 
-                  {activeTab === "tools" && (
-                    <ToolsTab
-                      toolsList={toolsList}
-                      setToolsList={setToolsList}
-                      isViewer={isViewer}
-                      onSave={handleSaveAll}
-                    />
-                  )}
-
                   {activeTab === "brands" && (
                     <BrandsTab
                       brandsList={brandsList}
@@ -522,7 +506,6 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                     geoForm={geoForm}
                     sponsorResults={sponsorResults}
                     whatPerforms={whatPerforms}
-                    toolsList={toolsList}
                     brandsList={brandsList}
                     adminUsers={adminUsers}
                   />

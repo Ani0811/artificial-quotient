@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Contact & Partnerships",
   description:
-    "Get in touch with Artificial Quotient for SaaS sponsorships, custom Make.com and n8n workflow development, and AI Tool Vault listings.",
+    "Get in touch with Artificial Quotient for SaaS sponsorships, custom Make.com and n8n workflow development, and creator partnerships.",
   alternates: {
     canonical: "/contact",
   },
@@ -44,10 +44,10 @@ export default function ContactLayout({
       },
       {
         "@type": "Question",
-        name: "How can I get my AI tool featured in the Tool Vault?",
+        name: "What types of AI software and tools do you feature?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Send us an inquiry with details about your tool. If it fits our standards and solves real workflow challenges for our audience, we'll feature it."
+          text: "We feature and create workflow tutorials for high-performing AI video generators, automation agents, productivity software, and SaaS platforms that solve real bottlenecks."
         }
       }
     ]

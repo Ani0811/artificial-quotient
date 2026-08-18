@@ -41,7 +41,7 @@ export function UsersTab({
               email: `admin${adminUsers.length + 1}@artificialquotient.com`,
               password: "",
               role: "Editor",
-              permissions: ["hero", "case-studies", "what-performs", "tools"],
+              permissions: ["hero", "case-studies", "what-performs", "brands"],
               recoveryKey: `AQ-SEC-${Math.floor(1000 + Math.random() * 9000)}`,
               status: "Active",
               lastLogin: new Date().toISOString(),
@@ -171,9 +171,9 @@ export function UsersTab({
                     const newRole = e.target.value as "Super Admin" | "Editor" | "Viewer";
                     next[idx].role = newRole;
                     if (newRole === "Super Admin") {
-                      next[idx].permissions = ["hero", "stats", "case-studies", "what-performs", "tools", "backup", "users"];
+                      next[idx].permissions = ["hero", "stats", "case-studies", "what-performs", "brands", "backup", "users"];
                     } else if (newRole === "Editor") {
-                      next[idx].permissions = ["hero", "case-studies", "what-performs", "tools"];
+                      next[idx].permissions = ["hero", "case-studies", "what-performs", "brands"];
                     } else {
                       next[idx].permissions = ["hero", "stats"];
                     }

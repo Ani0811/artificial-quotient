@@ -64,8 +64,8 @@ export default function ContactPage() {
       a: "Yes! We design, build, and optimize custom Make.com, n8n, and Python AI agent workflows tailored to your specific business operations.",
     },
     {
-      q: "How can I get my AI tool featured in the Tool Vault?",
-      a: "Send us an inquiry with details about your tool. If it fits our standards and solves real workflow challenges for our audience, we'll feature it.",
+      q: "What types of AI software and tools do you feature?",
+      a: "We feature and create workflow tutorials for high-performing AI video generators, automation agents, productivity software, and SaaS platforms that solve real bottlenecks.",
     },
   ];
 
