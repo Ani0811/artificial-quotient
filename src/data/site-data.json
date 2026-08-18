@@ -56,45 +56,44 @@
     "femalePercent": "15.6%"
   },
   "geographies": [
-    { "id": "geo-1", "name": "India", "percent": "21.8%" },
-    { "id": "geo-2", "name": "United States", "percent": "10.7%" },
-    { "id": "geo-3", "name": "Pakistan", "percent": "4.5%" },
-    { "id": "geo-4", "name": "Nigeria", "percent": "2.7%" },
-    { "id": "geo-5", "name": "Bangladesh", "percent": "2.5%" }
+    { "id": "geo-1", "name": "USA", "percent": "10.7%" },
+    { "id": "geo-2", "name": "England", "percent": "13.5%" },
+    { "id": "geo-3", "name": "India", "percent": "21.8%" },
+    { "id": "geo-4", "name": "Germany", "percent": "9.4%" }
   ],
   "whatPerforms": [
     {
       "id": "1",
-      "title": "How To Keep Character Voices Consistent In Grok AI Lip Sync! (FREE & Easy)",
-      "views": "5.2k",
-      "clicks": "480+",
+      "title": "Grok AI Lip Sync Tutorial With Consistent Characters: Make Long AI Videos In Minutes!",
+      "views": "105.3k",
+      "clicks": "4.2k+",
       "type": "Dedicated Video",
       "thumb": "🎙️",
-      "thumbnail": "https://img.youtube.com/vi/N9iVUmvgWzU/maxresdefault.jpg",
-      "ytUrl": "https://youtu.be/N9iVUmvgWzU?si=7bJlv0ZR7b7GWO7K",
-      "highlight": "Voice Consistency"
+      "thumbnail": "https://img.youtube.com/vi/FMnBEyQSPGQ/maxresdefault.jpg",
+      "ytUrl": "https://youtu.be/FMnBEyQSPGQ?si=r2QQ0V3ymofPR66Z",
+      "highlight": "AI Lip Sync"
     },
     {
       "id": "2",
-      "title": "How To Create MOVIE Recap/Explanation Videos Without Copyright (ChatGPT + Elevenlabs!)",
-      "views": "11.0k",
-      "clicks": "1.2k+",
+      "title": "Speechma AI Tutorial: Free ElevenLabs Alternative For Unlimited AI Voices!",
+      "views": "78.7k",
+      "clicks": "3.1k+",
       "type": "Dedicated Video",
-      "thumb": "🎬",
-      "thumbnail": "https://img.youtube.com/vi/6d0sSSXXTqA/maxresdefault.jpg",
-      "ytUrl": "https://youtu.be/6d0sSSXXTqA?si=Fvd5scO2V-8dZN_h",
-      "highlight": "Viral Reach"
+      "thumb": "🔊",
+      "thumbnail": "https://img.youtube.com/vi/oai9C43hqXw/maxresdefault.jpg",
+      "ytUrl": "https://youtu.be/oai9C43hqXw?si=ZvklcYK4Dh4_EkBt",
+      "highlight": "Voice Generator"
     },
     {
       "id": "3",
-      "title": "Poppy AI Review (+ Free Alternative): Best YouTube Script Generator In 2026?",
-      "views": "5.4k",
-      "clicks": "620+",
+      "title": "How To Create Viral AI Cat Videos For FREE! (Meow Meow Cat Story Video Tutorial)",
+      "views": "184.0k",
+      "clicks": "6.5k+",
       "type": "Dedicated Video",
-      "thumb": "🤖",
-      "thumbnail": "https://img.youtube.com/vi/B80v1fzWYxE/maxresdefault.jpg",
-      "ytUrl": "https://youtu.be/B80v1fzWYxE?si=fF7FZvXdjRgvV1J0",
-      "highlight": "SaaS Review"
+      "thumb": "🐱",
+      "thumbnail": "https://img.youtube.com/vi/jkUY_VYLHNM/maxresdefault.jpg",
+      "ytUrl": "https://youtu.be/jkUY_VYLHNM?si=Jv2eyaoll4rtmBxy",
+      "highlight": "Viral Animation"
     }
   ],
   "sponsorResults": [
@@ -138,20 +137,20 @@
     },
     {
       "id": "3",
-      "partnerName": "Marky Agent",
+      "partnerName": "EasyPeasy",
       "campaignType": "Dedicated Video",
-      "quote": "Our goal was to showcase Marky Agent's powerful AI workflow automation capabilities, driving high-intent signups and demonstrating real-world productivity use cases.",
+      "quote": "Our goal was to showcase EasyPeasy's powerful AI workflow automation capabilities, driving high-intent signups and demonstrating real-world productivity use cases.",
       "quoteFont": "Caveat",
       "stat1Label": "Signups Generated",
       "stat1Value": "680+",
       "stat2Label": "Est. ROI Multiplier",
       "stat2Value": "3.8x",
-      "description": "Goal: Show content creators, marketers, and power users how to utilize Marky Agent (Easy-Peasy.AI) to automate complex tasks, analyze documents, and construct custom AI tools effortlessly.",
-      "deliverables": "Videos Made:\n1. Marky Agent Tutorial: Build Custom AI Workflows & Automate Tasks\n2. Tracked Pinned Comment Link & Workflow Blueprint Download",
+      "description": "Goal: Show content creators, marketers, and power users how to utilize EasyPeasy to automate complex tasks, analyze documents, and construct custom AI tools effortlessly.",
+      "deliverables": "Videos Made:\n1. EasyPeasy Tutorial: Build Custom AI Workflows & Automate Tasks\n2. Tracked Pinned Comment Link & Workflow Blueprint Download",
       "ytUrl": "https://youtu.be/Oo9H89i6SYk?si=flMdazfrd1ef-feb",
       "roiBreakdown": "Results:\n• 3.8x Return on Investment within 30 days\n• 680+ high-intent platform signups\n• High organic search visibility for AI workflow agents",
       "publishDate": "Dedicated Video Integration",
-      "logoUrl": "",
+      "logoUrl": "/uploads/1786695121509_easypeasy.png",
       "websiteUrl": "https://easy-peasy.ai/marky",
       "thumbnailUrl": "https://img.youtube.com/vi/Oo9H89i6SYk/maxresdefault.jpg"
     }
@@ -189,11 +188,11 @@
       "displayOrder": 1
     },
     {
-      "id": "marky",
-      "name": "Marky Agent",
+      "id": "easypeasy",
+      "name": "EasyPeasy",
       "category": "Autonomous AI Agent",
       "tagline": "File analysis, task automation & custom app builder.",
-      "logoText": " Marky Agent",
+      "logoText": "EasyPeasy",
       "ytUrl": "https://youtu.be/Oo9H89i6SYk?si=flMdazfrd1ef-feb",
       "logoUrl": "/uploads/1786695121509_easypeasy.png",
       "displayOrder": 2

@@ -104,7 +104,7 @@ export function CountryFlag({ name }: { name: string }) {
   const norm = (name || "").toLowerCase().trim();
   if (norm === "india" || norm === "in") return <IndiaFlag />;
   if (norm === "usa" || norm === "united states" || norm === "us" || norm === "united states of america") return <USAFlag />;
-  if (norm === "uk" || norm === "united kingdom" || norm === "gb" || norm === "great britain") return <UKFlag />;
+  if (norm === "uk" || norm === "united kingdom" || norm === "gb" || norm === "great britain" || norm === "england") return <UKFlag />;
   if (norm === "germany" || norm === "de") return <GermanyFlag />;
   if (norm === "pakistan" || norm === "pk") return <PakistanFlag />;
   if (norm === "nigeria" || norm === "ng") return <NigeriaFlag />;

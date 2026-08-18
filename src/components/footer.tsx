@@ -98,7 +98,7 @@ export default function Footer() {
               Book Dedicated Video
             </a>
             <a href="https://forms.gle/4uTUZkEi5o3iqYrs5" target="_blank" rel="noreferrer" className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors">
-              Book Integration
+              Book 60s Integration
             </a>
             <a href="mailto:artificialquotient01@gmail.com?subject=Sponsorship%20Inquiry" className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors">
               Custom Campaign

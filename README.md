@@ -495,6 +495,42 @@ Reduced vertical padding and internal gaps across all homepage sections on mobil
 
 ---
 
+### 📅 Day 16 — YouTube Data API v3 Auto-Sync, Modular Admin Architecture, Touch Drag Carousel & EasyPeasy Integration
+
+#### 1. YouTube Data API v3 Live Auto-Sync (`/api/admin/youtube-sync`, `DashboardClient.tsx`)
+- **Automated YouTube Stats Sync**: Built a dedicated API endpoint at `/api/admin/youtube-sync` that queries the official Google YouTube Data API v3 (`channels` and `videos` endpoints).
+- **1-Click Dashboard Synchronization**: Added a glowing **"⚡ Sync Live Stats"** action button in the Admin Header. Clicking it fetches live channel metrics (subscribers count, total view count, video count) and real-time view counts, titles, and maximum resolution thumbnails (`maxresdefault.jpg`) for all videos listed in "What Performs", saving them directly into MySQL and JSON.
+- **Environment Configuration**: Added `YOUTUBE_API_KEY` and `YOUTUBE_CHANNEL_ID` support across `.env` and `.env.production`.
+
+#### 2. Modular Architecture Refactoring for Admin Management Portal
+- **2,638-Line Monolith Decomposed**: Refactored the monolithic `DashboardClient.tsx` down to a clean, lightweight orchestrator (~450 lines).
+- **11 Single-Responsibility Subcomponents (`src/app/admin/components/`)**:
+  - `AdminHeader.tsx` — Top bar, logo, DB connectivity badge, Live Site link, YouTube sync button, and view mode toggle.
+  - `AdminSidebar.tsx` — Responsive mobile tab strip and desktop vertical navigation.
+  - `tabs/HeroTab.tsx` — Hero card configuration, RGB framing effect, channel branding, and metric overlays.
+  - `tabs/StatsTab.tsx` — Channel stats, demographics, sponsorship rates, geographies with country picker, and interests.
+  - `tabs/CaseStudiesTab.tsx` — Sponsor case studies, Google font loader, quote styling, and video thumbnail controls.
+  - `tabs/WhatPerformsTab.tsx` — What Performs cards, YouTube link bindings, and view counters.
+  - `tabs/ToolsTab.tsx` — AI Tool Vault directory, promo codes, and try URLs.
+  - `tabs/BrandsTab.tsx` — Brands & Partners directory, custom logo uploads, and taglines.
+  - `tabs/UsersTab.tsx` — Admin user management, roles (`Super Admin`, `Editor`, `Viewer`), passwords, and recovery PINs.
+  - `tabs/BackupTab.tsx` — Data backup JSON export and snapshot restore engine.
+  - `preview/AdminPreviewPanel.tsx` — Real-time interactive pre-publish preview router.
+
+#### 3. Touch & Mouse Drag Marquee Carousel (`src/components/brand-carousel.tsx`)
+- Completely refactored the Brands & Partners carousel with fluid pointer drag support (`onMouseDown`, `onMouseMove`, `onMouseUp`, `onTouchStart`, `onTouchMove`, `onTouchEnd`) and infinite wrap boundaries, providing a smooth, glitch-free experience on both mobile touchscreens and desktop browsers.
+
+#### 4. EasyPeasy Tool Branding & Updated Video Highlights
+- **EasyPeasy Branding**: Renamed tool listings and partner references to EasyPeasy across the AI Tool Vault and partner directory.
+- **New What Performs Videos**: Configured latest top-performing tutorials in `site-data.json` and database seed scripts:
+  1. *Grok AI Lip Sync Voice Consistency* (`https://youtu.be/FMnBEyQSPGQ`)
+  2. *Speechma AI Movie Recap & Explanation Videos* (`https://youtu.be/oai9C43hqXw`)
+  3. *Viral AI Cat Videos & Automation Workflows* (`https://youtu.be/jkUY_VYLHNM`)
+- **Audience Geographies**: Configured India as the 3rd leading demographic in audience snapshot.
+- **Rate Card Copy**: Updated integration CTA button copy to "Book 60s integration".
+
+---
+
 ## 📂 Project Structure
 
 ```
@@ -512,10 +548,16 @@ artificial-quotient/
 ├── src/
 │   ├── app/
 │   │   ├── admin/
+│   │   │   ├── components/           # Modular Admin Subcomponents
+│   │   │   │   ├── tabs/             # 8 Dedicated Tab Editors
+│   │   │   │   ├── preview/          # Live Preview Routers
+│   │   │   │   ├── AdminHeader.tsx   # Top Navigation & Sync Button
+│   │   │   │   └── AdminSidebar.tsx  # Responsive Sidebar Navigation
 │   │   │   ├── login/                # Admin Login & 2FA Page
 │   │   │   ├── layout.tsx            # Admin Metadata Layout (noindex)
 │   │   │   ├── loading.tsx           # Dedicated Admin Loading Screen
-│   │   │   ├── DashboardClient.tsx   # Theme-Corrected Admin Management Portal
+│   │   │   ├── DashboardClient.tsx   # Clean Admin Master Orchestrator
+│   │   │   ├── utils.ts              # Admin Helper Utilities
 │   │   │   └── page.tsx              # Server Auth & RBAC Check
 │   │   ├── api/
 │   │   │   ├── admin/countries/      # Database World Countries CRUD API

@@ -85,7 +85,7 @@ export default function RateCard({ ratesData }: RateCardProps) {
               rel="noreferrer"
               className="block text-center w-full bg-white dark:bg-zinc-900 border border-brand-border dark:border-zinc-700 text-brand-text dark:text-white group-hover:bg-brand-blue group-hover:text-white group-hover:border-brand-blue dark:group-hover:bg-brand-blue hover:bg-brand-blue-hover hover:text-white dark:hover:bg-brand-blue-hover font-bold py-3 rounded-lg transition-all duration-200 shadow-sm"
             >
-              Book Integration
+              Book 60s Integration
             </a>
           </div>
 

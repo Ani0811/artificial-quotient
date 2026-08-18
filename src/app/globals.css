@@ -101,6 +101,14 @@ body {
   animation-play-state: paused !important;
 }
 
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 @keyframes slide-in-right {
   0% {
     transform: translate3d(100%, 0, 0);

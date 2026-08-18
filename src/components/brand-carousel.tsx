@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { Sparkles, ChevronLeft, ChevronRight, ExternalLink, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { BrandItem } from "@/types";
@@ -18,6 +18,8 @@ const ACCENT_PALETTE = [
   "from-sky-400 to-indigo-500",
 ];
 
+const SETS_COUNT = 6;
+
 interface BrandCarouselProps {
   brands?: BrandItem[];
 }
@@ -25,8 +27,11 @@ interface BrandCarouselProps {
 export default function BrandCarousel({ brands }: BrandCarouselProps) {
   const [items, setItems] = useState<BrandItem[]>(brands ?? []);
   const [isPaused, setIsPaused] = useState(false);
-  const [direction, setDirection] = useState<"forward" | "reverse">("forward");
-  const touchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const autoScrollResumeTimer = useRef<NodeJS.Timeout | null>(null);
+  const isDraggingRef = useRef(false);
+  const startXRef = useRef(0);
+  const scrollLeftRef = useRef(0);
 
   // Fetch from API if no brands passed as props
   useEffect(() => {
@@ -44,34 +49,115 @@ export default function BrandCarousel({ brands }: BrandCarouselProps) {
       .catch(() => {});
   }, [brands]);
 
-  // Clean up touch pause timer on unmount
+  // Clean up timer on unmount
   useEffect(() => {
     return () => {
-      if (touchTimeoutRef.current) clearTimeout(touchTimeoutRef.current);
+      if (autoScrollResumeTimer.current) clearTimeout(autoScrollResumeTimer.current);
     };
   }, []);
 
-  const handleTouchStart = () => {
-    if (touchTimeoutRef.current) clearTimeout(touchTimeoutRef.current);
+  // Multiply items by SETS_COUNT for seamless infinite buffer
+  const displayItems = items.length > 0
+    ? Array.from({ length: SETS_COUNT }, () => items).flat()
+    : [];
+
+  // Normalize scroll to stay within middle sets seamlessly
+  const normalizeScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el || items.length === 0) return;
+
+    const setWidth = el.scrollWidth / SETS_COUNT;
+    if (setWidth <= 0) return;
+
+    if (el.scrollLeft >= setWidth * 4) {
+      el.scrollLeft -= setWidth * 2;
+    } else if (el.scrollLeft <= setWidth * 1) {
+      el.scrollLeft += setWidth * 2;
+    }
+  }, [items.length]);
+
+  // Initialize scroll position in the middle
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el || items.length === 0) return;
+
+    const setWidth = el.scrollWidth / SETS_COUNT;
+    if (setWidth > 0) {
+      el.scrollLeft = setWidth * 2;
+    }
+  }, [items]);
+
+  // Smooth continuous marquee glide via requestAnimationFrame
+  useEffect(() => {
+    if (isPaused || items.length === 0) return;
+
+    let animId: number;
+    let lastTime = performance.now();
+
+    const step = (time: number) => {
+      const delta = (time - lastTime) / 1000;
+      lastTime = time;
+
+      const el = scrollRef.current;
+      if (el && !isPaused) {
+        // Continuous smooth glide at ~35px per second
+        el.scrollLeft += delta * 35;
+        normalizeScroll();
+      }
+      animId = requestAnimationFrame(step);
+    };
+
+    animId = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(animId);
+  }, [isPaused, items.length, normalizeScroll]);
+
+  // Manual scroll with Previous / Next buttons
+  const handleManualScroll = (direction: "left" | "right") => {
+    if (!scrollRef.current) return;
+    setIsPaused(true);
+
+    if (autoScrollResumeTimer.current) {
+      clearTimeout(autoScrollResumeTimer.current);
+    }
+
+    const el = scrollRef.current;
+    const cardWidth = typeof window !== "undefined" && window.innerWidth < 640 ? 285 + 24 : 320 + 24;
+    const scrollAmount = direction === "left" ? -cardWidth : cardWidth;
+    el.scrollBy({ left: scrollAmount, behavior: "smooth" });
+
+    normalizeScroll();
+    autoScrollResumeTimer.current = setTimeout(() => {
+      normalizeScroll();
+      setIsPaused(false);
+    }, 2500);
+  };
+
+  // Mouse drag to scroll support on desktop
+  const handleMouseDown = (e: React.MouseEvent) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    isDraggingRef.current = true;
+    startXRef.current = e.pageX - el.offsetLeft;
+    scrollLeftRef.current = el.scrollLeft;
     setIsPaused(true);
   };
 
-  const handleTouchEnd = () => {
-    if (touchTimeoutRef.current) clearTimeout(touchTimeoutRef.current);
-    touchTimeoutRef.current = setTimeout(() => {
-      setIsPaused(false);
-    }, 2000);
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDraggingRef.current || !scrollRef.current) return;
+    e.preventDefault();
+    const el = scrollRef.current;
+    const x = e.pageX - el.offsetLeft;
+    const walk = (x - startXRef.current) * 1.5;
+    el.scrollLeft = scrollLeftRef.current - walk;
+    normalizeScroll();
   };
 
-  // Toggle or switch direction with previous / next buttons
-  const handleDirectionChange = (newDirection: "forward" | "reverse") => {
-    setDirection(newDirection);
-    // Momentary pause to give clean visual feedback before resuming in new direction
-    setIsPaused(true);
-    if (touchTimeoutRef.current) clearTimeout(touchTimeoutRef.current);
-    touchTimeoutRef.current = setTimeout(() => {
-      setIsPaused(false);
-    }, 400);
+  const handleMouseUpOrLeave = () => {
+    if (isDraggingRef.current) {
+      isDraggingRef.current = false;
+      if (autoScrollResumeTimer.current) clearTimeout(autoScrollResumeTimer.current);
+      autoScrollResumeTimer.current = setTimeout(() => setIsPaused(false), 2000);
+    }
   };
 
   if (items.length === 0) {
@@ -83,12 +169,6 @@ export default function BrandCarousel({ brands }: BrandCarouselProps) {
       </section>
     );
   }
-
-  // Double the items array for a seamless 2-track infinite loop (reduces DOM by 66% vs 6 sets)
-  const displayItems = [...items, ...items];
-
-  // Dynamic animation duration based on item count (approx 4.2 seconds per card)
-  const animationDuration = `${Math.max(items.length * 4.2, 28)}s`;
 
   return (
     <section id="brands" className="w-full py-12 sm:py-16 px-4 border-t border-brand-border dark:border-zinc-800/80 transition-colors relative overflow-hidden bg-brand-bg/50 dark:bg-zinc-950/40">
@@ -115,53 +195,60 @@ export default function BrandCarousel({ brands }: BrandCarouselProps) {
           {/* Carousel Controls */}
           <div className="flex items-center justify-center gap-2">
             <button
-              onClick={() => handleDirectionChange("reverse")}
-              className={`w-10 h-10 rounded-xl border transition-all shadow-sm active:scale-95 z-30 cursor-pointer flex items-center justify-center ${
-                direction === "reverse"
-                  ? "bg-emerald-500 text-white border-emerald-500"
-                  : "bg-white dark:bg-zinc-900 border-brand-border dark:border-zinc-800 text-brand-text dark:text-white hover:bg-emerald-500 hover:text-white dark:hover:bg-emerald-500 dark:hover:border-emerald-500"
-              }`}
-              aria-label="Previous Brands (Reverse Flow)"
-              title="Reverse Marquee Flow"
+              type="button"
+              onClick={() => handleManualScroll("left")}
+              className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-900 border border-brand-border dark:border-zinc-800 text-brand-text dark:text-white flex items-center justify-center hover:bg-emerald-500 hover:text-white dark:hover:bg-emerald-500 dark:hover:border-emerald-500 transition-all shadow-sm active:scale-95 z-30 cursor-pointer"
+              aria-label="Previous Brands"
+              title="Previous Brands"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button
-              onClick={() => handleDirectionChange("forward")}
-              className={`w-10 h-10 rounded-xl border transition-all shadow-sm active:scale-95 z-30 cursor-pointer flex items-center justify-center ${
-                direction === "forward"
-                  ? "bg-emerald-500 text-white border-emerald-500"
-                  : "bg-white dark:bg-zinc-900 border-brand-border dark:border-zinc-800 text-brand-text dark:text-white hover:bg-emerald-500 hover:text-white dark:hover:bg-emerald-500 dark:hover:border-emerald-500"
-              }`}
-              aria-label="Next Brands (Forward Flow)"
-              title="Forward Marquee Flow"
+              type="button"
+              onClick={() => handleManualScroll("right")}
+              className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-900 border border-brand-border dark:border-zinc-800 text-brand-text dark:text-white flex items-center justify-center hover:bg-emerald-500 hover:text-white dark:hover:bg-emerald-500 dark:hover:border-emerald-500 transition-all shadow-sm active:scale-95 z-30 cursor-pointer"
+              aria-label="Next Brands"
+              title="Next Brands"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
           </div>
         </div>
 
-        {/* Hardware-Accelerated Infinite Marquee Carousel */}
+        {/* Seamless Infinite Marquee Carousel */}
         <div 
-          className="relative group/container overflow-hidden rounded-2xl select-none"
+          className="relative group/container overflow-hidden rounded-2xl"
           onMouseEnter={() => setIsPaused(true)}
-          onMouseLeave={() => setIsPaused(false)}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-          onTouchCancel={handleTouchEnd}
+          onMouseLeave={() => {
+            if (!isDraggingRef.current) setIsPaused(false);
+          }}
+          onTouchStart={() => {
+            setIsPaused(true);
+            if (autoScrollResumeTimer.current) clearTimeout(autoScrollResumeTimer.current);
+          }}
+          onTouchEnd={() => {
+            if (autoScrollResumeTimer.current) clearTimeout(autoScrollResumeTimer.current);
+            autoScrollResumeTimer.current = setTimeout(() => {
+              normalizeScroll();
+              setIsPaused(false);
+            }, 2500);
+          }}
         >
           {/* Left & Right Gradient Mask Fades */}
           <div className="absolute top-0 bottom-0 left-0 w-12 sm:w-20 bg-gradient-to-r from-brand-bg dark:from-zinc-950 to-transparent z-20 pointer-events-none"></div>
           <div className="absolute top-0 bottom-0 right-0 w-12 sm:w-20 bg-gradient-to-l from-brand-bg dark:from-zinc-950 to-transparent z-20 pointer-events-none"></div>
 
-          {/* GPU Composited Track */}
-          <div className="overflow-hidden py-3">
-            <div 
-              className={`flex gap-6 py-1 w-max ${
-                direction === "forward" ? "animate-marquee-smooth" : "animate-marquee-reverse"
-              } ${isPaused ? "pause-marquee" : ""}`}
-              style={{ animationDuration }}
-            >
+          {/* Scroll Track */}
+          <div
+            ref={scrollRef}
+            onScroll={normalizeScroll}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUpOrLeave}
+            className="overflow-x-auto scrollbar-none py-3 select-none cursor-grab active:cursor-grabbing touch-pan-x"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
+            <div className="flex gap-6 py-1 w-max">
               {displayItems.map((brand, idx) => {
                 const accent = ACCENT_PALETTE[idx % ACCENT_PALETTE.length];
                 return (

@@ -70,7 +70,7 @@ export async function GET() {
 
         if (fileData.brandItems && Array.isArray(fileData.brandItems)) {
           const hasAllBrands = fileData.brandItems.every((fileB: any) =>
-            brandItems.some((dbB: any) => dbB.id === fileB.id && (dbB.logoUrl || "") === (fileB.logoUrl || ""))
+            brandItems.some((dbB: any) => dbB.id === fileB.id && dbB.name === fileB.name && (dbB.logoUrl || "") === (fileB.logoUrl || ""))
           ) && brandItems.length === fileData.brandItems.length;
 
           if (!hasAllBrands) {
