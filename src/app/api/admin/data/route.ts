@@ -154,24 +154,18 @@ export async function GET() {
   }
 }
 
-import { cookies } from "next/headers";
-import { getAdminUsers } from "@/lib/auth-store";
+import { verifyAdminSession } from "@/lib/admin-auth";
 
 export async function POST(request: Request) {
-  try {
-    const cookieStore = await cookies();
-    const userId = cookieStore.get("admin_user_id")?.value;
-    if (userId) {
-      const users = await getAdminUsers();
-      const currentUser = users.find((u) => u.id === userId && u.status === "Active");
-      if (currentUser?.role === "Viewer") {
-        return NextResponse.json(
-          { success: false, message: "Forbidden: Viewer accounts have read-only access." },
-          { status: 403 }
-        );
-      }
-    }
+  const auth = await verifyAdminSession(undefined, false);
+  if (!auth.isAuthenticated || auth.errorResponse) {
+    return NextResponse.json(
+      { success: false, message: auth.errorResponse?.message || "Unauthorized" },
+      { status: auth.errorResponse?.status || 401 }
+    );
+  }
 
+  try {
     const data = await request.json();
     await initDatabase();
 

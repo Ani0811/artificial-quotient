@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { setAdminPassword, getAdminUsers, updateAdminUserPassword } from "@/lib/auth-store";
+import { getAdminUsers, updateAdminUserPassword } from "@/lib/auth-store";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +12,18 @@ function getEnvRecoveryKeys(): string[] {
 }
 
 export async function POST(request: Request) {
+  // Rate limit: max 5 attempts per minute per IP
+  const rateLimit = checkRateLimit(request, 5, 60000);
+  if (!rateLimit.success) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: `Too many password reset attempts. Please wait ${Math.ceil(rateLimit.resetMs / 1000)} seconds before trying again.`,
+      },
+      { status: 429 }
+    );
+  }
+
   try {
     const { email, recoveryKey, newPassword } = await request.json();
 

@@ -1,12 +1,22 @@
-import path from "path";
-import fs from "fs";
-
 export interface ContactEmailParams {
   name: string;
   email: string;
   inquiryType: string;
   subject?: string;
   message: string;
+}
+
+/**
+ * Escapes HTML characters to prevent HTML Injection and Email XSS.
+ */
+function escapeHtml(str: string): string {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 /**
@@ -38,8 +48,15 @@ Reply directly to ${name}: mailto:${email}
  */
 export function generateContactEmailHtml(params: ContactEmailParams): string {
   const { name, email, inquiryType, subject, message } = params;
-  const initial = name ? name.trim().charAt(0).toUpperCase() : "A";
-  const replySubject = encodeURIComponent(`Re: ${subject || inquiryType || "Artificial Quotient Inquiry"}`);
+  const safeName = escapeHtml(name);
+  const safeEmail = escapeHtml(email);
+  const safeInquiryType = escapeHtml(inquiryType);
+  const safeSubject = escapeHtml(subject || "No Subject Provided");
+  const safeMessage = escapeHtml(message);
+
+  const initial = safeName ? safeName.trim().charAt(0).toUpperCase() : "A";
+  const rawSubject = subject || inquiryType || "Artificial Quotient Inquiry";
+  const replySubject = encodeURIComponent(`Re: ${rawSubject}`);
   
   const logoUrl = "https://artificial-quotient.com/logo/logo-removebg-preview.png";
 
@@ -110,11 +127,11 @@ export function generateContactEmailHtml(params: ContactEmailParams): string {
                   </td>
                   <td valign="middle">
                     <div style="font-size: 18px; font-weight: 700; color: #ffffff; margin-bottom: 3px;">
-                      ${name}
+                      ${safeName}
                     </div>
                     <div style="font-size: 14px;">
-                      <a href="mailto:${email}" style="color: #34d399; text-decoration: none; font-weight: 600;">
-                        ${email}
+                      <a href="mailto:${safeEmail}" style="color: #34d399; text-decoration: none; font-weight: 600;">
+                        ${safeEmail}
                       </a>
                     </div>
                   </td>
@@ -131,7 +148,7 @@ export function generateContactEmailHtml(params: ContactEmailParams): string {
                   <td style="padding-bottom: 14px; border-bottom: 1px solid #16382e;">
                     <span style="font-size: 11px; font-weight: 700; color: #6ee7b7; text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 6px;">Inquiry Category</span>
                     <span style="display: inline-block; padding: 4px 12px; background-color: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #a7f3d0; font-size: 12px; font-weight: 700; border-radius: 8px;">
-                      ${inquiryType}
+                      ${safeInquiryType}
                     </span>
                   </td>
                 </tr>
@@ -139,7 +156,7 @@ export function generateContactEmailHtml(params: ContactEmailParams): string {
                   <td style="padding-top: 14px;">
                     <span style="font-size: 11px; font-weight: 700; color: #6ee7b7; text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 6px;">Subject</span>
                     <span style="font-size: 15px; font-weight: 700; color: #ffffff;">
-                      ${subject || "No Subject Provided"}
+                      ${safeSubject}
                     </span>
                   </td>
                 </tr>
@@ -155,7 +172,7 @@ export function generateContactEmailHtml(params: ContactEmailParams): string {
                   Message Content
                 </div>
                 <div style="font-size: 15px; line-height: 1.7; color: #e2e8f0; white-space: pre-wrap; font-weight: 400;">
-                  ${message}
+                  ${safeMessage}
                 </div>
               </div>
             </td>
@@ -164,8 +181,8 @@ export function generateContactEmailHtml(params: ContactEmailParams): string {
           <!-- Direct Reply Button -->
           <tr>
             <td style="padding: 0 32px 32px 32px;" align="center">
-              <a href="mailto:${email}?subject=${replySubject}" style="display: block; width: 100%; box-sizing: border-box; padding: 15px 24px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; font-weight: 800; font-size: 15px; text-align: center; text-decoration: none; border-radius: 12px; box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);">
-                ✉️ Reply directly to ${name}
+              <a href="mailto:${safeEmail}?subject=${replySubject}" style="display: block; width: 100%; box-sizing: border-box; padding: 15px 24px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; font-weight: 800; font-size: 15px; text-align: center; text-decoration: none; border-radius: 12px; box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);">
+                ✉️ Reply directly to ${safeName}
               </a>
             </td>
           </tr>

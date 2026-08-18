@@ -31,62 +31,61 @@ export async function POST(request: Request) {
       );
     }
 
-    // Try matching email + password
+    // 1. Strict email + password authentication
     if (email) {
-      const targetUserIndex = adminUsers.findIndex(
-        (u) => u.email.toLowerCase() === email.trim().toLowerCase()
+      const normalizedEmail = email.trim().toLowerCase();
+      const user = adminUsers.find(
+        (u) => u.email.toLowerCase() === normalizedEmail
       );
 
-      if (targetUserIndex !== -1) {
-        const user = adminUsers[targetUserIndex];
-        if (user.status !== "Active") {
+      if (!user) {
+        return NextResponse.json(
+          { success: false, message: "Invalid administrator credentials. Permission to access the Admin Portal must be granted by an existing System Administrator." },
+          { status: 401 }
+        );
+      }
+
+      if (user.status !== "Active") {
+        return NextResponse.json(
+          { success: false, message: "Access Denied: This account is inactive. Permission must be granted by an active System Administrator." },
+          { status: 403 }
+        );
+      }
+
+      if (user.password === password || password === masterPassword) {
+        // Generate OTP
+        const code = generateOTP(user.id);
+        
+        // Send Email
+        const emailSent = await send2FACodeEmail(user.email, code);
+        if (!emailSent) {
           return NextResponse.json(
-            { success: false, message: "Access Denied: This account is inactive. Permission must be granted by an active System Administrator." },
-            { status: 403 }
+            { success: false, message: "Failed to send verification code. Please check email configuration." },
+            { status: 500 }
           );
         }
 
-        if (user.password === password || password === masterPassword) {
-          // Generate OTP
-          const code = generateOTP(user.id);
-          
-          // Send Email
-          const emailSent = await send2FACodeEmail(user.email, code);
-          if (!emailSent) {
-            return NextResponse.json(
-              { success: false, message: "Failed to send verification code. Please check email configuration." },
-              { status: 500 }
-            );
-          }
-
-          return NextResponse.json({ 
-            success: true, 
-            require2FA: true, 
-            userId: user.id, 
-            message: "Verification code sent to email." 
-          });
-        }
+        return NextResponse.json({ 
+          success: true, 
+          require2FA: true, 
+          userId: user.id, 
+          message: "Verification code sent to email." 
+        });
       }
+
+      return NextResponse.json(
+        { success: false, message: "Invalid administrator credentials. Permission to access the Admin Portal must be granted by an existing System Administrator." },
+        { status: 401 }
+      );
     }
 
-    // Try matching password against any active user or master password (fallback for non-email login)
-    const matchingUser = adminUsers.find(
-      (u) => u.status === "Active" && u.password === password
-    );
+    // 2. Fallback for non-email master password login
+    if (password === masterPassword) {
+      const primaryAdmin = adminUsers.find((u) => u.status === "Active" && u.role === "Super Admin") || adminUsers[0];
+      const userId = primaryAdmin?.id || "admin-1";
+      const userEmail = primaryAdmin?.email || process.env.CONTACT_RECEIVER_EMAIL || "admin@artificialquotient.com";
 
-    if (password === masterPassword || matchingUser) {
-      let userId = "admin-1"; // Fallback to primary admin
-      let userEmail = process.env.CONTACT_RECEIVER_EMAIL || "admin@artificialquotient.com";
-      
-      if (matchingUser) {
-        userId = matchingUser.id;
-        userEmail = matchingUser.email;
-      }
-
-      // Generate OTP
       const code = generateOTP(userId);
-      
-      // Send Email
       const emailSent = await send2FACodeEmail(userEmail, code);
       if (!emailSent) {
         return NextResponse.json(

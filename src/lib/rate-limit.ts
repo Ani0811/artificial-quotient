@@ -2,11 +2,20 @@ interface RateLimitRecord {
   timestamps: number[];
 }
 
-const trackerMap = new Map<string, RateLimitRecord>();
+const globalForRateLimit = global as unknown as {
+  rateLimitTracker: Map<string, RateLimitRecord>;
+  rateLimitInterval?: NodeJS.Timeout;
+};
+
+if (!globalForRateLimit.rateLimitTracker) {
+  globalForRateLimit.rateLimitTracker = new Map<string, RateLimitRecord>();
+}
+
+const trackerMap = globalForRateLimit.rateLimitTracker;
 
 // Cleanup stale IP entries every 5 minutes to prevent memory growth
-if (typeof setInterval !== "undefined") {
-  setInterval(() => {
+if (typeof setInterval !== "undefined" && !globalForRateLimit.rateLimitInterval) {
+  globalForRateLimit.rateLimitInterval = setInterval(() => {
     const now = Date.now();
     for (const [ip, record] of trackerMap.entries()) {
       record.timestamps = record.timestamps.filter((ts) => now - ts < 600000);
@@ -19,7 +28,6 @@ if (typeof setInterval !== "undefined") {
 
 /**
  * In-memory sliding window rate limiter.
- * Does NOT require Redis or external infrastructure.
  */
 export function checkRateLimit(
   request: Request,
@@ -29,7 +37,13 @@ export function checkRateLimit(
   // Extract client IP address from standard headers
   const forwardedFor = request.headers.get("x-forwarded-for");
   const realIp = request.headers.get("x-real-ip");
-  const ip = (forwardedFor ? forwardedFor.split(",")[0].trim() : realIp) || "127.0.0.1";
+  const cfConnectingIp = request.headers.get("cf-connecting-ip");
+  
+  const ip = (
+    cfConnectingIp ||
+    (forwardedFor ? forwardedFor.split(",")[0].trim() : realIp) ||
+    "127.0.0.1"
+  );
 
   const now = Date.now();
   const key = `${ip}`;

@@ -2,10 +2,23 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { getAdminUsers, saveAdminUsers } from "@/lib/auth-store";
 import { verifyOTP } from "@/lib/otp-store";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
+  // Rate limit: max 10 verification requests per minute per IP
+  const rateLimit = checkRateLimit(request, 10, 60000);
+  if (!rateLimit.success) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: `Too many verification attempts. Please wait ${Math.ceil(rateLimit.resetMs / 1000)} seconds before trying again.`,
+      },
+      { status: 429 }
+    );
+  }
+
   try {
     const { userId, code } = await request.json();
 
@@ -16,11 +29,11 @@ export async function POST(request: Request) {
       );
     }
 
-    const isValid = verifyOTP(userId, code);
+    const result = verifyOTP(userId, code);
 
-    if (!isValid) {
+    if (!result.valid) {
       return NextResponse.json(
-        { success: false, message: "Invalid or expired verification code." },
+        { success: false, message: result.message || "Invalid or expired verification code." },
         { status: 401 }
       );
     }

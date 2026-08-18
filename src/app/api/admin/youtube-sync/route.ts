@@ -23,20 +23,18 @@ function formatViews(views: string): string {
   return num.toString();
 }
 
+import { verifyAdminSession } from "@/lib/admin-auth";
+
 export async function POST(request: Request) {
+  const auth = await verifyAdminSession(undefined, false);
+  if (!auth.isAuthenticated || auth.errorResponse) {
+    return NextResponse.json(
+      { success: false, message: auth.errorResponse?.message || "Unauthorized" },
+      { status: auth.errorResponse?.status || 401 }
+    );
+  }
+
   try {
-    const cookieStore = await cookies();
-    const userId = cookieStore.get("admin_user_id")?.value;
-    if (userId) {
-      const users = await getAdminUsers();
-      const currentUser = users.find((u: any) => u.id === userId && u.status === "Active");
-      if (currentUser?.role === "Viewer") {
-        return NextResponse.json(
-          { success: false, message: "Forbidden: Viewer accounts have read-only access." },
-          { status: 403 }
-        );
-      }
-    }
 
     const apiKey = process.env.YOUTUBE_API_KEY;
     const channelId = process.env.YOUTUBE_CHANNEL_ID;

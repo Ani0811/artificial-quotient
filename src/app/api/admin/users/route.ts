@@ -1,12 +1,23 @@
 import { NextResponse } from "next/server";
 import { initDatabase } from "@/lib/db";
 import { getAdminUsersFromDb, syncAdminUsersToDb } from "@/schema";
+import { verifyAdminSession } from "@/lib/admin-auth";
 import fs from "fs/promises";
 import path from "path";
+
+export const dynamic = "force-dynamic";
 
 const usersFilePath = path.join(process.cwd(), "src", "data", "admin-users.json");
 
 export async function GET() {
+  const auth = await verifyAdminSession(undefined, true);
+  if (!auth.isAuthenticated || auth.errorResponse) {
+    return NextResponse.json(
+      { success: false, message: auth.errorResponse?.message || "Unauthorized" },
+      { status: auth.errorResponse?.status || 401 }
+    );
+  }
+
   try {
     await initDatabase();
     const users = await getAdminUsersFromDb();
@@ -31,25 +42,16 @@ export async function GET() {
   }
 }
 
-import { cookies } from "next/headers";
-import { getAdminUsers } from "@/lib/auth-store";
-
 export async function POST(req: Request) {
-  try {
-    const cookieStore = await cookies();
-    const userId = cookieStore.get("admin_user_id")?.value;
-    if (userId) {
-      const existingUsers = await getAdminUsers();
-      const currentUser = existingUsers.find((u) => u.id === userId && u.status === "Active");
-      const canEdit = currentUser?.role === "Super Admin" || (currentUser?.role !== "Viewer" && currentUser?.permissions?.includes("users"));
-      if (!canEdit) {
-        return NextResponse.json(
-          { success: false, message: "Forbidden: You do not have permission to manage admin users." },
-          { status: 403 }
-        );
-      }
-    }
+  const auth = await verifyAdminSession("users", false);
+  if (!auth.isAuthenticated || auth.errorResponse) {
+    return NextResponse.json(
+      { success: false, message: auth.errorResponse?.message || "Unauthorized" },
+      { status: auth.errorResponse?.status || 401 }
+    );
+  }
 
+  try {
     const { users } = await req.json();
     if (!Array.isArray(users)) {
       return NextResponse.json({ success: false, message: "Invalid users list" }, { status: 400 });

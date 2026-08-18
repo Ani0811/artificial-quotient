@@ -531,6 +531,15 @@ Reduced vertical padding and internal gaps across all homepage sections on mobil
 - **Audience Geographies**: Configured India as the 3rd leading demographic in audience snapshot.
 - **Rate Card Copy**: Updated integration CTA button copy to "Book 60s integration".
 
+#### 6. Comprehensive Security & Vulnerability Hardening
+- **RBAC & Session Guards**: Created centralized [`verifyAdminSession`](file:///src/lib/admin-auth.ts) server helper enforcing strict authentication and role/permission checks across all admin endpoints (`/api/admin/users`, `/api/admin/data`, `/api/admin/upload`, `/api/admin/youtube-sync`), preventing authentication bypass and unauthorized data alterations.
+- **Credential Leak Prevention**: Locked down `GET /api/admin/users` so only authenticated admins can view user records.
+- **Secure File Upload Pipeline**: Hardened [`/api/admin/upload`](file:///src/app/api/admin/upload/route.ts) with active session checks, a strict image MIME and extension whitelist (`.jpg`, `.png`, `.webp`, `.gif`, `.svg`, `.avif`), a 10MB per-file limit, and rigorous path sanitization to prevent directory traversal and stored script attacks.
+- **2FA Brute-Force Defense**: Added sliding-window IP rate limiting and a 5-attempt threshold in [`otp-store.ts`](file:///src/lib/otp-store.ts) and [`verify-2fa`](file:///src/app/api/auth/verify-2fa/route.ts) that automatically invalidates compromised OTPs upon repeated failure.
+- **Zero Console Secret Exposure**: Restricted OTP console logs strictly to `development` mode.
+- **Email XSS & HTML Injection Defense**: Implemented strict HTML entity escaping (`escapeHtml`) on all user-supplied contact form inputs before email template compilation in [`contact-template.ts`](file:///src/emails/contact-template.ts).
+- **Hardened Rate Limiting**: Upgraded [`rate-limit.ts`](file:///src/lib/rate-limit.ts) with `global` singleton persistence and Cloudflare header support (`cf-connecting-ip`).
+
 ---
 
 ## 📂 Project Structure
