@@ -194,82 +194,86 @@ export default function WhatPerforms({ whatPerforms, isLoading }: WhatPerformsPr
               return (
                 <div
                   key={study.id || idx}
-                  className="px-2.5 sm:px-3 shrink-0 transition-all duration-300"
+                  className="px-2.5 sm:px-3 shrink-0 transition-all duration-300 flex flex-col"
                   style={{ width: `${100 / itemsPerView}%` }}
                 >
-                  <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-brand-border dark:border-zinc-800/90 overflow-hidden shadow-sm flex flex-col justify-between h-full group hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-500/10 hover:border-emerald-500/40 dark:hover:border-emerald-500/40 transition-all duration-300 relative">
+                  <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-brand-border dark:border-zinc-800/90 overflow-hidden shadow-sm flex flex-col h-full group hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-500/10 hover:border-emerald-500/40 dark:hover:border-emerald-500/40 transition-all duration-300 relative">
                     {/* Top Ambient Glow Line */}
                     <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-                    <div>
-                      {/* Video Thumbnail Media Card */}
-                      <div className="aspect-video bg-zinc-950 flex items-center justify-center text-5xl relative overflow-hidden group/thumb">
-                        {thumbImg ? (
-                          <img
-                            src={thumbImg}
-                            alt={study.title}
-                            width={480}
-                            height={270}
-                            loading="lazy"
-                            decoding="async"
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                          />
-                        ) : (
-                          <span className="text-4xl">{study.thumb || "🎬"}</span>
-                        )}
+                    {/* Video Thumbnail Media Card */}
+                    <div className="aspect-video bg-zinc-950 flex items-center justify-center text-5xl relative overflow-hidden group/thumb shrink-0">
+                      {thumbImg ? (
+                        <img
+                          src={thumbImg}
+                          alt={study.title}
+                          width={480}
+                          height={270}
+                          loading="lazy"
+                          decoding="async"
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      ) : (
+                        <span className="text-4xl">{study.thumb || "🎬"}</span>
+                      )}
 
-                        {/* Centered Play Button Overlay */}
-                        {study.ytUrl ? (
-                          <a
-                            href={study.ytUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="absolute inset-0 bg-black/25 group-hover:bg-black/10 transition-colors flex items-center justify-center cursor-pointer"
-                            title={`Watch "${study.title}" on YouTube`}
-                          >
-                            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-black/60 backdrop-blur-md border border-white/30 text-white flex items-center justify-center shadow-xl transition-all duration-300 group-hover:scale-110 group-hover:bg-emerald-600/90 group-hover:border-emerald-400">
-                              <Play className="w-5 h-5 sm:w-6 sm:h-6 fill-current ml-0.5" />
-                            </div>
-                          </a>
-                        ) : (
-                          <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                            <div className="w-12 h-12 rounded-full bg-black/60 text-white flex items-center justify-center">
-                              <Play className="w-5 h-5 fill-current ml-0.5" />
-                            </div>
+                      {/* Centered Play Button Overlay */}
+                      {study.ytUrl ? (
+                        <a
+                          href={study.ytUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="absolute inset-0 bg-black/25 group-hover:bg-black/10 transition-colors flex items-center justify-center cursor-pointer"
+                          title={`Watch "${study.title}" on YouTube`}
+                        >
+                          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-black/60 backdrop-blur-md border border-white/30 text-white flex items-center justify-center shadow-xl transition-all duration-300 group-hover:scale-110 group-hover:bg-emerald-600/90 group-hover:border-emerald-400">
+                            <Play className="w-5 h-5 sm:w-6 sm:h-6 fill-current ml-0.5" />
                           </div>
-                        )}
-
-                        {/* Top Category Badge */}
-                        <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-md text-[11px] font-bold px-2.5 py-1 rounded-lg text-white border border-white/10 shadow-sm">
-                          {study.type || "Tutorial"}
+                        </a>
+                      ) : (
+                        <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                          <div className="w-12 h-12 rounded-full bg-black/60 text-white flex items-center justify-center">
+                            <Play className="w-5 h-5 fill-current ml-0.5" />
+                          </div>
                         </div>
+                      )}
 
-                        {/* Top Right Highlight Badge */}
-                        {study.highlight && (
-                          <div className="absolute top-3 right-3 bg-emerald-500/90 backdrop-blur-md text-[10px] font-extrabold px-2 py-0.5 rounded-md text-zinc-950 uppercase tracking-wider shadow-sm">
-                            {study.highlight}
-                          </div>
-                        )}
+                      {/* Top Category Badge */}
+                      <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-md text-[11px] font-bold px-2.5 py-1 rounded-lg text-white border border-white/10 shadow-sm">
+                        {study.type || "Tutorial"}
                       </div>
 
-                      {/* Video Title & Metrics */}
-                      <div className="p-4 sm:p-5">
+                      {/* Top Right Highlight Badge */}
+                      {study.highlight && (
+                        <div className="absolute top-3 right-3 bg-emerald-500/90 backdrop-blur-md text-[10px] font-extrabold px-2 py-0.5 rounded-md text-zinc-950 uppercase tracking-wider shadow-sm">
+                          {study.highlight}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Card Content: Title + Metrics + Action in a flex-1 flex flex-col justify-between container */}
+                    <div className="p-4 sm:p-5 flex flex-col flex-1 justify-between">
+                      {/* Video Title Section with min-height for uniform alignment */}
+                      <div className="min-h-[4.2rem] sm:min-h-[4.75rem] flex flex-col justify-start">
                         {study.ytUrl ? (
                           <a
                             href={study.ytUrl}
                             target="_blank"
                             rel="noreferrer"
-                            className="block font-heading text-base sm:text-lg font-bold text-brand-text dark:text-white line-clamp-2 group-hover:text-emerald-500 transition-colors leading-snug mb-4"
+                            className="block font-heading text-base sm:text-lg font-bold text-brand-text dark:text-white line-clamp-3 group-hover:text-emerald-500 transition-colors leading-snug"
                             title={study.title}
                           >
                             {study.title}
                           </a>
                         ) : (
-                          <h3 className="font-heading text-base sm:text-lg font-bold text-brand-text dark:text-white line-clamp-2 leading-snug mb-4">
+                          <h3 className="font-heading text-base sm:text-lg font-bold text-brand-text dark:text-white line-clamp-3 leading-snug">
                             {study.title}
                           </h3>
                         )}
+                      </div>
 
+                      {/* Bottom Section: Metrics + Button pinned together */}
+                      <div className="mt-4 space-y-3.5">
                         {/* Performance Metrics Row */}
                         <div className="grid grid-cols-2 gap-2 pt-3 border-t border-brand-border dark:border-zinc-800/80">
                           <div className="bg-brand-bg/60 dark:bg-zinc-950/60 p-2 rounded-xl border border-brand-border/60 dark:border-zinc-800/60 flex items-center gap-2">
@@ -288,23 +292,21 @@ export default function WhatPerforms({ whatPerforms, isLoading }: WhatPerformsPr
                             </div>
                           </div>
                         </div>
+
+                        {/* Watch on YouTube Link */}
+                        {study.ytUrl && (
+                          <a
+                            href={study.ytUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="w-full py-2 px-3 rounded-xl bg-brand-bg dark:bg-zinc-950 text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center justify-between border border-brand-border dark:border-zinc-800 hover:border-emerald-500/40 hover:bg-emerald-500/10 transition-all group/link"
+                          >
+                            <span>Watch Video on YouTube</span>
+                            <ExternalLink className="w-3.5 h-3.5 transition-transform group-hover/link:translate-x-0.5" />
+                          </a>
+                        )}
                       </div>
                     </div>
-
-                    {/* Bottom Watch on YouTube Link */}
-                    {study.ytUrl && (
-                      <div className="px-4 sm:px-5 pb-4">
-                        <a
-                          href={study.ytUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="w-full py-2 px-3 rounded-xl bg-brand-bg dark:bg-zinc-950 text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center justify-between border border-brand-border dark:border-zinc-800 hover:border-emerald-500/40 hover:bg-emerald-500/10 transition-all group/link"
-                        >
-                          <span>Watch Video on YouTube</span>
-                          <ExternalLink className="w-3.5 h-3.5 transition-transform group-hover/link:translate-x-0.5" />
-                        </a>
-                      </div>
-                    )}
                   </div>
                 </div>
               );

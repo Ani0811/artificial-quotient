@@ -526,7 +526,7 @@ Reduced vertical padding and internal gaps across all homepage sections on mobil
 - **EasyPeasy Branding**: Renamed partner references to EasyPeasy across case studies and partner directory.
 - **New What Performs Videos**: Configured latest top-performing tutorials in `site-data.json` and database seed scripts:
   1. *Grok AI Lip Sync Voice Consistency* (`https://youtu.be/FMnBEyQSPGQ`)
-  2. *Speechma AI Movie Recap & Explanation Videos* (`https://youtu.be/oai9C43hqXw`)
+  2. *Jitter Video Motion Graphics Tutorial* (`https://youtu.be/OjN4u-b0xnQ`)
   3. *Viral AI Cat Videos & Automation Workflows* (`https://youtu.be/jkUY_VYLHNM`)
 - **Audience Geographies**: Configured India as the 3rd leading demographic in audience snapshot.
 - **Rate Card Copy**: Updated integration CTA button copy to "Book 60s integration".

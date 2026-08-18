@@ -184,14 +184,14 @@ VALUES
   ),
   (
     '2', 
-    'Speechma AI Tutorial: Free ElevenLabs Alternative For Unlimited AI Voices!', 
-    '78.7k', 
-    '3.1k+', 
+    'Jitter Video Tutorial for Beginners: Make Motion Graphics In Minutes!', 
+    '30.2k', 
+    '1.2k+', 
     'Dedicated Video', 
-    '🔊', 
-    'https://img.youtube.com/vi/oai9C43hqXw/maxresdefault.jpg', 
-    'https://youtu.be/oai9C43hqXw?si=ZvklcYK4Dh4_EkBt', 
-    'Voice Generator', 
+    '✨', 
+    'https://img.youtube.com/vi/OjN4u-b0xnQ/maxresdefault.jpg', 
+    'https://youtu.be/OjN4u-b0xnQ?si=HbK87q1HcyZ7h4Zm', 
+    'Motion Graphics', 
     1
   ),
   (
