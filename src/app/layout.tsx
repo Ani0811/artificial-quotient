@@ -67,13 +67,13 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/logo/logo-removebg-preview.png?v=4", type: "image/png" },
-      { url: "/logo-removebg-preview.png?v=4", type: "image/png" },
-      { url: "/logo.png?v=4", type: "image/png" },
-      { url: "/favicon.ico?v=4", sizes: "any" }
+      { url: "/logo/logo-removebg-preview.png?v=5", type: "image/png" },
+      { url: "/logo-removebg-preview.png?v=5", type: "image/png" },
+      { url: "/logo.png?v=5", type: "image/png" },
+      { url: "/favicon.ico?v=5", sizes: "any" }
     ],
-    shortcut: "/logo/logo-removebg-preview.png?v=4",
-    apple: "/logo/logo-removebg-preview.png?v=4",
+    shortcut: "/logo/logo-removebg-preview.png?v=5",
+    apple: "/logo/logo-removebg-preview.png?v=5",
   },
   openGraph: {
     title: "Artificial Quotient — Premier AI Automation & SaaS Media Hub",
@@ -131,9 +131,9 @@ export default async function RootLayout({
           />
         )}
         {/* End Google Tag Manager */}
-        <link rel="icon" href="/logo/logo-removebg-preview.png?v=4" type="image/png" sizes="any" />
-        <link rel="shortcut icon" href="/logo/logo-removebg-preview.png?v=4" type="image/png" />
-        <link rel="apple-touch-icon" href="/logo/logo-removebg-preview.png?v=4" />
+        <link rel="icon" href="/logo/logo-removebg-preview.png?v=5" type="image/png" sizes="any" />
+        <link rel="shortcut icon" href="/logo/logo-removebg-preview.png?v=5" type="image/png" />
+        <link rel="apple-touch-icon" href="/logo/logo-removebg-preview.png?v=5" />
       </head>
       <body suppressHydrationWarning className={`${inter.variable} ${outfit.variable} ${caveat.variable} antialiased bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-emerald-50 font-body flex flex-col min-h-screen transition-colors duration-200 relative`}>
         {/* Google Tag Manager (noscript) */}
