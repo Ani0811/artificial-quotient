@@ -551,6 +551,18 @@ Reduced vertical padding and internal gaps across all homepage sections on mobil
 
 ---
 
+### 📅 Day 18 — High-Performance Google Tag Manager Integration & Clean Environment Analytics
+
+#### 1. High-Performance GTM Script Insertion (`src/app/layout.tsx`)
+- **First-Party Injection**: Pasted Google's official GTM script as high as possible in the `<head>` of the root layout to capture early user interactions, and placed the fallback `<noscript>` iframe immediately after the opening `<body>` tag.
+- **Dynamic Configuration & Zero Fallback Hardcoding**: Configured the GTM loading engine to use the `process.env.NEXT_PUBLIC_GTM_ID` environment variable dynamically, rendering scripts conditionally only when the tag ID is configured.
+
+#### 2. Duplicate GTM Tracking Purge (`src/components/analytics/google-analytics.tsx`)
+- **De-Duplication**: Purged duplicate Tag Manager initialization logic from the custom client-side `GoogleAnalytics` component, keeping Google Analytics 4 (GA4) logic intact to prevent double-tracked pageviews and statistics corruption.
+- **Local Environment Sync**: Synchronized `NEXT_PUBLIC_GTM_ID` across `.env` and `.env.production`.
+
+---
+
 ## 📂 Project Structure
 
 ```
