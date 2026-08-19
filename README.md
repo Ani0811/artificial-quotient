@@ -542,6 +542,15 @@ Reduced vertical padding and internal gaps across all homepage sections on mobil
 
 ---
 
+### 📅 Day 17 — Premium UX Inline Notifications & Alert System Replacement
+
+#### 1. Inline Alert Banner System (`DashboardClient.tsx`)
+- **Native Alert Eradication**: Replaced all native browser `alert()` popups with a custom, state-driven inline notification banner system for a smoother, non-blocking admin experience.
+- **Visual Feedback & HSL Colors**: Designed semantic UI themes matching the client design tokens—Emerald/Success with `Check` icon, Red/Danger with `AlertCircle` icon, and responsive dismiss buttons (`X` icon).
+- **Auto-Dismiss & Focus Scroll**: Integrated automatic scroll-into-view behavior to dynamically focus the user's viewport on the notification banner, along with a 5-second auto-clear timer on successful actions to prevent layout clutter.
+
+---
+
 ## 📂 Project Structure
 
 ```

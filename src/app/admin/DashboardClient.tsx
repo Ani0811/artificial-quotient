@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Check, Edit3, ShieldCheck } from "lucide-react";
+import { Check, Edit3, ShieldCheck, AlertCircle, X } from "lucide-react";
 import { PerformItem, SponsorItem, AdminUser, BrandItem, InterestItem, CountryItem, HeroConfig } from "@/types";
 import { parseGeographies } from "@/components/audience-snapshot";
 import { ALL_COUNTRIES } from "@/lib/countries";
@@ -29,6 +29,10 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
   const [isSyncingYoutube, setIsSyncingYoutube] = useState(false);
   const [layoutMode, setLayoutMode] = useState<"split" | "edit" | "preview">("split");
   const [loading, setLoading] = useState(true);
+  const [notification, setNotification] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
   const [dbStatus, setDbStatus] = useState<string>("Connected to MySQL: AQ-Dashboard");
   const [uploadingField, setUploadingField] = useState<string | null>(null);
 
@@ -128,6 +132,28 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
     }
   }, [savedSuccess]);
 
+  // Scroll and handle notification auto-clear
+  useEffect(() => {
+    if (notification) {
+      setTimeout(() => {
+        if (bannerRef.current) {
+          bannerRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+        } else if (topRef.current) {
+          topRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+        window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+      }, 50);
+
+      // Auto-clear success notifications after 5 seconds
+      if (notification.type === "success") {
+        const timer = setTimeout(() => {
+          setNotification(null);
+        }, 5000);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [notification]);
+
   // Fetch initial site data from API on mount
   useEffect(() => {
     async function loadData() {
@@ -180,6 +206,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
     formData.append("file", file);
 
     setUploadingField(fieldId);
+    setNotification(null);
     try {
       const res = await fetch("/api/admin/upload", {
         method: "POST",
@@ -192,10 +219,16 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
           setFieldUrl(data.url);
         }
       } else {
-        alert("Upload failed. Please check server logs.");
+        setNotification({
+          type: "error",
+          message: "Upload failed. Please check server logs.",
+        });
       }
     } catch {
-      alert("Network error during file upload.");
+      setNotification({
+        type: "error",
+        message: "Network error during file upload.",
+      });
     } finally {
       setUploadingField(null);
     }
@@ -253,17 +286,29 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
   const handleSyncYoutube = async () => {
     if (isViewer) return;
     setIsSyncingYoutube(true);
+    setNotification(null);
     try {
       const res = await fetch("/api/admin/youtube-sync", { method: "POST" });
       const data = await res.json();
       if (res.ok) {
-        alert(data.message || "Successfully synced YouTube stats!");
-        window.location.reload();
+        setNotification({
+          type: "success",
+          message: data.message || "Successfully synced YouTube stats!",
+        });
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
       } else {
-        alert(data.message || "Failed to sync YouTube stats. Check your API key.");
+        setNotification({
+          type: "error",
+          message: data.message || "Failed to sync YouTube stats. Check your API key.",
+        });
       }
     } catch {
-      alert("Network error occurred while syncing YouTube stats.");
+      setNotification({
+        type: "error",
+        message: "Network error occurred while syncing YouTube stats.",
+      });
     } finally {
       setIsSyncingYoutube(false);
     }
@@ -297,13 +342,17 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
   const handleRestoreBackup = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setNotification(null);
 
     try {
       const text = await file.text();
       const backupData = JSON.parse(text);
 
       if (!backupData.stats && !backupData.rates && !backupData.whatPerforms) {
-        alert("Invalid backup file structure.");
+        setNotification({
+          type: "error",
+          message: "Invalid backup file structure.",
+        });
         return;
       }
 
@@ -325,12 +374,16 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
       });
 
       if (res.ok) {
-        setSavedSuccess(true);
-        setTimeout(() => setSavedSuccess(false), 3000);
-        alert("Backup restored successfully and saved to database!");
+        setNotification({
+          type: "success",
+          message: "Backup restored successfully and saved to database!",
+        });
       }
     } catch {
-      alert("Failed to restore backup file. Ensure it is a valid JSON backup file.");
+      setNotification({
+        type: "error",
+        message: "Failed to restore backup file. Ensure it is a valid JSON backup file.",
+      });
     } finally {
       e.target.value = "";
     }
@@ -393,11 +446,36 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
           {/* Main Workspace */}
           <div className="lg:col-span-9 flex flex-col gap-4 sm:gap-6">
             
-            {savedSuccess && (
-              <div ref={bannerRef} className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 px-5 py-3.5 rounded-xl text-sm font-bold flex items-center gap-2.5 animate-fade-in shadow-sm">
-                <Check className="w-5 h-5 text-emerald-500" /> Changes saved &amp; published live on site!
-              </div>
-            )}
+            <div ref={bannerRef} className="space-y-4">
+              {savedSuccess && (
+                <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 px-5 py-3.5 rounded-xl text-sm font-bold flex items-center gap-2.5 animate-fade-in shadow-sm">
+                  <Check className="w-5 h-5 text-emerald-500" /> Changes saved &amp; published live on site!
+                </div>
+              )}
+
+              {notification && (
+                <div className={`border px-5 py-3.5 rounded-xl text-sm font-bold flex items-center justify-between gap-2.5 animate-fade-in shadow-sm ${
+                  notification.type === "success" 
+                    ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400"
+                    : "bg-red-500/10 border-red-500/30 text-red-600 dark:text-red-400"
+                }`}>
+                  <div className="flex items-center gap-2.5">
+                    {notification.type === "success" ? (
+                      <Check className="w-5 h-5 text-emerald-500 shrink-0" />
+                    ) : (
+                      <AlertCircle className="w-5 h-5 text-red-500 shrink-0" />
+                    )}
+                    <span>{notification.message}</span>
+                  </div>
+                  <button 
+                    onClick={() => setNotification(null)}
+                    className="p-1 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors shrink-0 text-brand-muted hover:text-brand-text dark:text-emerald-300 dark:hover:text-white"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+            </div>
 
             <div className={`grid gap-8 ${layoutMode === "split" ? "xl:grid-cols-12" : "grid-cols-1"}`}>
               
