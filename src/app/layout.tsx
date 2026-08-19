@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     template: "%s | Artificial Quotient",
   },
   description:
-    "The premier hub for AI automation tutorials, workflow deep-dives, and tool reviews. Connecting tech builders with high-performing SaaS.",
+    "Artificial Quotient is the premier AI automation media hub and SaaS sponsorship platform connecting high-performing tech brands with 10,000+ AI builders.",
   keywords: [
     "AI Automation",
     "Make.com Workflows",
