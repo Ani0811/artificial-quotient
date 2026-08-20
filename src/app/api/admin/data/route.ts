@@ -59,8 +59,14 @@ export async function GET() {
 
         if (fileData.sponsorResults && Array.isArray(fileData.sponsorResults)) {
           const hasAllCases = fileData.sponsorResults.every((fileCs: any) =>
-            sponsorResults.some((dbCs: any) => dbCs.id === fileCs.id && dbCs.partnerName === fileCs.partnerName && (dbCs.logoUrl || "") === (fileCs.logoUrl || ""))
-          ) && sponsorResults.length >= fileData.sponsorResults.length;
+            sponsorResults.some((dbCs: any) => 
+              dbCs.id === fileCs.id && 
+              dbCs.partnerName === fileCs.partnerName && 
+              (dbCs.logoUrl || "") === (fileCs.logoUrl || "") &&
+              (dbCs.thumbnailUrl || "") === (fileCs.thumbnailUrl || "") &&
+              (dbCs.ytUrl || "") === (fileCs.ytUrl || "")
+            )
+          ) && sponsorResults.length === fileData.sponsorResults.length;
 
           if (!hasAllCases) {
             await syncSponsorCaseStudies(fileData.sponsorResults);
@@ -70,7 +76,13 @@ export async function GET() {
 
         if (fileData.brandItems && Array.isArray(fileData.brandItems)) {
           const hasAllBrands = fileData.brandItems.every((fileB: any) =>
-            brandItems.some((dbB: any) => dbB.id === fileB.id && dbB.name === fileB.name && (dbB.logoUrl || "") === (fileB.logoUrl || ""))
+            brandItems.some((dbB: any) => 
+              dbB.id === fileB.id && 
+              dbB.name === fileB.name && 
+              (dbB.logoUrl || "") === (fileB.logoUrl || "") &&
+              (dbB.category || "") === (fileB.category || "") &&
+              (dbB.tagline || "") === (fileB.tagline || "")
+            )
           ) && brandItems.length === fileData.brandItems.length;
 
           if (!hasAllBrands) {
@@ -84,7 +96,13 @@ export async function GET() {
             (dbW: any) => dbW.title === "Revid.AI" || dbW.title === "Flashloop AI" || dbW.title === "Marky Agent"
           );
           const hasAllWhatPerforms = fileData.whatPerforms.every((fileW: any) =>
-            whatPerforms.some((dbW: any) => dbW.id === fileW.id && dbW.title === fileW.title && dbW.views === fileW.views)
+            whatPerforms.some((dbW: any) => 
+              dbW.id === fileW.id && 
+              dbW.title === fileW.title && 
+              dbW.views === fileW.views &&
+              (dbW.thumbnail || "") === (fileW.thumbnail || "") &&
+              (dbW.ytUrl || "") === (fileW.ytUrl || "")
+            )
           ) && whatPerforms.length === fileData.whatPerforms.length;
 
           if (hasOutdatedData || !hasAllWhatPerforms) {
