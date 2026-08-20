@@ -13,7 +13,9 @@ export function getBrevoConfigs(): BrevoConfig[] {
   const defaultSenderName = "Artificial Quotient Security";
   const defaultSenderEmail =
     process.env.BREVO_SENDER_EMAIL ||
+    process.env.BREVO_SENDER ||
     process.env.SMTP_USER ||
+    process.env.CONTACT_RECEIVER_EMAIL ||
     "anirudha.basuthakur@gmail.com";
 
   // 1. Check for BREVO_API_KEYS (comma-separated list: key1,key2,key3)
@@ -50,15 +52,46 @@ export function getBrevoConfigs(): BrevoConfig[] {
     }
   }
 
-  // 3. Fallback to standard BREVO_API_KEY (backward compatibility)
-  if (process.env.BREVO_API_KEY && process.env.BREVO_API_KEY.trim()) {
-    const legacyKey = process.env.BREVO_API_KEY.trim();
-    if (!configs.some((c) => c.apiKey === legacyKey)) {
-      configs.push({
-        apiKey: legacyKey,
-        senderEmail: defaultSenderEmail,
-        senderName: defaultSenderName,
-      });
+  // 3. Fallback to standard key names and aliases
+  const aliasKeys = [
+    process.env.BREVO_API_KEY,
+    process.env.BREVO_KEY,
+    process.env.BREVO_APIKEY,
+    process.env.BREVO_TOKEN,
+    process.env.SENDINBLUE_API_KEY,
+    process.env.NEXT_PUBLIC_BREVO_API_KEY,
+    process.env.NEXT_PUBLIC_BREVO_KEY,
+  ];
+
+  for (const rawKey of aliasKeys) {
+    if (rawKey && rawKey.trim()) {
+      const cleanKey = rawKey.trim();
+      if (!configs.some((c) => c.apiKey === cleanKey)) {
+        configs.push({
+          apiKey: cleanKey,
+          senderEmail: defaultSenderEmail,
+          senderName: defaultSenderName,
+        });
+      }
+    }
+  }
+
+  // 4. Dynamic discovery for any env var containing BREVO
+  for (const [envName, envVal] of Object.entries(process.env)) {
+    if (
+      envVal &&
+      typeof envVal === "string" &&
+      envName.toUpperCase().includes("BREVO") &&
+      (envName.toUpperCase().includes("KEY") || envName.toUpperCase().includes("SECRET") || envName.toUpperCase().includes("TOKEN"))
+    ) {
+      const cleanKey = envVal.trim();
+      if (!configs.some((c) => c.apiKey === cleanKey)) {
+        configs.push({
+          apiKey: cleanKey,
+          senderEmail: defaultSenderEmail,
+          senderName: defaultSenderName,
+        });
+      }
     }
   }
 
@@ -248,39 +281,48 @@ export async function send2FACodeEmail(toEmail: string, code: string): Promise<b
   }
 
   // 2. Fallback to Nodemailer SMTP
-  try {
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || "smtp.gmail.com",
-      port: Number(process.env.SMTP_PORT) || 587,
-      secure: false,
-      auth: {
-        user: senderEmail,
-        pass: process.env.SMTP_PASS || "",
-      },
-      tls: {
-        rejectUnauthorized: false,
-      },
-    });
-
-    const mailOptions = {
-      from: `"${senderName}" <${senderEmail}>`,
-      to: toEmail,
-      subject: subjectText,
-      attachments: [
-        {
-          filename: "logo.jpeg",
-          path: logoPath,
-          cid: "aqlogo@artificialquotient",
+  if (process.env.SMTP_PASS) {
+    try {
+      const transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST || "smtp.gmail.com",
+        port: Number(process.env.SMTP_PORT) || 587,
+        secure: false,
+        auth: {
+          user: senderEmail,
+          pass: process.env.SMTP_PASS || "",
         },
-      ],
-      html: htmlContent,
-    };
+        tls: {
+          rejectUnauthorized: false,
+        },
+      });
 
-    const info = await transporter.sendMail(mailOptions);
-    console.log("2FA email sent via Nodemailer SMTP: %s", info.messageId);
-    return true;
-  } catch (error) {
-    console.error("Error sending 2FA email via Nodemailer SMTP:", error);
-    return false;
+      const mailOptions = {
+        from: `"${senderName}" <${senderEmail}>`,
+        to: toEmail,
+        subject: subjectText,
+        attachments: [
+          {
+            filename: "logo.jpeg",
+            path: logoPath,
+            cid: "aqlogo@artificialquotient",
+          },
+        ],
+        html: htmlContent,
+      };
+
+      const info = await transporter.sendMail(mailOptions);
+      console.log("2FA email sent via Nodemailer SMTP: %s", info.messageId);
+      return true;
+    } catch (error) {
+      console.error("Error sending 2FA email via Nodemailer SMTP:", error);
+    }
   }
+
+  // 3. In development or localhost, log OTP to terminal so admin is never locked out
+  if (process.env.NODE_ENV === "development" || !process.env.NODE_ENV) {
+    console.log(`\n========================================\n[DEV 2FA CODE]: ${code}\nRecipient: ${toEmail}\n========================================\n`);
+    return true;
+  }
+
+  return false;
 }

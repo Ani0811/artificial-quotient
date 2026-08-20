@@ -7,7 +7,7 @@ import { checkRateLimit } from "@/lib/rate-limit";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
-  const rateLimit = checkRateLimit(request, 5, 60000);
+  const rateLimit = checkRateLimit(request, 15, 60000);
   if (!rateLimit.success) {
     return NextResponse.json(
       {
