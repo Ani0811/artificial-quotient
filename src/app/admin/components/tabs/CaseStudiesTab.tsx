@@ -282,9 +282,15 @@ export function CaseStudiesTab({
               </div>
             </div>
 
-            <div className="pt-2 border-t border-brand-border dark:border-[#16382e] space-y-3">
-              <div className="text-xs font-bold text-emerald-500 uppercase tracking-wider">
-                Extended Case Study Details (Modal View)
+            <div className="pt-3 border-t border-brand-border dark:border-[#16382e] space-y-4">
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <div className="text-xs font-bold text-emerald-500 uppercase tracking-wider flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Extended Case Study Details (Modal View)</span>
+                </div>
+                <span className="text-[11px] text-brand-muted dark:text-emerald-300/70">
+                  Formatted bullet points and line breaks display as structured cards in the public modal.
+                </span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
@@ -300,7 +306,7 @@ export function CaseStudiesTab({
                     ) : null}
                     <input 
                       type="text" 
-                      placeholder="/logo/revid.png or https://..."
+                      placeholder="/logo/flova.png or /logo/flova.svg"
                       value={item.logoUrl || ""} 
                       disabled={isViewer}
                       onChange={(e) => {
@@ -308,39 +314,18 @@ export function CaseStudiesTab({
                         next[idx].logoUrl = e.target.value;
                         setSponsorResults(next);
                       }}
-                      className="flex-1 min-w-0 border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs sm:text-sm disabled:opacity-50" 
+                      className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs sm:text-sm disabled:opacity-50" 
                     />
-                    <label 
-                      htmlFor={`sponsor-logo-input-${item.id}`}
-                      className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold px-3 py-2 rounded-xl cursor-pointer text-xs flex items-center gap-1.5 border border-emerald-500/30 shrink-0 whitespace-nowrap shadow-sm"
-                    >
-                      {uploadingField === `sponsor-logo-${item.id}` ? "Saving..." : "Upload Logo"}
-                      <input 
-                        id={`sponsor-logo-input-${item.id}`}
-                        type="file" 
-                        accept="image/*" 
-                        className="hidden" 
-                        onChange={(e) => handleInlineMediaUpload(
-                          e.target.files, 
-                          (url) => {
-                            const next = [...sponsorResults];
-                            next[idx].logoUrl = url;
-                            setSponsorResults(next);
-                          },
-                          `sponsor-logo-${item.id}`
-                        )}
-                      />
-                    </label>
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">
-                    Partner Official Website URL
+                    Official Website URL
                   </label>
                   <input 
                     type="text" 
-                    placeholder="https://www.revid.ai/"
+                    placeholder="https://www.flova.ai/en/"
                     value={item.websiteUrl || ""} 
                     disabled={isViewer}
                     onChange={(e) => {
@@ -353,12 +338,24 @@ export function CaseStudiesTab({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">
-                    Featured YouTube Video URL
-                  </label>
+                  <div className="flex items-center justify-between gap-1 mb-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80">
+                      Featured YouTube Video URL
+                    </label>
+                    {item.ytUrl && (
+                      <a 
+                        href={item.ytUrl} 
+                        target="_blank" 
+                        rel="noreferrer" 
+                        className="text-[11px] font-semibold text-emerald-500 hover:underline flex items-center gap-1"
+                      >
+                        Open Video &rarr;
+                      </a>
+                    )}
+                  </div>
                   <input 
                     type="text" 
-                    placeholder="https://youtube.com/watch?v=..."
+                    placeholder="https://youtube.com/watch?v=1tbJ3WJ9_po"
                     value={item.ytUrl || ""} 
                     disabled={isViewer}
                     onChange={(e) => {
@@ -391,7 +388,7 @@ export function CaseStudiesTab({
                   </label>
                   <input 
                     type="text" 
-                    placeholder="e.g. Q2 2026"
+                    placeholder="e.g. Dedicated Video Integration, Q2 2026"
                     value={item.publishDate || ""} 
                     disabled={isViewer}
                     onChange={(e) => {
@@ -404,13 +401,45 @@ export function CaseStudiesTab({
                 </div>
               </div>
 
-              <div>
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">
-                  Campaign Overview &amp; Narrative
-                </label>
+              {/* 1. Campaign Overview & Narrative */}
+              <div className="space-y-1.5 bg-brand-card/50 dark:bg-[#0c201a]/50 p-3.5 rounded-xl border border-brand-border/80 dark:border-[#16382e]">
+                <div className="flex items-center justify-between flex-wrap gap-1">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-brand-text dark:text-emerald-300">
+                    Campaign Overview &amp; Narrative
+                  </label>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <button
+                      type="button"
+                      disabled={isViewer}
+                      onClick={() => {
+                        const next = [...sponsorResults];
+                        const curr = next[idx].description || "";
+                        const template = `Goal: Demonstrate how creators and developers can leverage ${item.partnerName} (${item.websiteUrl || "https://..."}) to streamline AI workflows and generate high-impact results.`;
+                        next[idx].description = curr ? `${curr}\n\n${template}` : template;
+                        setSponsorResults(next);
+                      }}
+                      className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 transition-colors cursor-pointer"
+                    >
+                      + Insert Goal Template
+                    </button>
+                    <button
+                      type="button"
+                      disabled={isViewer}
+                      onClick={() => {
+                        const next = [...sponsorResults];
+                        const curr = next[idx].description || "";
+                        next[idx].description = curr ? `${curr}\n• ` : "• ";
+                        setSponsorResults(next);
+                      }}
+                      className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 transition-colors cursor-pointer"
+                    >
+                      + Bullet Point
+                    </button>
+                  </div>
+                </div>
                 <textarea 
-                  rows={2}
-                  placeholder="Full campaign narrative and target audience fit..."
+                  rows={4}
+                  placeholder="e.g. Goal: Demonstrate how creators and filmmakers can leverage Flova AI (https://www.flova.ai/en/) to generate high-production cinematic AI videos, maintain character consistency across scenes, and turn scripts into finished animations."
                   value={item.description || ""} 
                   disabled={isViewer}
                   onChange={(e) => {
@@ -418,17 +447,55 @@ export function CaseStudiesTab({
                     next[idx].description = e.target.value;
                     setSponsorResults(next);
                   }}
-                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs disabled:opacity-50" 
+                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl p-3 text-xs sm:text-sm font-sans leading-relaxed disabled:opacity-50 focus:border-emerald-500 focus:outline-none" 
                 />
               </div>
 
-              <div>
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">
-                  Deliverables Provided
-                </label>
-                <input 
-                  type="text" 
-                  placeholder="e.g. 10-min YouTube video, workflow JSON download, newsletter link"
+              {/* 2. Videos & Deliverables Provided */}
+              <div className="space-y-1.5 bg-brand-card/50 dark:bg-[#0c201a]/50 p-3.5 rounded-xl border border-brand-border/80 dark:border-[#16382e]">
+                <div className="flex items-center justify-between flex-wrap gap-1">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-brand-text dark:text-emerald-300">
+                      Videos &amp; Deliverables Provided
+                    </label>
+                    <span className="text-[10px] text-brand-muted dark:text-emerald-300/60 block">
+                      Enter 1 deliverable per line or numbered list (e.g. 1. Tutorial Video, 2. Pinned Tracked Link)
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <button
+                      type="button"
+                      disabled={isViewer}
+                      onClick={() => {
+                        const next = [...sponsorResults];
+                        const curr = next[idx].deliverables || "";
+                        const itemStr = "1. Dedicated Step-by-Step Tutorial & Prompt Engineering Breakdown";
+                        next[idx].deliverables = curr ? `${curr}\n${itemStr}` : `Videos Made:\n${itemStr}`;
+                        setSponsorResults(next);
+                      }}
+                      className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 transition-colors cursor-pointer"
+                    >
+                      + Video Item
+                    </button>
+                    <button
+                      type="button"
+                      disabled={isViewer}
+                      onClick={() => {
+                        const next = [...sponsorResults];
+                        const curr = next[idx].deliverables || "";
+                        const itemStr = "• Tracked Pinned Comment Link & Workflow JSON Blueprint Download";
+                        next[idx].deliverables = curr ? `${curr}\n${itemStr}` : itemStr;
+                        setSponsorResults(next);
+                      }}
+                      className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 transition-colors cursor-pointer"
+                    >
+                      + Pinned Link / Asset
+                    </button>
+                  </div>
+                </div>
+                <textarea 
+                  rows={4}
+                  placeholder={`Videos Made:\n1. Flova AI Tutorial: Create Cinematic AI Videos With Consistent Characters!\n2. Dedicated Step-by-Step Workflow & Prompt Engineering Breakdown\n3. First-Line Hashtags (#Flovaai, #Flovatutorial) & Tracked Pinned Link`}
                   value={item.deliverables || ""} 
                   disabled={isViewer}
                   onChange={(e) => {
@@ -436,9 +503,66 @@ export function CaseStudiesTab({
                     next[idx].deliverables = e.target.value;
                     setSponsorResults(next);
                   }}
-                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs disabled:opacity-50" 
+                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl p-3 text-xs sm:text-sm font-sans leading-relaxed disabled:opacity-50 focus:border-emerald-500 focus:outline-none" 
                 />
               </div>
+
+              {/* 3. Campaign Results & ROI Breakdown */}
+              <div className="space-y-1.5 bg-brand-card/50 dark:bg-[#0c201a]/50 p-3.5 rounded-xl border border-brand-border/80 dark:border-[#16382e]">
+                <div className="flex items-center justify-between flex-wrap gap-1">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-brand-text dark:text-emerald-300">
+                      Campaign Results &amp; ROI Breakdown
+                    </label>
+                    <span className="text-[10px] text-brand-muted dark:text-emerald-300/60 block">
+                      Displays impact bullets, CPV bonuses, and return on investment in the modal.
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <button
+                      type="button"
+                      disabled={isViewer}
+                      onClick={() => {
+                        const next = [...sponsorResults];
+                        const curr = next[idx].roiBreakdown || "";
+                        const itemStr = "• $100 base guaranteed + $0.50 CPV performance bonus";
+                        next[idx].roiBreakdown = curr ? `${curr}\n${itemStr}` : `Results:\n${itemStr}`;
+                        setSponsorResults(next);
+                      }}
+                      className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 transition-colors cursor-pointer"
+                    >
+                      + CPV Bonus
+                    </button>
+                    <button
+                      type="button"
+                      disabled={isViewer}
+                      onClick={() => {
+                        const next = [...sponsorResults];
+                        const curr = next[idx].roiBreakdown || "";
+                        const itemStr = "• High creator engagement on consistent character & multi-shot AI storytelling";
+                        next[idx].roiBreakdown = curr ? `${curr}\n${itemStr}` : itemStr;
+                        setSponsorResults(next);
+                      }}
+                      className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 transition-colors cursor-pointer"
+                    >
+                      + Engagement Stat
+                    </button>
+                  </div>
+                </div>
+                <textarea 
+                  rows={4}
+                  placeholder={`Results:\n• $100 base guaranteed + $0.50 CPV performance bonus\n• Tiered exposure model reaching up to $2,000 total payout\n• High creator engagement on consistent character & multi-shot AI storytelling`}
+                  value={item.roiBreakdown || ""} 
+                  disabled={isViewer}
+                  onChange={(e) => {
+                    const next = [...sponsorResults];
+                    next[idx].roiBreakdown = e.target.value;
+                    setSponsorResults(next);
+                  }}
+                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl p-3 text-xs sm:text-sm font-sans leading-relaxed disabled:opacity-50 focus:border-emerald-500 focus:outline-none" 
+                />
+              </div>
+
             </div>
           </div>
         ))}

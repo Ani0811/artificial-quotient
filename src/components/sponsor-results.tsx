@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowUpRight, ExternalLink, X, Play, Sparkles, CheckCircle, Calendar, Target, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowUpRight, ExternalLink, X, Play, Sparkles, CheckCircle, CheckCircle2, Calendar, Target, ChevronLeft, ChevronRight, TrendingUp, FileText, Video } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { loadGoogleFont } from "./font-provider";
 import Link from "next/link";
@@ -23,6 +23,87 @@ export interface SponsorResult {
   logoUrl?: string;
   websiteUrl?: string;
   thumbnailUrl?: string;
+}
+
+function renderNarrativeText(text?: string) {
+  if (!text) return null;
+  const urlRegex = /(https?:\/\/[^\s\)]+)/g;
+  const parts = text.split(urlRegex);
+
+  return (
+    <p className="text-xs sm:text-sm text-brand-muted dark:text-emerald-100/90 leading-relaxed font-normal">
+      {parts.map((part, i) => {
+        if (part.match(urlRegex)) {
+          return (
+            <a
+              key={i}
+              href={part}
+              target="_blank"
+              rel="noreferrer"
+              className="text-emerald-500 hover:text-emerald-400 font-semibold underline decoration-emerald-500/40 hover:decoration-emerald-500 transition-colors inline-flex items-center gap-0.5 mx-0.5"
+            >
+              <span>{part.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "")}</span>
+              <ExternalLink className="w-2.5 h-2.5 inline" />
+            </a>
+          );
+        }
+        return <span key={i}>{part}</span>;
+      })}
+    </p>
+  );
+}
+
+function renderStructuredList(content?: string, type: "deliverables" | "roi" = "deliverables") {
+  if (!content) return null;
+  const lines = content.split("\n").map(l => l.trim()).filter(Boolean);
+
+  return (
+    <div className="space-y-2">
+      {lines.map((line, idx) => {
+        // Detect section headers like "Videos Made:" or "Results:"
+        if (line.toLowerCase().endsWith(":") || line.toLowerCase().startsWith("videos made") || line.toLowerCase().startsWith("results")) {
+          return (
+            <div key={idx} className="pb-1 pt-0.5">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold text-xs uppercase tracking-wider">
+                <Sparkles className="w-3 h-3 text-emerald-500" />
+                {line.replace(/:$/, "")}
+              </span>
+            </div>
+          );
+        }
+
+        // Detect numbered items like "1. Flova Tutorial"
+        const numberedMatch = line.match(/^(\d+)[\.\)]\s*(.*)/);
+        if (numberedMatch) {
+          const num = numberedMatch[1].padStart(2, "0");
+          const rest = numberedMatch[2];
+          return (
+            <div key={idx} className="flex items-start gap-2.5 p-2.5 sm:p-3 rounded-xl bg-brand-bg/80 dark:bg-[#061612]/80 border border-brand-border/70 dark:border-[#16382e] transition-all hover:border-emerald-500/40">
+              <span className="shrink-0 w-6 h-6 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 font-mono font-bold text-xs flex items-center justify-center">
+                {num}
+              </span>
+              <span className="text-xs sm:text-sm font-medium text-brand-text dark:text-emerald-50 leading-relaxed pt-0.5">
+                {rest}
+              </span>
+            </div>
+          );
+        }
+
+        // Bullet items (e.g. • or -)
+        const cleanBullet = line.replace(/^[•\-\*]\s*/, "");
+        return (
+          <div key={idx} className="flex items-start gap-2.5 p-2.5 sm:p-3 rounded-xl bg-brand-bg/80 dark:bg-[#061612]/80 border border-brand-border/70 dark:border-[#16382e] transition-all hover:border-emerald-500/40">
+            <span className="shrink-0 w-6 h-6 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 font-bold text-xs flex items-center justify-center">
+              {type === "roi" ? <TrendingUp className="w-3.5 h-3.5" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+            </span>
+            <span className="text-xs sm:text-sm font-medium text-brand-text dark:text-emerald-50 leading-relaxed pt-0.5">
+              {cleanBullet}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
 }
 
 function getYoutubeId(url?: string) {
@@ -582,61 +663,37 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
                   {selectedCaseStudy.stat1Value}
                 </span>
               </div>
-
-              {selectedCaseStudy.roiBreakdown && (
-                <div className="p-3.5 rounded-2xl bg-brand-bg dark:bg-[#061612] border border-brand-border dark:border-[#16382e]">
-                  <span className="text-xs font-bold text-brand-muted dark:text-emerald-200/60 uppercase block mb-1">
-                    Campaign Impact
-                  </span>
-                  <div className="text-xs sm:text-sm font-semibold text-brand-text dark:text-emerald-200 space-y-1">
-                    {selectedCaseStudy.roiBreakdown.includes("\n") ? (
-                      selectedCaseStudy.roiBreakdown.split("\n").map((line, i) => (
-                        <p key={i} className="leading-snug">{line}</p>
-                      ))
-                    ) : (
-                      <span>{selectedCaseStudy.roiBreakdown}</span>
-                    )}
-                  </div>
-                </div>
-              )}
             </div>
 
-            {/* Extended Description & Deliverables */}
+            {/* Extended Description, Deliverables & ROI Breakdown */}
             <div className="space-y-4 pt-1">
+              {/* Campaign Overview & Goal */}
               {selectedCaseStudy.description && (
-                <div>
-                  <h4 className="font-heading font-bold text-xs sm:text-sm text-brand-text dark:text-white uppercase tracking-wider mb-1 flex items-center gap-2">
+                <div className="bg-brand-bg/60 dark:bg-[#061612]/60 p-4 sm:p-5 rounded-2xl border border-brand-border/80 dark:border-[#16382e]">
+                  <h4 className="font-heading font-bold text-xs sm:text-sm text-brand-text dark:text-white uppercase tracking-wider mb-2.5 flex items-center gap-2">
                     <Target className="w-4 h-4 text-emerald-500" /> Campaign Overview &amp; Goal
                   </h4>
-                  <p className="text-xs sm:text-sm text-brand-muted dark:text-emerald-200/80 leading-relaxed bg-brand-bg dark:bg-[#061612] p-3.5 rounded-xl border border-brand-border dark:border-[#16382e]">
-                    {selectedCaseStudy.description}
-                  </p>
+                  {renderNarrativeText(selectedCaseStudy.description)}
                 </div>
               )}
 
+              {/* Videos & Deliverables Provided */}
               {selectedCaseStudy.deliverables && (
-                <div>
-                  <h4 className="font-heading font-bold text-xs sm:text-sm text-brand-text dark:text-white uppercase tracking-wider mb-1.5 flex items-center gap-2">
+                <div className="bg-brand-bg/60 dark:bg-[#061612]/60 p-4 sm:p-5 rounded-2xl border border-brand-border/80 dark:border-[#16382e]">
+                  <h4 className="font-heading font-bold text-xs sm:text-sm text-brand-text dark:text-white uppercase tracking-wider mb-3 flex items-center gap-2">
                     <CheckCircle className="w-4 h-4 text-emerald-500" /> Videos &amp; Deliverables Made
                   </h4>
-                  <div className="text-xs sm:text-sm text-brand-muted dark:text-emerald-200/90 leading-relaxed bg-brand-bg dark:bg-[#061612] p-3.5 rounded-xl border border-brand-border dark:border-[#16382e] space-y-2">
-                    {selectedCaseStudy.deliverables.includes("\n") ? (
-                      selectedCaseStudy.deliverables.split("\n").map((line, i) => (
-                        <div key={i} className="flex items-start gap-2">
-                          {line.startsWith("Videos Made:") ? (
-                            <span className="font-bold text-emerald-400 block mb-1">{line}</span>
-                          ) : (
-                            <>
-                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0"></span>
-                              <span className="font-medium text-brand-text dark:text-white">{line}</span>
-                            </>
-                          )}
-                        </div>
-                      ))
-                    ) : (
-                      <p>{selectedCaseStudy.deliverables}</p>
-                    )}
-                  </div>
+                  {renderStructuredList(selectedCaseStudy.deliverables, "deliverables")}
+                </div>
+              )}
+
+              {/* Campaign Results & ROI Breakdown */}
+              {selectedCaseStudy.roiBreakdown && (
+                <div className="bg-brand-bg/60 dark:bg-[#061612]/60 p-4 sm:p-5 rounded-2xl border border-brand-border/80 dark:border-[#16382e]">
+                  <h4 className="font-heading font-bold text-xs sm:text-sm text-brand-text dark:text-white uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4 text-emerald-500" /> Campaign Results &amp; ROI Breakdown
+                  </h4>
+                  {renderStructuredList(selectedCaseStudy.roiBreakdown, "roi")}
                 </div>
               )}
             </div>
