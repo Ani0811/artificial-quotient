@@ -588,17 +588,18 @@ Reduced vertical padding and internal gaps across all homepage sections on mobil
 - **Universal Directory Synchronization**: Linked official Flova brand logos across the Brands & Partners directory, Sponsor Case Studies, and SQL database seed records.
 
 #### 2. Enhanced Admin Dashboard Quick-Save & Global `Ctrl+S` Shortcut (`DashboardClient.tsx`, `AdminHeader.tsx`)
-- **Persistent Floating Quick-Save Bar**: Designed a sleek, frosted glassmorphic quick-action bar pinned to the bottom-right of the viewport with an emerald ambient glow and instant save trigger, eliminating the need to scroll through long data forms.
-- **Top Header Quick-Save Button**: Added a direct **"Save Changes"** button inside [`AdminHeader.tsx`](file:///src/app/admin/components/AdminHeader.tsx) alongside *"Sync Live Stats"*.
+- **Persistent Floating Quick-Save Bar**: Designed a sleek, frosted glassmorphic quick-action bar pinned to the bottom-right of the viewport with an emerald ambient glow, live saving spinner (`Loader2`), and instant save trigger, eliminating the need to scroll through long data forms.
+- **Top Header Quick-Save Button**: Added a direct **"Save Changes"** button inside [`AdminHeader.tsx`](file:///src/app/admin/components/AdminHeader.tsx) with real-time `isSaving` spinners and double-submit protection.
 - **Global Keyboard Shortcut (`Ctrl+S` / `Cmd+S`)**: Added a global event listener that captures `Ctrl+S` (or `Cmd+S` on macOS) anywhere in the admin dashboard, triggering an immediate database save and displaying the live success alert.
 - **Comprehensive Inline Action Alerts**: Fully integrated real-time semantic notification banners with auto-focus scrolling and a 6-second auto-clear timer across all admin tabs (Seed Resets, Auto High-Res Thumbnail Generation, User Management, and Global Saves).
 
-#### 3. Sponsor Case Studies Interactive Horizontal Carousel (`src/components/sponsor-results.tsx`, `src/components/what-performs.tsx`)
+#### 3. Sponsor Case Studies Interactive Horizontal Carousel & Gesture Performance (`src/components/sponsor-results.tsx`, `src/components/what-performs.tsx`)
 - **Eliminated Rigid Grid Pagination**: Replaced the previous 3-per-page paginated layout in [`sponsor-results.tsx`](file:///src/components/sponsor-results.tsx) with a fluid, multi-card horizontal Carousel matching the modern behavior of **What Performs** and **Brand Carousel**.
-- **Touch & Mouse Drag Engine**: Built comprehensive mouse drag-to-scroll (`onMouseDown`/`onMouseMove`/`onMouseUp`) and mobile touch swiping (`onTouchStart`/`onTouchEnd`) support.
+- **Touch & Mouse Drag Engine with Threshold Guards**: Built comprehensive mouse drag-to-scroll (`onMouseDown`/`onMouseMove`/`onMouseUp`) and mobile touch swiping (`onTouchStart`/`onTouchEnd`) with a 10px intentional drag threshold to prevent accidental clicks.
+- **Modal Scroll Lock & Escape Dismiss**: Integrated background `overflow: hidden` locking while the Case Study modal is active, alongside a global `Escape` key listener for instant closing.
 - **Slide Navigation & Indicators**: Added smooth header navigation chevrons and interactive bottom slide-indicator dots.
 - **Synchronized Breakdown Navigation**: Clicking *"View Breakdown"* from any partner in the Brand Carousel seamlessly slides the Case Studies carousel directly to that card and launches the full Case Study Modal.
-- **Cross-Section Interactivity**: Enhanced [`what-performs.tsx`](file:///src/components/what-performs.tsx) with mouse drag listeners for a unified, tactile carousel experience across the entire site.
+- **Cross-Section Interactivity**: Enhanced [`what-performs.tsx`](file:///src/components/what-performs.tsx) with tactile drag listeners and grabbing cursors for a unified experience across the entire site.
 
 ---
 
