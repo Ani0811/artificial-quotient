@@ -156,24 +156,21 @@ export default function Footer({ subscribersCount, isAdmin = false }: FooterProp
 
         <div className="pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-brand-muted dark:text-zinc-500">
           <p>&copy; {new Date().getFullYear()} Artificial Quotient. All rights reserved.</p>
-          <div className="flex flex-wrap items-center justify-center gap-4">
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-5">
             <Link href="/terms" className="hover:text-emerald-500 transition-colors">Terms of Service</Link>
             <span>&bull;</span>
             <Link href="/privacy" className="hover:text-emerald-500 transition-colors">Privacy Policy</Link>
             <span>&bull;</span>
             <Link href="/contact" className="hover:text-emerald-500 transition-colors">Contact</Link>
             <span>&bull;</span>
-            {isAdmin ? (
-              <Link href="/admin" className="hover:text-emerald-500 text-emerald-500 dark:text-emerald-400 font-medium transition-colors flex items-center gap-1">
-                <Lock className="w-3 h-3" />
-                <span>Admin Portal</span>
-              </Link>
-            ) : (
-              <Link href="/admin/login" className="hover:text-emerald-500 transition-colors flex items-center gap-1 opacity-50 hover:opacity-100" title="Admin Login">
-                <Lock className="w-3 h-3" />
-                <span>Admin</span>
-              </Link>
-            )}
+            <Link
+              href={isAdmin ? "/admin" : "/admin/login"}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border border-emerald-500/30 dark:border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold text-xs transition-all hover:scale-105 shadow-sm shadow-emerald-500/10"
+              title={isAdmin ? "Go to Admin Portal" : "Admin Sign In"}
+            >
+              <Lock className="w-3.5 h-3.5 text-emerald-500" />
+              <span>{isAdmin ? "Admin Portal" : "Admin Login"}</span>
+            </Link>
           </div>
         </div>
       </div>
