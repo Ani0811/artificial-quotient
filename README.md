@@ -601,6 +601,12 @@ Reduced vertical padding and internal gaps across all homepage sections on mobil
 - **Synchronized Breakdown Navigation**: Clicking *"View Breakdown"* from any partner in the Brand Carousel seamlessly slides the Case Studies carousel directly to that card and launches the full Case Study Modal.
 - **Cross-Section Interactivity**: Enhanced [`what-performs.tsx`](file:///src/components/what-performs.tsx) with tactile drag listeners and grabbing cursors for a unified experience across the entire site.
 
+#### 4. Dynamic YouTube API Synchronization in Footer & Case Studies Routing Fix (`src/components/footer.tsx`, `src/lib/scroll.ts`, `src/app/page.tsx`)
+- **Live YouTube Subscriber Badge in Footer**: Replaced the static footer count with dynamic fetching from `/api/admin/data` (which synchronizes with YouTube Data API v3 and MySQL), wrapped with an interactive link directly to [`@ArtificialQuotient01`](https://www.youtube.com/@ArtificialQuotient01).
+- **Synchronized Channel Subscriber Sync**: Updated `/api/admin/youtube-sync` to write live subscriber metrics to both `stats.subscribers` and `heroConfig.subscribersCount`.
+- **Deduplicated DOM Anchor IDs**: Resolved an issue where multiple `<section>` and `<div>` tags shared `id="case-studies"`, causing unpredictable scroll jumps or cancelled animations on mobile viewports.
+- **Robust Hash Scroll & Navigation Engine**: Upgraded `src/lib/scroll.ts` and `src/app/page.tsx` with dynamic header offset calculation (`80px`), `hashchange` event listeners, and post-hydration scroll triggers ensuring *"Case Studies"* buttons and tabs work seamlessly across all routes.
+
 ---
 
 ## 📂 Project Structure
