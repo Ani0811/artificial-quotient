@@ -83,12 +83,16 @@ export async function POST(request: Request) {
       const stats = channelData.items[0].statistics;
       const currentConfig = await getSiteConfig();
       if (currentConfig) {
+        const formattedSubs = formatViews(stats.subscriberCount);
         currentConfig.stats = {
           ...currentConfig.stats,
-          subscribers: formatViews(stats.subscriberCount),
+          subscribers: formattedSubs,
           videosCount: stats.videoCount + "+",
           monthlyViews: formatViews(stats.viewCount),
         };
+        if (currentConfig.heroConfig) {
+          currentConfig.heroConfig.subscribersCount = formattedSubs;
+        }
         await upsertSiteConfig(currentConfig);
         syncedStats = currentConfig.stats;
         updatedCount++;

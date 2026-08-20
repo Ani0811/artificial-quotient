@@ -34,6 +34,43 @@ export default function Home() {
     };
   }, []);
 
+  // Handle hash scrolling on direct navigation or link clicks (e.g. #case-studies, #brands)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const handleHashScroll = () => {
+      const hash = window.location.hash.replace(/^#/, "");
+      if (!hash) return;
+
+      const cleanId = hash.startsWith("case-study-") || hash.startsWith("case-studies-")
+        ? "case-studies"
+        : hash;
+
+      const elem = document.getElementById(cleanId) || document.getElementById(`${cleanId}-section`);
+      if (elem) {
+        const headerOffset = 80;
+        const elementPosition = elem.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: "smooth",
+        });
+      }
+    };
+
+    handleHashScroll();
+    window.addEventListener("hashchange", handleHashScroll);
+    const t1 = setTimeout(handleHashScroll, 150);
+    const t2 = setTimeout(handleHashScroll, 500);
+
+    return () => {
+      window.removeEventListener("hashchange", handleHashScroll);
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [loading, data]);
+
   return (
     <div className="flex flex-col">
       <Hero heroConfig={data?.heroConfig} stats={data?.stats} isLoading={loading} />

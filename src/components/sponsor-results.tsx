@@ -258,7 +258,7 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
 
   if (loading) {
     return (
-      <section id="case-studies" className="w-full py-20 px-4 bg-brand-bg dark:bg-[#061612] border-t border-brand-border dark:border-[#14352b] transition-colors">
+      <section className="w-full py-20 px-4 bg-brand-bg dark:bg-[#061612] border-t border-brand-border dark:border-[#14352b] transition-colors">
         <div className="max-w-6xl mx-auto space-y-8 animate-pulse">
           <div className="h-8 bg-emerald-500/10 rounded-lg w-64"></div>
           <div className="grid md:grid-cols-3 gap-6 sm:gap-8">
@@ -276,7 +276,7 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
   const showControls = results.length > itemsPerView;
 
   return (
-    <section id="case-studies" className="w-full py-16 sm:py-20 px-4 bg-brand-bg dark:bg-[#061612] border-t border-brand-border dark:border-[#14352b] transition-colors">
+    <section className="w-full py-16 sm:py-20 px-4 bg-brand-bg dark:bg-[#061612] border-t border-brand-border dark:border-[#14352b] transition-colors">
       <div className="max-w-6xl mx-auto">
         {/* Section Header with Carousel Navigation */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 text-center sm:text-left">

@@ -1,11 +1,45 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Mail, Sparkles } from "lucide-react";
 import { handleSmoothScroll } from "@/lib/scroll";
 import { LogoImage } from "@/components/ui/logo-image";
 
-export default function Footer() {
+interface FooterProps {
+  subscribersCount?: string;
+}
+
+export default function Footer({ subscribersCount }: FooterProps) {
+  const [subs, setSubs] = useState<string>(subscribersCount || "10.1k");
+
+  useEffect(() => {
+    if (subscribersCount) {
+      setSubs(subscribersCount);
+      return;
+    }
+
+    let isMounted = true;
+    fetch("/api/admin/data")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!isMounted) return;
+        const liveSubs = data?.heroConfig?.subscribersCount || data?.stats?.subscribers;
+        if (liveSubs) {
+          setSubs(liveSubs);
+        }
+      })
+      .catch(() => {});
+
+    return () => {
+      isMounted = false;
+    };
+  }, [subscribersCount]);
+
+  const formattedSubText = subs.toLowerCase().includes("subscriber") 
+    ? subs 
+    : `${subs} Subscribers`;
+
   return (
     <footer className="w-full border-t border-brand-border/80 dark:border-zinc-800/80 bg-white/60 dark:bg-zinc-950/60 backdrop-blur-md transition-colors relative overflow-hidden">
       {/* Background Accent Orbs */}
@@ -54,10 +88,16 @@ export default function Footer() {
               >
                 <Mail className="w-5 h-5" />
               </a>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-zinc-900 border border-brand-border dark:border-zinc-800 text-xs font-semibold text-brand-text dark:text-zinc-300">
+              <a
+                href={"https://www.youtube.com/" + "@" + "ArtificialQuotient01"}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-brand-border dark:border-zinc-800 text-xs font-semibold text-brand-text dark:text-zinc-300 transition-all hover:scale-105 cursor-pointer"
+                title="View Artificial Quotient YouTube Channel"
+              >
                 <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                <span>10.1k Subscribers</span>
-              </div>
+                <span>{formattedSubText}</span>
+              </a>
             </div>
           </div>
 

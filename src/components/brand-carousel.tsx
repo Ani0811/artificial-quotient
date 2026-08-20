@@ -302,7 +302,13 @@ export default function BrandCarousel({ brands }: BrandCarouselProps) {
                             );
                             const elem = document.getElementById("case-studies") || document.getElementById("case-studies-section");
                             if (elem) {
-                              elem.scrollIntoView({ behavior: "smooth" });
+                              const headerOffset = 80;
+                              const elementPosition = elem.getBoundingClientRect().top;
+                              const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                              window.scrollTo({
+                                top: offsetPosition,
+                                behavior: "smooth"
+                              });
                             }
                             if (window.location.hash !== "#case-studies") {
                               window.history.pushState(null, "", "/#case-studies");
