@@ -96,6 +96,7 @@ export default function WhatPerforms({ whatPerforms, isLoading }: WhatPerformsPr
 
   const isDraggingRef = useRef(false);
   const dragStartXRef = useRef(0);
+  const isActualDragRef = useRef(false);
 
   // Touch Swipe Support
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -116,15 +117,22 @@ export default function WhatPerforms({ whatPerforms, isLoading }: WhatPerformsPr
   // Mouse Drag Support
   const handleMouseDown = (e: React.MouseEvent) => {
     isDraggingRef.current = true;
+    isActualDragRef.current = false;
     dragStartXRef.current = e.clientX;
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (isDraggingRef.current && Math.abs(e.clientX - dragStartXRef.current) > 10) {
+      isActualDragRef.current = true;
+    }
   };
 
   const handleMouseUp = (e: React.MouseEvent) => {
     if (!isDraggingRef.current) return;
     const diff = dragStartXRef.current - e.clientX;
-    if (diff > 60) {
+    if (diff > 50) {
       handleNext();
-    } else if (diff < -60) {
+    } else if (diff < -50) {
       handlePrev();
     }
     isDraggingRef.current = false;
@@ -201,10 +209,11 @@ export default function WhatPerforms({ whatPerforms, isLoading }: WhatPerformsPr
 
         {/* Carousel Viewport Container */}
         <div 
-          className="overflow-hidden relative select-none"
+          className="overflow-hidden relative select-none cursor-grab active:cursor-grabbing"
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
           onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseLeave}
         >

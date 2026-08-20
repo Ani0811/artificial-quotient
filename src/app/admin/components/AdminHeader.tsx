@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { Zap, ExternalLink, LogOut, Database, Sparkles, Edit3, Eye } from "lucide-react";
+import { Zap, ExternalLink, LogOut, Database, Sparkles, Edit3, Eye, Loader2 } from "lucide-react";
 import { LogoImage } from "@/components/ui/logo-image";
 import { AdminUser } from "@/types";
 
@@ -11,6 +11,7 @@ interface AdminHeaderProps {
   dbStatus: string;
   isViewer: boolean;
   isSyncingYoutube: boolean;
+  isSaving?: boolean;
   layoutMode: "split" | "edit" | "preview";
   setLayoutMode: (mode: "split" | "edit" | "preview") => void;
   onSyncYoutube: () => void;
@@ -23,6 +24,7 @@ export function AdminHeader({
   dbStatus,
   isViewer,
   isSyncingYoutube,
+  isSaving = false,
   layoutMode,
   setLayoutMode,
   onSyncYoutube,
@@ -56,11 +58,21 @@ export function AdminHeader({
             <button
               type="button"
               onClick={onSave}
-              className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-sm flex items-center gap-1.5 transition-all cursor-pointer"
+              disabled={isSaving}
+              className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-sm flex items-center gap-1.5 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
               title="Save all changes (Ctrl+S)"
             >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Save Changes</span>
+              {isSaving ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Saving...</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Save Changes</span>
+                </>
+              )}
             </button>
           )}
           <button

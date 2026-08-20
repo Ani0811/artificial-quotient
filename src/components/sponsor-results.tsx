@@ -87,6 +87,8 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
     load();
   }, [sponsorResults, isLoading]);
 
+  const isActualDragRef = useRef(false);
+
   // Responsive window resize listener for cards per view
   useEffect(() => {
     function updateItemsPerView() {
@@ -121,6 +123,25 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
     setCurrentIndex((prev) => Math.min(maxIndex, prev + 1));
   };
 
+  // Lock body scroll and listen for Escape key when modal is open
+  useEffect(() => {
+    if (selectedCaseStudy) {
+      document.body.style.overflow = "hidden";
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") {
+          setSelectedCaseStudy(null);
+        }
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.body.style.overflow = "";
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    } else {
+      document.body.style.overflow = "";
+    }
+  }, [selectedCaseStudy]);
+
   // Touch Swipe Support
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
@@ -140,15 +161,22 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
   // Mouse Drag Support
   const handleMouseDown = (e: React.MouseEvent) => {
     isDraggingRef.current = true;
+    isActualDragRef.current = false;
     dragStartXRef.current = e.clientX;
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (isDraggingRef.current && Math.abs(e.clientX - dragStartXRef.current) > 10) {
+      isActualDragRef.current = true;
+    }
   };
 
   const handleMouseUp = (e: React.MouseEvent) => {
     if (!isDraggingRef.current) return;
     const diff = dragStartXRef.current - e.clientX;
-    if (diff > 60) {
+    if (diff > 50) {
       handleNext();
-    } else if (diff < -60) {
+    } else if (diff < -50) {
       handlePrev();
     }
     isDraggingRef.current = false;
@@ -294,10 +322,11 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
 
         {/* Carousel Viewport Container */}
         <div 
-          className="overflow-hidden relative select-none"
+          className="overflow-hidden relative select-none cursor-grab active:cursor-grabbing"
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
           onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseLeave}
         >
@@ -318,7 +347,11 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
                   style={{ width: `${100 / itemsPerView}%` }}
                 >
                   <div 
-                    onClick={() => setSelectedCaseStudy(item)}
+                    onClick={() => {
+                      if (!isActualDragRef.current) {
+                        setSelectedCaseStudy(item);
+                      }
+                    }}
                     className="group relative bg-white dark:bg-zinc-900 rounded-2xl p-5 sm:p-6 border border-brand-border dark:border-zinc-800 shadow-sm flex flex-col justify-between h-full transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-500/5 hover:border-emerald-500/40 dark:hover:border-emerald-500/40 overflow-hidden cursor-pointer"
                   >
                     {/* Ambient top border glow line */}

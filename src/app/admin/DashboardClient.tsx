@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Check, Edit3, ShieldCheck, AlertCircle, X, Save, Sparkles } from "lucide-react";
+import { Check, Edit3, ShieldCheck, AlertCircle, X, Save, Sparkles, Loader2 } from "lucide-react";
 import { PerformItem, SponsorItem, AdminUser, BrandItem, InterestItem, CountryItem, HeroConfig } from "@/types";
 import { parseGeographies } from "@/components/audience-snapshot";
 import { ALL_COUNTRIES } from "@/lib/countries";
@@ -20,13 +20,18 @@ import { BackupTab } from "./components/tabs/BackupTab";
 import { AdminPreviewPanel } from "./components/preview/AdminPreviewPanel";
 import defaultSiteData from "@/data/site-data.json";
 
-export default function DashboardClient({ currentUser }: { currentUser?: AdminUser }) {
-  const isViewer = Boolean(currentUser?.role === "Viewer");
+interface DashboardClientProps {
+  currentUser?: AdminUser;
+}
+
+export default function DashboardClient({ currentUser }: DashboardClientProps) {
+  const isViewer = currentUser?.role === "Viewer";
   const canEditUsers = Boolean(currentUser?.role !== "Viewer" && (currentUser?.role === "Super Admin" || currentUser?.permissions?.includes("users")));
   const canEditBackup = Boolean(currentUser?.role !== "Viewer" && (currentUser?.role === "Super Admin" || currentUser?.permissions?.includes("backup")));
 
   const [activeTab, setActiveTab] = useState<AdminTabType>("hero");
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [isSyncingYoutube, setIsSyncingYoutube] = useState(false);
   const [layoutMode, setLayoutMode] = useState<"split" | "edit" | "preview">("split");
   const [loading, setLoading] = useState(true);
@@ -279,7 +284,8 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
   };
 
   const handleSaveUsers = async () => {
-    if (isViewer) return;
+    if (isViewer || isSaving) return;
+    setIsSaving(true);
     setNotification(null);
     try {
       const res = await fetch("/api/admin/users", {
@@ -306,11 +312,14 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
         type: "error",
         message: "Network error occurred while saving users.",
       });
+    } finally {
+      setIsSaving(false);
     }
   };
 
   const handleSaveAll = async () => {
-    if (isViewer) return;
+    if (isViewer || isSaving) return;
+    setIsSaving(true);
     setNotification(null);
     const payload = {
       heroConfig: heroForm,
@@ -350,6 +359,8 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
         type: "error",
         message: "Network error occurred while saving changes.",
       });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -538,6 +549,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
           dbStatus={dbStatus}
           isViewer={isViewer}
           isSyncingYoutube={isSyncingYoutube}
+          isSaving={isSaving}
           layoutMode={layoutMode}
           setLayoutMode={setLayoutMode}
           onSyncYoutube={handleSyncYoutube}
@@ -724,11 +736,21 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
           </span>
           <button
             type="button"
+            disabled={isSaving}
             onClick={activeTab === "users" ? handleSaveUsers : handleSaveAll}
-            className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-emerald-600/30 hover:shadow-emerald-600/50 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+            className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-emerald-600/30 hover:shadow-emerald-600/50 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            <Save className="w-4 h-4" />
-            <span>Save Changes</span>
+            {isSaving ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Saving Live...</span>
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4" />
+                <span>Save Changes</span>
+              </>
+            )}
           </button>
         </div>
       )}
