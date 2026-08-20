@@ -226,7 +226,7 @@ export default function Hero({ heroConfig, stats, isLoading }: HeroProps) {
 
                 <div className="bg-[#0d221c]/80 rounded-2xl p-3 sm:p-4 border border-cyan-500/20 transition-all hover:border-cyan-500/50 hover:bg-[#102b23] hover:shadow-lg hover:shadow-cyan-500/10">
                   <p className="text-cyan-200/70 text-[10px] sm:text-xs mb-1 font-medium flex items-center gap-1.5">
-                    <Play className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-cyan-400" /> Monthly Views
+                    <Play className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-cyan-400" /> Total Views
                   </p>
                   <div className="flex items-baseline gap-1.5 flex-wrap">
                     <span className="text-xl sm:text-3xl font-heading font-extrabold text-white">{monthlyViewsCount}</span>

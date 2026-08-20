@@ -121,7 +121,7 @@ export function AdminPreviewPanel({
 
                   <div className="bg-[#0d221c] p-2.5 rounded-xl border border-cyan-500/20">
                     <div className="text-[10px] text-cyan-200/70 flex items-center gap-1">
-                      <Play className="w-3 h-3 text-cyan-400" /> Monthly Views
+                      <Play className="w-3 h-3 text-cyan-400" /> Total Views
                     </div>
                     <div className="flex items-baseline gap-1 mt-0.5">
                       <span className="text-base font-extrabold text-white">{heroForm.monthlyViewsCount || "69.5k"}</span>

@@ -615,6 +615,15 @@ Reduced vertical padding and internal gaps across all homepage sections on mobil
 
 ---
 
+### 📅 Day 21 — Total Views Metric Alignment Across Hero & Admin Portal
+
+#### 1. Metric Renaming & UI Standardization (`src/components/hero.tsx`, `HeroTab.tsx`, `AdminPreviewPanel.tsx`)
+- **Homepage Hero Snapshot Card**: Renamed Metric 2 label from `Monthly Views` to `Total Views` in [`hero.tsx`](file:///src/components/hero.tsx) to align with cumulative channel lifetime reach and YouTube Data API statistics.
+- **Admin Hero Tab Editor**: Standardized metric section header to `Metric 2 (Total Views)` in [`HeroTab.tsx`](file:///src/app/admin/components/tabs/HeroTab.tsx) for clear admin configuration.
+- **Admin Real-Time Preview Panel**: Updated Metric 2 display label to `Total Views` in [`AdminPreviewPanel.tsx`](file:///src/app/admin/components/preview/AdminPreviewPanel.tsx) to ensure exact visual parity between pre-publish preview and public production site.
+
+---
+
 ## 📂 Project Structure
 
 ```
@@ -660,7 +669,6 @@ artificial-quotient/
 │   │   ├── sponsor/                  # Sponsorship Subpage
 │   │   ├── stats/                    # Audience Stats Subpage
 │   │   ├── case-studies/             # Case Studies Subpage
-│   │   ├── tools/                    # AI Tool Vault Directory
 │   │   ├── globals.css               # Global CSS & GPU Marquee Keyframes
 │   │   ├── layout.tsx                # Root Layout, Analytics, Async Cookies & Ambient Glows
 │   │   ├── loading.tsx               # Global Loading Screen & Animated Logo

@@ -181,7 +181,7 @@ export function HeroTab({
             </div>
 
             <div className="p-3 bg-brand-card dark:bg-[#0c201a] rounded-xl border border-brand-border dark:border-[#16382e] space-y-2">
-              <span className="text-[11px] font-bold uppercase text-cyan-400 block">Metric 2 (Monthly Views)</span>
+              <span className="text-[11px] font-bold uppercase text-cyan-400 block">Metric 2 (Total Views)</span>
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="block text-[10px] font-bold text-brand-muted dark:text-emerald-200/60 mb-1">Value (e.g. 69.5k)</label>
