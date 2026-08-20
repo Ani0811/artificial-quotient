@@ -43,7 +43,9 @@ export default function Home() {
       <div id="stats" className="scroll-mt-16">
         <AudienceSnapshot siteData={data} isLoading={loading} />
       </div>
-      <SponsorResults sponsorResults={data?.sponsorResults} isLoading={loading} />
+      <div id="case-studies" className="scroll-mt-16">
+        <SponsorResults sponsorResults={data?.sponsorResults} isLoading={loading} />
+      </div>
       <div id="what-performs" className="scroll-mt-16">
         <WhatPerforms whatPerforms={data?.whatPerforms} isLoading={loading} />
       </div>

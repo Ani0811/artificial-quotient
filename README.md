@@ -563,6 +563,25 @@ Reduced vertical padding and internal gaps across all homepage sections on mobil
 
 ---
 
+### 📅 Day 19 — View Breakdown Modal Routing Fix, Flova AI Integration & Automated High-Res Thumbnail Pipeline
+
+#### 1. View Breakdown Modal Routing & Event Dispatcher (`src/components/brand-carousel.tsx`, `src/components/sponsor-results.tsx`, `src/app/page.tsx`)
+- **Container & Anchor ID Unification**: Standardized the DOM ID across `src/app/page.tsx` and `src/components/sponsor-results.tsx` to `#case-studies` (with backwards compatibility for `#case-studies-section`), fixing broken smooth-scrolling when clicking "View Breakdown" in the Brand Carousel and Navbar/Hero/Footer.
+- **Automated Breakdown Modal Launcher**: Built a `CustomEvent("open-case-study")` pipeline and URL hash listener (`#case-study-*`) in `sponsor-results.tsx`. Clicking "View Breakdown" on any sponsor card in the Brand Carousel instantly scrolls down, switches to the matching pagination page, and launches the detailed Case Study Breakdown Modal with the partner's video, deliverables, and ROI impacts.
+
+#### 2. Flova AI Partner & Case Study Addition (`src/data/site-data.json`, `src/schema/sql/seed-data.sql`, `public/logo/flova.png`)
+- **Brand Carousel**: Added Flova AI (`/logo/flova.png`, `Cinematic AI Video`, *All-in-one AI video generator with consistent characters*).
+- **Sponsor Case Study**: Integrated Flova AI's dedicated YouTube tutorial (`https://youtu.be/1tbJ3WJ9_po`) with tiered CPV performance metrics, multi-shot character consistency overview, and full deliverable breakdown.
+- **SQL & JSON Store Sync**: Persisted Flova AI across `site-data.json` and `seed-data.sql`.
+
+#### 3. Automated High-Resolution Thumbnail Pipeline (`/api/admin/youtube-sync`, `CaseStudiesTab.tsx`, `WhatPerformsTab.tsx`)
+- **Dual-Section YouTube Live Sync**: Upgraded `/api/admin/youtube-sync` to automatically fetch and upscale video thumbnails across both **What Performs** and **Sponsor Case Studies** videos directly from YouTube Data API v3 (`maxresdefault.jpg` / `1280x720`).
+- **Real-Time Input Auto-Extraction**: Added automated YouTube video ID extraction on URL inputs in `CaseStudiesTab` and `WhatPerformsTab` that immediately populates high-res thumbnails upon pasting/typing a YouTube link.
+- **1-Click High-Res Restore**: Integrated "Auto-fetch High-Res" buttons across Admin tabs.
+- **Resilient Fallback**: Implemented client-side `onError` handlers across thumbnail elements in `what-performs.tsx` and `sponsor-results.tsx` that automatically fallback to `hqdefault.jpg` for legacy standard-definition videos.
+
+---
+
 ## 📂 Project Structure
 
 ```
@@ -573,7 +592,8 @@ artificial-quotient/
 │   │   ├── logo.png                  # Static Brand Logo Alias
 │   │   ├── revid.png                 # Partner Brand Logo
 │   │   ├── flashloop.png             # Partner Brand Logo
-│   │   └── easypeasy.png             # Partner Brand Logo
+│   │   ├── easypeasy.png             # Partner Brand Logo
+│   │   └── flova.png                 # Partner Brand Logo
 │   ├── logo.png                      # Root Logo Fallback
 │   ├── favicon.ico                   # Browser Favicon
 │   └── uploads/                      # Uploaded Media Storage

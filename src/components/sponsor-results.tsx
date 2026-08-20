@@ -85,20 +85,78 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
   }, [sponsorResults, isLoading]);
 
   useEffect(() => {
-    if (!loading && typeof window !== "undefined" && window.location.hash === "#case-studies") {
-      const timer = setTimeout(() => {
-        const elem = document.getElementById("case-studies-section");
+    if (loading || results.length === 0 || typeof window === "undefined") return;
+
+    const handleHash = () => {
+      const hash = window.location.hash;
+      if (hash === "#case-studies" || hash === "#case-studies-section") {
+        const elem = document.getElementById("case-studies") || document.getElementById("case-studies-section");
         if (elem) {
           elem.scrollIntoView({ behavior: "smooth" });
         }
-      }, 150);
-      return () => clearTimeout(timer);
-    }
-  }, [loading]);
+      } else if (hash.startsWith("#case-study-") || hash.startsWith("#case-studies-")) {
+        const query = hash.replace(/^#case-stud(y|ies)-/, "").toLowerCase();
+        const found = results.find(
+          (r) =>
+            r.id.toLowerCase() === query ||
+            r.partnerName.toLowerCase().replace(/[^a-z0-9]/g, "").includes(query.replace(/[^a-z0-9]/g, "")) ||
+            query.replace(/[^a-z0-9]/g, "").includes(r.partnerName.toLowerCase().replace(/[^a-z0-9]/g, ""))
+        );
+        if (found) {
+          const itemIndex = results.findIndex((r) => r.id === found.id);
+          if (itemIndex !== -1) {
+            setCurrentPage(Math.floor(itemIndex / ITEMS_PER_PAGE) + 1);
+          }
+          setSelectedCaseStudy(found);
+          const elem = document.getElementById("case-studies") || document.getElementById("case-studies-section");
+          if (elem) {
+            elem.scrollIntoView({ behavior: "smooth" });
+          }
+        }
+      }
+    };
+
+    const handleOpenCaseStudy = (e: Event) => {
+      const customEvent = e as CustomEvent<{ id?: string; partnerName?: string }>;
+      const { id, partnerName } = customEvent.detail || {};
+      const found = results.find((r) => {
+        if (id && r.id.toLowerCase() === id.toLowerCase()) return true;
+        if (partnerName) {
+          const normP = partnerName.toLowerCase().replace(/[^a-z0-9]/g, "");
+          const normR = r.partnerName.toLowerCase().replace(/[^a-z0-9]/g, "");
+          return normR.includes(normP) || normP.includes(normR);
+        }
+        return false;
+      });
+
+      if (found) {
+        const itemIndex = results.findIndex((r) => r.id === found.id);
+        if (itemIndex !== -1) {
+          setCurrentPage(Math.floor(itemIndex / ITEMS_PER_PAGE) + 1);
+        }
+        setSelectedCaseStudy(found);
+      }
+      const elem = document.getElementById("case-studies") || document.getElementById("case-studies-section");
+      if (elem) {
+        elem.scrollIntoView({ behavior: "smooth" });
+      }
+    };
+
+    window.addEventListener("open-case-study", handleOpenCaseStudy);
+    window.addEventListener("hashchange", handleHash);
+
+    const timer = setTimeout(handleHash, 150);
+
+    return () => {
+      window.removeEventListener("open-case-study", handleOpenCaseStudy);
+      window.removeEventListener("hashchange", handleHash);
+      clearTimeout(timer);
+    };
+  }, [loading, results]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    const section = document.getElementById("case-studies-section");
+    const section = document.getElementById("case-studies") || document.getElementById("case-studies-section");
     if (section) {
       section.scrollIntoView({ behavior: "smooth", block: "start" });
     }
@@ -106,7 +164,7 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
 
   if (loading) {
     return (
-      <section className="w-full py-20 px-4 bg-brand-bg dark:bg-[#061612] border-t border-brand-border dark:border-[#14352b] transition-colors">
+      <section id="case-studies" className="w-full py-20 px-4 bg-brand-bg dark:bg-[#061612] border-t border-brand-border dark:border-[#14352b] transition-colors">
         <div className="max-w-6xl mx-auto space-y-8 animate-pulse">
           <div className="h-8 bg-emerald-500/10 rounded-lg w-64"></div>
           <div className="grid md:grid-cols-3 gap-6 sm:gap-8">
@@ -132,7 +190,7 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
   };
 
   return (
-    <section id="case-studies-section" className="w-full py-16 sm:py-20 px-4 bg-brand-bg dark:bg-[#061612] border-t border-brand-border dark:border-[#14352b] transition-colors">
+    <section id="case-studies" className="w-full py-16 sm:py-20 px-4 bg-brand-bg dark:bg-[#061612] border-t border-brand-border dark:border-[#14352b] transition-colors">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col gap-2 mb-12 text-center md:text-left">
           <h2 className="font-heading text-3xl md:text-4xl font-bold text-brand-text dark:text-white">
@@ -166,6 +224,12 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
                         alt={`${item.partnerName} Case Study Thumbnail`}
                         loading="lazy" 
                         decoding="async" 
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          if (target.src.includes("maxresdefault.jpg")) {
+                            target.src = target.src.replace("maxresdefault.jpg", "hqdefault.jpg");
+                          }
+                        }}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
                       />
                       <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors flex items-center justify-center">
@@ -341,6 +405,12 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
                 <img 
                   src={selectedCaseStudy.thumbnailUrl} 
                   alt={`${selectedCaseStudy.partnerName} Thumbnail`}
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (target.src.includes("maxresdefault.jpg")) {
+                      target.src = target.src.replace("maxresdefault.jpg", "hqdefault.jpg");
+                    }
+                  }}
                   className="w-full h-full object-cover" 
                 />
                 {selectedCaseStudy.ytUrl && (

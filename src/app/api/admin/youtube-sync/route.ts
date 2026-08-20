@@ -1,14 +1,39 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { initDatabase } from "@/lib/db";
-import { getSiteConfig, upsertSiteConfig, getWhatPerforms, syncWhatPerforms } from "@/schema";
-import { getAdminUsers } from "@/lib/auth-store";
+import { 
+  getSiteConfig, 
+  upsertSiteConfig, 
+  getWhatPerforms, 
+  syncWhatPerforms,
+  getSponsorCaseStudies,
+  syncSponsorCaseStudies
+} from "@/schema";
+import { verifyAdminSession } from "@/lib/admin-auth";
+import fs from "fs/promises";
+import path from "path";
 
-function getYoutubeId(url?: string) {
+function getYoutubeId(url?: string): string | null {
   if (!url) return null;
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
   const match = url.match(regExp);
   return (match && match[2].length === 11) ? match[2] : null;
+}
+
+function getHighResYoutubeThumbnail(thumbnails?: any, vId?: string | null): string {
+  if (thumbnails?.maxres?.url) {
+    return thumbnails.maxres.url;
+  }
+  if (vId) {
+    return `https://img.youtube.com/vi/${vId}/maxresdefault.jpg`;
+  }
+  if (thumbnails?.standard?.url) {
+    return thumbnails.standard.url;
+  }
+  if (thumbnails?.high?.url) {
+    return thumbnails.high.url;
+  }
+  return thumbnails?.default?.url || "";
 }
 
 function formatViews(views: string): string {
@@ -23,8 +48,6 @@ function formatViews(views: string): string {
   return num.toString();
 }
 
-import { verifyAdminSession } from "@/lib/admin-auth";
-
 export async function POST(request: Request) {
   const auth = await verifyAdminSession(undefined, false);
   if (!auth.isAuthenticated || auth.errorResponse) {
@@ -35,7 +58,6 @@ export async function POST(request: Request) {
   }
 
   try {
-
     const apiKey = process.env.YOUTUBE_API_KEY;
     const channelId = process.env.YOUTUBE_CHANNEL_ID;
 
@@ -49,6 +71,7 @@ export async function POST(request: Request) {
     await initDatabase();
     
     let updatedCount = 0;
+    let syncedStats: any = null;
 
     // 1. Sync Channel Stats
     const channelRes = await fetch(
@@ -67,35 +90,36 @@ export async function POST(request: Request) {
           monthlyViews: formatViews(stats.viewCount),
         };
         await upsertSiteConfig(currentConfig);
+        syncedStats = currentConfig.stats;
         updatedCount++;
       }
     }
 
-    // 2. Sync What Performs Videos
+    // 2. Sync What Performs Videos & High-Res Thumbnails
     const wpList = await getWhatPerforms();
-    const videoIdsToWpId = new Map<string, string>();
-    const videoIds: string[] = [];
+    const wpVideoIdsToId = new Map<string, string>();
+    const wpVideoIds: string[] = [];
 
     for (const item of wpList) {
       const vId = getYoutubeId(item.ytUrl);
       if (vId) {
-        videoIds.push(vId);
-        videoIdsToWpId.set(vId, item.id);
+        wpVideoIds.push(vId);
+        wpVideoIdsToId.set(vId, item.id);
       }
     }
 
-    if (videoIds.length > 0) {
-      const idsStr = videoIds.join(",");
+    let updatedWpList = [...wpList];
+    if (wpVideoIds.length > 0) {
+      const idsStr = wpVideoIds.join(",");
       const videosRes = await fetch(
         `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${idsStr}&key=${apiKey}`
       );
       const videosData = await videosRes.json();
 
       if (videosData.items && videosData.items.length > 0) {
-        const updatedWpList = [...wpList];
         for (const v of videosData.items) {
           const vId = v.id;
-          const wpId = videoIdsToWpId.get(vId);
+          const wpId = wpVideoIdsToId.get(vId);
           if (wpId) {
             const wpItem = updatedWpList.find(i => i.id === wpId);
             if (wpItem) {
@@ -105,8 +129,10 @@ export async function POST(request: Request) {
               }
               const snippet = v.snippet;
               if (snippet) {
-                wpItem.title = snippet.title;
-                const bestThumb = snippet.thumbnails?.maxres?.url || snippet.thumbnails?.high?.url || snippet.thumbnails?.standard?.url || snippet.thumbnails?.default?.url;
+                if (!wpItem.title || wpItem.title.trim() === "" || wpItem.title.includes("New Highlight")) {
+                  wpItem.title = snippet.title;
+                }
+                const bestThumb = getHighResYoutubeThumbnail(snippet.thumbnails, vId);
                 if (bestThumb) {
                   wpItem.thumbnail = bestThumb;
                 }
@@ -119,9 +145,76 @@ export async function POST(request: Request) {
       }
     }
 
+    // 3. Sync Sponsor Case Studies & High-Res Thumbnails
+    const csList = await getSponsorCaseStudies();
+    const csVideoIdsToId = new Map<string, string>();
+    const csVideoIds: string[] = [];
+
+    for (const item of csList) {
+      const vId = getYoutubeId(item.ytUrl);
+      if (vId && item.thumbnailUrl !== "none") {
+        csVideoIds.push(vId);
+        csVideoIdsToId.set(vId, item.id);
+      }
+    }
+
+    let updatedCsList = [...csList];
+    if (csVideoIds.length > 0) {
+      const idsStr = csVideoIds.join(",");
+      const csVideosRes = await fetch(
+        `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${idsStr}&key=${apiKey}`
+      );
+      const csVideosData = await csVideosRes.json();
+
+      if (csVideosData.items && csVideosData.items.length > 0) {
+        for (const v of csVideosData.items) {
+          const vId = v.id;
+          const csId = csVideoIdsToId.get(vId);
+          if (csId) {
+            const csItem = updatedCsList.find(i => i.id === csId);
+            if (csItem && csItem.thumbnailUrl !== "none") {
+              const snippet = v.snippet;
+              const bestThumb = getHighResYoutubeThumbnail(snippet?.thumbnails, vId);
+              if (bestThumb) {
+                csItem.thumbnailUrl = bestThumb;
+              }
+            }
+          }
+        }
+        await syncSponsorCaseStudies(updatedCsList);
+        updatedCount += csVideosData.items.length;
+      }
+    }
+
+    // 4. Update site-data.json local store for full consistency
+    try {
+      const filePath = path.join(process.cwd(), "src", "data", "site-data.json");
+      const fileContents = await fs.readFile(filePath, "utf8");
+      const jsonData = JSON.parse(fileContents);
+
+      if (syncedStats) {
+        jsonData.stats = syncedStats;
+      }
+      if (updatedWpList && updatedWpList.length > 0) {
+        jsonData.whatPerforms = updatedWpList;
+      }
+      if (updatedCsList && updatedCsList.length > 0) {
+        jsonData.sponsorResults = updatedCsList;
+      }
+
+      await fs.writeFile(filePath, JSON.stringify(jsonData, null, 2), "utf8");
+    } catch (fsErr) {
+      console.warn("Could not write updated stats to site-data.json:", fsErr);
+    }
+
     return NextResponse.json({
       success: true,
-      message: `Successfully synced YouTube stats (${updatedCount} items updated).`,
+      message: `Successfully synced live stats and upscaled thumbnails (${updatedCount} items updated).`,
+      data: {
+        stats: syncedStats,
+        whatPerformsCount: updatedWpList.length,
+        sponsorResultsCount: updatedCsList.length,
+      }
     });
   } catch (error: any) {
     console.error("YouTube sync error:", error);
@@ -131,3 +224,4 @@ export async function POST(request: Request) {
     );
   }
 }
+

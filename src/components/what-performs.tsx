@@ -211,6 +211,12 @@ export default function WhatPerforms({ whatPerforms, isLoading }: WhatPerformsPr
                           height={270}
                           loading="lazy"
                           decoding="async"
+                          onError={(e) => {
+                            const target = e.currentTarget;
+                            if (target.src.includes("maxresdefault.jpg")) {
+                              target.src = target.src.replace("maxresdefault.jpg", "hqdefault.jpg");
+                            }
+                          }}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                       ) : (

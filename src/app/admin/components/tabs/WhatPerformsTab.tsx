@@ -1,9 +1,10 @@
 "use client";
 
 import React from "react";
-import { Plus, Trash2, Sparkles, Save } from "lucide-react";
+import { Plus, Trash2, Sparkles, Save, Image as ImageIcon } from "lucide-react";
 import { PerformItem } from "@/types";
 import defaultSiteData from "@/data/site-data.json";
+import { getYoutubeId } from "../../utils";
 
 interface WhatPerformsTabProps {
   whatPerforms: PerformItem[];
@@ -51,7 +52,7 @@ export function WhatPerformsTab({
               thumb: "🚀",
               highlight: "High CTR",
               ytUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-              thumbnail: ""
+              thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg"
             }])}
             className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold px-3.5 py-2 rounded-xl text-xs flex items-center gap-1.5 border border-emerald-500/30 disabled:opacity-50 transition-colors cursor-pointer"
           >
@@ -112,16 +113,59 @@ export function WhatPerformsTab({
                   value={item.ytUrl || ""} 
                   disabled={isViewer}
                   onChange={(e) => {
+                    const val = e.target.value;
                     const next = [...whatPerforms];
-                    next[idx].ytUrl = e.target.value;
+                    const newYtId = getYoutubeId(val);
+                    const prevYtId = getYoutubeId(item.ytUrl);
+
+                    let updatedThumb = next[idx].thumbnail;
+                    if (newYtId) {
+                      if (!updatedThumb || updatedThumb === "" || (prevYtId && updatedThumb.includes(prevYtId)) || updatedThumb.includes("img.youtube.com") || updatedThumb.includes("i.ytimg.com")) {
+                        updatedThumb = `https://img.youtube.com/vi/${newYtId}/maxresdefault.jpg`;
+                      }
+                    }
+
+                    next[idx] = {
+                      ...next[idx],
+                      ytUrl: val,
+                      thumbnail: updatedThumb,
+                    };
                     setWhatPerforms(next);
                   }}
                   className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm disabled:opacity-50" 
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Thumbnail Media</label>
+                <div className="flex items-center justify-between gap-2 mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80">Thumbnail Media</label>
+                  {getYoutubeId(item.ytUrl) && (
+                    <button
+                      type="button"
+                      disabled={isViewer}
+                      onClick={() => {
+                        const ytId = getYoutubeId(item.ytUrl);
+                        if (ytId) {
+                          const next = [...whatPerforms];
+                          next[idx].thumbnail = `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`;
+                          setWhatPerforms(next);
+                        }
+                      }}
+                      className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 transition-colors disabled:opacity-50 cursor-pointer"
+                    >
+                      <Sparkles className="w-3 h-3" /> Auto High-Res
+                    </button>
+                  )}
+                </div>
                 <div className="flex items-center gap-2">
+                  {(() => {
+                    const ytId = getYoutubeId(item.ytUrl);
+                    const effectiveThumb = item.thumbnail || (ytId ? `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg` : null);
+                    return effectiveThumb ? (
+                      <div className="w-14 h-9 rounded-lg bg-black border border-brand-border dark:border-[#16382e] shrink-0 overflow-hidden relative shadow-sm">
+                        <img src={effectiveThumb} alt="Thumbnail preview" className="w-full h-full object-cover" />
+                      </div>
+                    ) : null;
+                  })()}
                   <input 
                     type="text" 
                     placeholder="/uploads/file.png or YouTube thumb..."
@@ -136,7 +180,7 @@ export function WhatPerformsTab({
                   />
                   <label 
                     htmlFor={`perform-thumb-input-${item.id}`}
-                    className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold px-3 py-2 rounded-xl cursor-pointer text-xs flex items-center gap-1.5 border border-emerald-500/30 shrink-0 whitespace-nowrap"
+                    className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold px-3 py-2 rounded-xl cursor-pointer text-xs flex items-center gap-1.5 border border-emerald-500/30 shrink-0 whitespace-nowrap shadow-sm"
                   >
                     {uploadingField === `perform-thumb-${item.id}` ? "Saving..." : "Upload"}
                     <input 

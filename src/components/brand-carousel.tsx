@@ -292,8 +292,24 @@ export default function BrandCarousel({ brands }: BrandCarouselProps) {
                     <div className="flex items-center justify-between pt-4 border-t border-brand-border/60 dark:border-zinc-800/80 text-xs font-bold text-emerald-600 dark:text-emerald-400 group-hover:translate-x-0.5 transition-transform">
                       <Link 
                         href="/#case-studies" 
-                        onClick={(e) => handleSmoothScroll(e, "case-studies")}
-                        className="hover:underline flex items-center gap-1"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (typeof window !== "undefined") {
+                            window.dispatchEvent(
+                              new CustomEvent("open-case-study", {
+                                detail: { partnerName: brand.name, id: brand.id },
+                              })
+                            );
+                            const elem = document.getElementById("case-studies") || document.getElementById("case-studies-section");
+                            if (elem) {
+                              elem.scrollIntoView({ behavior: "smooth" });
+                            }
+                            if (window.location.hash !== "#case-studies") {
+                              window.history.pushState(null, "", "/#case-studies");
+                            }
+                          }
+                        }}
+                        className="hover:underline flex items-center gap-1 cursor-pointer"
                       >
                         <span>View Breakdown</span>
                         <ExternalLink className="w-3.5 h-3.5" />

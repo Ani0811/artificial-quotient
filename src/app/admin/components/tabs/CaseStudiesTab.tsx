@@ -102,12 +102,16 @@ export function CaseStudiesTab({
                       disabled={isViewer}
                       onClick={() => {
                         const next = [...sponsorResults];
-                        next[idx] = { ...next[idx], thumbnailUrl: "" };
+                        const ytId = getYoutubeId(item.ytUrl);
+                        next[idx] = { 
+                          ...next[idx], 
+                          thumbnailUrl: ytId ? `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg` : "" 
+                        };
                         setSponsorResults(next);
                       }}
                       className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 transition-colors disabled:opacity-50 cursor-pointer"
                     >
-                      <Sparkles className="w-3 h-3" /> Auto-fetch from YouTube
+                      <Sparkles className="w-3 h-3" /> Auto-fetch High-Res
                     </button>
                   ) : (
                     <button
@@ -331,8 +335,23 @@ export function CaseStudiesTab({
                     value={item.ytUrl || ""} 
                     disabled={isViewer}
                     onChange={(e) => {
+                      const val = e.target.value;
                       const next = [...sponsorResults];
-                      next[idx].ytUrl = e.target.value;
+                      const newYtId = getYoutubeId(val);
+                      const prevYtId = getYoutubeId(item.ytUrl);
+
+                      let updatedThumb = next[idx].thumbnailUrl;
+                      if (newYtId && updatedThumb !== "none") {
+                        if (!updatedThumb || updatedThumb === "" || (prevYtId && updatedThumb.includes(prevYtId)) || updatedThumb.includes("img.youtube.com") || updatedThumb.includes("i.ytimg.com")) {
+                          updatedThumb = `https://img.youtube.com/vi/${newYtId}/maxresdefault.jpg`;
+                        }
+                      }
+
+                      next[idx] = {
+                        ...next[idx],
+                        ytUrl: val,
+                        thumbnailUrl: updatedThumb,
+                      };
                       setSponsorResults(next);
                     }}
                     className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs sm:text-sm disabled:opacity-50" 

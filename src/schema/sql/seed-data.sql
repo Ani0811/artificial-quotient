@@ -147,6 +147,25 @@ VALUES
     '/uploads/1786695121509_easypeasy.png',
     'https://easy-peasy.ai/marky',
     2
+  ),
+  (
+    '4',
+    'Flova AI',
+    'Dedicated Tutorial',
+    'Our goal is to showcase Flova AI\'s cutting-edge workflow for creating cinematic videos with consistent characters, multi-shot storytelling, and editable footage.',
+    'Caveat',
+    'Performance Model',
+    'Tiered CPV ($0.5/v)',
+    'Max Potential',
+    'Up to $2,000',
+    'Goal: Demonstrate how creators and filmmakers can leverage Flova AI (https://www.flova.ai/en/) to generate high-production cinematic AI videos, maintain perfect character consistency across scenes, and turn creative scripts into finished animations.',
+    'Videos Made:\n1. Flova AI Tutorial: Create Cinematic AI Videos With Consistent Characters!\n2. Dedicated Step-by-Step Workflow & Prompt Engineering Breakdown\n3. First-Line Hashtags (#Flovaai, #Flovatutorial) & Tracked Pinned Link',
+    'https://youtu.be/1tbJ3WJ9_po',
+    'Results:\n• $100 base guaranteed + $0.50 CPV performance bonus\n• Tiered exposure model reaching up to $2,000 total payout\n• High creator engagement on consistent character & multi-shot AI storytelling',
+    'Dedicated Video Integration',
+    '/logo/flova.png',
+    'https://www.flova.ai/en/',
+    3
   )
 ON DUPLICATE KEY UPDATE
   partner_name=VALUES(partner_name),
@@ -275,6 +294,16 @@ VALUES
     'https://youtu.be/Oo9H89i6SYk?si=flMdazfrd1ef-feb',
     '/uploads/1786695121509_easypeasy.png',
     2
+  ),
+  (
+    'flova',
+    'Flova AI',
+    'Cinematic AI Video',
+    'All-in-one AI video generator with consistent characters.',
+    'Flova AI',
+    'https://youtu.be/1tbJ3WJ9_po',
+    '/logo/flova.png',
+    3
   )
 ON DUPLICATE KEY UPDATE
   name=VALUES(name),
