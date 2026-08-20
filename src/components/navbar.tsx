@@ -160,19 +160,9 @@ function MobileDrawer({
             </a>
           )}
 
-          <div className="pt-2 flex items-center justify-between text-[10px] text-zinc-600">
-            <span>© 2026 Artificial Quotient</span>
-            {!isAdmin && (
-              <Link
-                href="/admin/login"
-                onClick={onClose}
-                className="hover:text-emerald-400 transition-colors flex items-center gap-1"
-              >
-                <Lock className="w-2.5 h-2.5" />
-                <span>Admin Login</span>
-              </Link>
-            )}
-          </div>
+          <p className="text-[10px] text-zinc-600 text-center pt-2">
+            © 2026 Artificial Quotient
+          </p>
         </div>
       </div>
     </div>,
