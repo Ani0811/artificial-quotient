@@ -2,15 +2,16 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Mail, Sparkles } from "lucide-react";
+import { Mail, Sparkles, Lock } from "lucide-react";
 import { handleSmoothScroll } from "@/lib/scroll";
 import { LogoImage } from "@/components/ui/logo-image";
 
 interface FooterProps {
   subscribersCount?: string;
+  isAdmin?: boolean;
 }
 
-export default function Footer({ subscribersCount }: FooterProps) {
+export default function Footer({ subscribersCount, isAdmin = false }: FooterProps) {
   const [subs, setSubs] = useState<string>(subscribersCount || "10.1k");
 
   useEffect(() => {
@@ -47,10 +48,10 @@ export default function Footer({ subscribersCount }: FooterProps) {
       <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-teal-500/5 dark:bg-teal-500/10 blur-[100px] rounded-full pointer-events-none"></div>
 
       <div className="max-w-6xl mx-auto px-4 pt-16 pb-12 relative z-10">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8 sm:gap-10 pb-12 border-b border-brand-border dark:border-zinc-800/80">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 pb-12 border-b border-brand-border dark:border-zinc-800/80">
           
-          {/* Brand & Mission Column (Spans full on mobile/tablet, 2 cols on lg) */}
-          <div className="col-span-2 sm:col-span-3 lg:col-span-2 flex flex-col gap-4">
+          {/* Brand & Mission Column (Spans full on mobile, 2 cols on lg) */}
+          <div className="sm:col-span-2 lg:col-span-2 flex flex-col gap-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl overflow-hidden border border-emerald-500/30 shadow-md flex items-center justify-center bg-brand-dark dark:bg-zinc-800">
                 <LogoImage 
@@ -127,6 +128,12 @@ export default function Footer({ subscribersCount }: FooterProps) {
             >
               Case Studies
             </Link>
+            <Link 
+              href="/contact" 
+              className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors"
+            >
+              Contact Us
+            </Link>
           </div>
 
           {/* Sponsoring Column */}
@@ -145,33 +152,28 @@ export default function Footer({ subscribersCount }: FooterProps) {
             </a>
           </div>
 
-          {/* Admin & Legal Column */}
-          <div className="col-span-1 flex flex-col gap-3">
-            <h3 className="font-heading font-bold text-sm text-brand-text dark:text-white uppercase tracking-wider">
-              Legal &amp; Admin
-            </h3>
-            <Link href="/terms" className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors">
-              Terms &amp; Conditions
-            </Link>
-            <Link href="/privacy" className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors">
-              Privacy Policy
-            </Link>
-            <Link href="/contact" className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors">
-              Support &amp; Contact
-            </Link>
-            <Link href="/admin" className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors">
-              Admin Portal
-            </Link>
-          </div>
-
         </div>
 
         <div className="pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-brand-muted dark:text-zinc-500">
           <p>&copy; {new Date().getFullYear()} Artificial Quotient. All rights reserved.</p>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center justify-center gap-4">
             <Link href="/terms" className="hover:text-emerald-500 transition-colors">Terms of Service</Link>
             <span>&bull;</span>
             <Link href="/privacy" className="hover:text-emerald-500 transition-colors">Privacy Policy</Link>
+            <span>&bull;</span>
+            <Link href="/contact" className="hover:text-emerald-500 transition-colors">Contact</Link>
+            <span>&bull;</span>
+            {isAdmin ? (
+              <Link href="/admin" className="hover:text-emerald-500 text-emerald-500 dark:text-emerald-400 font-medium transition-colors flex items-center gap-1">
+                <Lock className="w-3 h-3" />
+                <span>Admin Portal</span>
+              </Link>
+            ) : (
+              <Link href="/admin/login" className="hover:text-emerald-500 transition-colors flex items-center gap-1 opacity-50 hover:opacity-100" title="Admin Login">
+                <Lock className="w-3 h-3" />
+                <span>Admin</span>
+              </Link>
+            )}
           </div>
         </div>
       </div>

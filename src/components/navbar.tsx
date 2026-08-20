@@ -124,14 +124,30 @@ function MobileDrawer({
 
         {/* Footer CTAs */}
         <div className="space-y-3">
-          <Link
-            href={isAdmin ? "/admin" : "/admin/login?notice=not-admin"}
-            onClick={onClose}
-            className="flex items-center gap-2 p-3 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-emerald-400 hover:text-emerald-300 transition-colors border border-white/5"
-          >
-            <Lock className="w-4 h-4" />
-            <span>Access Admin Portal</span>
-          </Link>
+          {isAdmin ? (
+            <Link
+              href="/admin"
+              onClick={onClose}
+              className="flex items-center gap-2 p-3 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-emerald-400 hover:text-emerald-300 transition-colors border border-white/5"
+            >
+              <Lock className="w-4 h-4" />
+              <span>Access Admin Portal</span>
+            </Link>
+          ) : (
+            !isLoginPage && (
+              <a
+                href="https://www.youtube.com/@ArtificialQuotient01"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-red-600 via-rose-600 to-red-500 hover:from-red-500 hover:to-rose-600 text-white font-bold text-center text-sm py-3 rounded-xl transition-all shadow-md shadow-red-600/30"
+              >
+                <svg className="w-4 h-4 fill-current text-white shrink-0" viewBox="0 0 24 24">
+                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                </svg>
+                <span>Subscribe on YouTube</span>
+              </a>
+            )
+          )}
 
           {!isLoginPage && (
             <a
@@ -144,9 +160,19 @@ function MobileDrawer({
             </a>
           )}
 
-          <p className="text-[10px] text-zinc-600 text-center">
-            © 2026 Artificial Quotient
-          </p>
+          <div className="pt-2 flex items-center justify-between text-[10px] text-zinc-600">
+            <span>© 2026 Artificial Quotient</span>
+            {!isAdmin && (
+              <Link
+                href="/admin/login"
+                onClick={onClose}
+                className="hover:text-emerald-400 transition-colors flex items-center gap-1"
+              >
+                <Lock className="w-2.5 h-2.5" />
+                <span>Admin Login</span>
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </div>,
@@ -220,13 +246,29 @@ export default function Navbar({ isAdmin = false }: NavbarProps) {
           <div className="flex items-center gap-3">
             <ThemeToggle />
 
-            <Link
-              href={isAdmin ? "/admin" : "/admin/login?notice=not-admin"}
-              className="text-brand-text dark:text-white hover:text-emerald-500 px-3.5 py-2 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors border border-brand-border dark:border-zinc-800 bg-brand-card dark:bg-zinc-900 shadow-sm hidden lg:flex"
-            >
-              <Lock className="w-3.5 h-3.5 text-emerald-500" />
-              <span>Admin Portal</span>
-            </Link>
+            {isAdmin ? (
+              <Link
+                href="/admin"
+                className="text-brand-text dark:text-white hover:text-emerald-500 px-3.5 py-2 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors border border-brand-border dark:border-zinc-800 bg-brand-card dark:bg-zinc-900 shadow-sm hidden lg:flex"
+              >
+                <Lock className="w-3.5 h-3.5 text-emerald-500" />
+                <span>Admin Portal</span>
+              </Link>
+            ) : (
+              !isLoginPage && (
+                <a
+                  href="https://www.youtube.com/@ArtificialQuotient01"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-gradient-to-r from-red-600 via-rose-600 to-red-500 hover:from-red-500 hover:to-rose-600 text-white font-bold text-xs px-3.5 py-2 rounded-xl transition-all shadow-sm shadow-red-600/20 hover:scale-105 active:scale-95 hidden lg:flex items-center gap-1.5 cursor-pointer"
+                >
+                  <svg className="w-3.5 h-3.5 fill-current text-white shrink-0" viewBox="0 0 24 24">
+                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                  </svg>
+                  <span>Subscribe</span>
+                </a>
+              )
+            )}
 
             {!isLoginPage && (
               <a

@@ -33,7 +33,7 @@ export function ThemeToggle() {
     { value: "system", label: "System", icon: Laptop, color: "text-emerald-600 dark:text-emerald-400" },
   ];
 
-  const currentOption = options.find((opt) => opt.value === theme) || options[2];
+  const currentOption = options.find((opt) => opt.value === theme) || options[1];
   const CurrentIcon = currentOption.icon;
 
   return (

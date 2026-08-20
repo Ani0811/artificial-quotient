@@ -169,7 +169,7 @@ export function AdminPreviewPanel({
             </div>
 
             <div className="bg-brand-bg dark:bg-[#061612] border border-brand-border dark:border-[#16382e] rounded-xl p-4">
-              <div className="text-xs font-bold text-brand-muted dark:text-emerald-200/60 uppercase">View Count</div>
+              <div className="text-xs font-bold text-brand-muted dark:text-emerald-200/60 uppercase">Total Views</div>
               <div className="text-xl font-bold text-brand-text dark:text-white mt-1">{statsForm.monthlyViews}</div>
             </div>
           </div>

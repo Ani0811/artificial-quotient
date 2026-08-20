@@ -154,13 +154,13 @@ export default async function RootLayout({
         <div className="fixed top-0 left-1/4 w-[500px] h-[500px] bg-emerald-500/10 dark:bg-emerald-500/15 blur-[120px] rounded-full pointer-events-none z-0"></div>
         <div className="fixed bottom-0 right-1/4 w-[600px] h-[600px] bg-teal-500/10 dark:bg-emerald-700/15 blur-[140px] rounded-full pointer-events-none z-0"></div>
 
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <FontProvider>
             <Navbar isAdmin={isAdmin} />
             <main className="flex-grow relative z-10">
               {children}
             </main>
-            <Footer />
+            <Footer isAdmin={isAdmin} />
             <ScrollToTop />
           </FontProvider>
         </ThemeProvider>

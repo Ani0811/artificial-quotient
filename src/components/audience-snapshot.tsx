@@ -277,7 +277,7 @@ export default function AudienceSnapshot({ siteData, isLoading }: AudienceSnapsh
       bg: "bg-blue-500/10 border-blue-500/20",
     },
     {
-      label: "Views",
+      label: "Total Views",
       value: stats.monthlyViews || "0",
       sub: stats.monthlyViewsSub || "",
       icon: BarChart3,
