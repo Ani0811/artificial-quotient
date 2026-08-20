@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowUpRight, ExternalLink, X, Play, Sparkles, CheckCircle, Calendar, Target, ChevronLeft, ChevronRight } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { loadGoogleFont } from "./font-provider";
 import Link from "next/link";
 
@@ -48,8 +48,11 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
   const [results, setResults] = useState<SponsorResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCaseStudy, setSelectedCaseStudy] = useState<SponsorResult | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 3;
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [itemsPerView, setItemsPerView] = useState(3);
+  const touchStartX = useRef<number | null>(null);
+  const isDraggingRef = useRef(false);
+  const dragStartXRef = useRef(0);
 
   useEffect(() => {
     if (sponsorResults !== undefined) {
@@ -84,6 +87,77 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
     load();
   }, [sponsorResults, isLoading]);
 
+  // Responsive window resize listener for cards per view
+  useEffect(() => {
+    function updateItemsPerView() {
+      if (window.innerWidth < 640) {
+        setItemsPerView(1);
+      } else if (window.innerWidth < 1024) {
+        setItemsPerView(2);
+      } else {
+        setItemsPerView(3);
+      }
+    }
+
+    updateItemsPerView();
+    window.addEventListener("resize", updateItemsPerView);
+    return () => window.removeEventListener("resize", updateItemsPerView);
+  }, []);
+
+  const maxIndex = Math.max(0, results.length - itemsPerView);
+
+  // Clamp current index if itemsPerView changes
+  useEffect(() => {
+    if (currentIndex > maxIndex) {
+      setCurrentIndex(maxIndex);
+    }
+  }, [maxIndex, currentIndex]);
+
+  const handlePrev = () => {
+    setCurrentIndex((prev) => Math.max(0, prev - 1));
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prev) => Math.min(maxIndex, prev + 1));
+  };
+
+  // Touch Swipe Support
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (diff > 50) {
+      handleNext();
+    } else if (diff < -50) {
+      handlePrev();
+    }
+    touchStartX.current = null;
+  };
+
+  // Mouse Drag Support
+  const handleMouseDown = (e: React.MouseEvent) => {
+    isDraggingRef.current = true;
+    dragStartXRef.current = e.clientX;
+  };
+
+  const handleMouseUp = (e: React.MouseEvent) => {
+    if (!isDraggingRef.current) return;
+    const diff = dragStartXRef.current - e.clientX;
+    if (diff > 60) {
+      handleNext();
+    } else if (diff < -60) {
+      handlePrev();
+    }
+    isDraggingRef.current = false;
+  };
+
+  const handleMouseLeave = () => {
+    isDraggingRef.current = false;
+  };
+
   useEffect(() => {
     if (loading || results.length === 0 || typeof window === "undefined") return;
 
@@ -105,7 +179,7 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
         if (found) {
           const itemIndex = results.findIndex((r) => r.id === found.id);
           if (itemIndex !== -1) {
-            setCurrentPage(Math.floor(itemIndex / ITEMS_PER_PAGE) + 1);
+            setCurrentIndex(Math.min(maxIndex, itemIndex));
           }
           setSelectedCaseStudy(found);
           const elem = document.getElementById("case-studies") || document.getElementById("case-studies-section");
@@ -132,7 +206,7 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
       if (found) {
         const itemIndex = results.findIndex((r) => r.id === found.id);
         if (itemIndex !== -1) {
-          setCurrentPage(Math.floor(itemIndex / ITEMS_PER_PAGE) + 1);
+          setCurrentIndex(Math.min(maxIndex, itemIndex));
         }
         setSelectedCaseStudy(found);
       }
@@ -152,15 +226,7 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
       window.removeEventListener("hashchange", handleHash);
       clearTimeout(timer);
     };
-  }, [loading, results]);
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    const section = document.getElementById("case-studies") || document.getElementById("case-studies-section");
-    if (section) {
-      section.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  };
+  }, [loading, results, maxIndex]);
 
   if (loading) {
     return (
@@ -179,170 +245,190 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
 
   if (results.length === 0) return null;
 
-  const totalPages = Math.ceil(results.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedResults = results.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-
-  const getGridLayout = (count: number) => {
-    if (count === 1) return "grid grid-cols-1 max-w-lg mx-auto gap-6 sm:gap-8";
-    if (count === 2) return "grid grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto gap-6 sm:gap-8";
-    return "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8";
-  };
+  const showControls = results.length > itemsPerView;
 
   return (
     <section id="case-studies" className="w-full py-16 sm:py-20 px-4 bg-brand-bg dark:bg-[#061612] border-t border-brand-border dark:border-[#14352b] transition-colors">
       <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col gap-2 mb-12 text-center md:text-left">
-          <h2 className="font-heading text-3xl md:text-4xl font-bold text-brand-text dark:text-white">
-            Sponsor Case Studies
-          </h2>
-          <p className="text-brand-muted dark:text-zinc-400 font-medium text-lg">
-            Real outcomes from forward-thinking tech &amp; AI brand integrations.
-          </p>
-        </div>
+        {/* Section Header with Carousel Navigation */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 text-center sm:text-left">
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-semibold text-xs w-fit mx-auto sm:mx-0">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Proven Campaign Results</span>
+            </div>
+            <h2 className="font-heading text-3xl md:text-4xl font-bold text-brand-text dark:text-white">
+              Sponsor Case Studies
+            </h2>
+            <p className="text-brand-muted dark:text-zinc-400 font-medium text-base sm:text-lg">
+              Real outcomes and verified metrics from forward-thinking tech &amp; AI brand integrations.
+            </p>
+          </div>
 
-        <div className={getGridLayout(paginatedResults.length)}>
-          {paginatedResults.map((item, idx) => {
-            const ytId = getYoutubeId(item.ytUrl);
-            const thumbImg = item.thumbnailUrl === "none" ? null : (item.thumbnailUrl || (ytId ? `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg` : null));
-
-            return (
-              <div 
-                key={item.id || idx} 
-                onClick={() => setSelectedCaseStudy(item)}
-                className="group relative bg-white dark:bg-zinc-900 rounded-2xl p-5 sm:p-6 border border-brand-border dark:border-zinc-800 shadow-sm flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-500/5 hover:border-emerald-500/40 dark:hover:border-emerald-500/40 overflow-hidden cursor-pointer"
-              >
-                {/* Ambient top border glow line */}
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
-                <div>
-                  {/* Thumbnail Image Banner */}
-                  {thumbImg && (
-                    <div className="relative aspect-video w-full rounded-xl overflow-hidden mb-5 bg-zinc-950 border border-brand-border/80 dark:border-zinc-800/80 shadow-sm group/thumb">
-                      <img 
-                        src={thumbImg} 
-                        alt={`${item.partnerName} Case Study Thumbnail`}
-                        loading="lazy" 
-                        decoding="async" 
-                        onError={(e) => {
-                          const target = e.currentTarget;
-                          if (target.src.includes("maxresdefault.jpg")) {
-                            target.src = target.src.replace("maxresdefault.jpg", "hqdefault.jpg");
-                          }
-                        }}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
-                      />
-                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                        <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-black/60 backdrop-blur-md border border-white/30 text-white flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-110 group-hover:bg-emerald-600/90 group-hover:border-emerald-400">
-                          <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-current ml-0.5" />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="flex items-center justify-between gap-2 mb-6">
-                    {item.websiteUrl ? (
-                      <a
-                        href={item.websiteUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        className="inline-flex items-center gap-1.5 bg-brand-bg dark:bg-zinc-950 px-2.5 sm:px-3 py-1.5 rounded-xl border border-brand-border dark:border-zinc-800 font-bold text-xs sm:text-sm text-brand-text dark:text-white transition-all duration-300 hover:border-emerald-500/50 hover:bg-emerald-500/10 hover:text-emerald-400 group/link shrink-0 min-w-0"
-                        title={`Visit ${item.partnerName} Website`}
-                      >
-                        {item.logoUrl ? (
-                          <img src={item.logoUrl} alt={item.partnerName} width={18} height={18} loading="lazy" decoding="async" className="w-4 h-4 sm:w-4.5 sm:h-4.5 object-contain rounded shrink-0" />
-                        ) : null}
-                        <span className="whitespace-nowrap truncate">{item.partnerName}</span>
-                        <ExternalLink className="w-3 h-3 text-emerald-500 opacity-70 group-hover/link:opacity-100 group-hover/link:translate-x-0.5 transition-all shrink-0" />
-                      </a>
-                    ) : (
-                      <div className="bg-brand-bg dark:bg-zinc-950 px-2.5 sm:px-3 py-1.5 rounded-xl border border-brand-border dark:border-zinc-800 font-bold text-xs sm:text-sm text-brand-text dark:text-white flex items-center gap-1.5 shrink-0 min-w-0">
-                        {item.logoUrl ? (
-                          <img src={item.logoUrl} alt={item.partnerName} width={18} height={18} loading="lazy" decoding="async" className="w-4 h-4 sm:w-4.5 sm:h-4.5 object-contain rounded shrink-0" />
-                        ) : null}
-                        <span className="whitespace-nowrap truncate">{item.partnerName}</span>
-                      </div>
-                    )}
-
-                    <span className="text-[10px] sm:text-xs font-bold px-2.5 py-1 bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 rounded-full border border-emerald-500/20 leading-tight whitespace-nowrap shrink-0">
-                      {item.campaignType}
-                    </span>
-                  </div>
-                  {item.quote && (
-                    <p 
-                      style={{ fontFamily: item.quoteFont ? `'${item.quoteFont}', cursive, sans-serif` : undefined }}
-                      className="font-handwritten text-2xl text-brand-text dark:text-zinc-200 mb-6 transition-colors duration-300 group-hover:text-brand-text dark:group-hover:text-white"
-                    >
-                      &quot;{item.quote}&quot;
-                    </p>
-                  )}
-                </div>
-                
-                <div>
-                  <div className="border-t border-brand-border dark:border-zinc-800 pt-5 transition-colors duration-300 group-hover:border-emerald-500/20 dark:group-hover:border-zinc-700 mb-4">
-                    <div className="p-2.5 rounded-xl bg-brand-bg/60 dark:bg-zinc-950/40 border border-brand-border/60 dark:border-zinc-800/60 transition-all duration-300 hover:bg-emerald-500/5 dark:hover:bg-zinc-800/50">
-                      <p className="text-xs text-brand-muted dark:text-zinc-400 mb-1 font-medium">{item.stat1Label}</p>
-                      <p className="text-xl font-bold text-brand-text dark:text-white flex items-center justify-between">
-                        <span>{item.stat1Value}</span>
-                        <ArrowUpRight className="w-4 h-4 text-emerald-500" />
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between text-xs font-bold text-emerald-600 dark:text-emerald-400 group-hover:translate-x-1 transition-transform pt-1">
-                    <span>View Detailed Case Study &amp; Video &rarr;</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Pagination Bar */}
-        {totalPages > 1 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-10 pt-6 border-t border-brand-border dark:border-zinc-800">
-            <span className="text-xs sm:text-sm font-semibold text-brand-muted dark:text-zinc-400">
-              Showing <span className="font-bold text-brand-text dark:text-white">{startIndex + 1}</span>–<span className="font-bold text-brand-text dark:text-white">{Math.min(startIndex + ITEMS_PER_PAGE, results.length)}</span> of <span className="font-bold text-brand-text dark:text-white">{results.length}</span> Case Studies
-            </span>
-
-            <div className="flex items-center gap-2">
+          {/* Slideshow Controls */}
+          {showControls && (
+            <div className="flex items-center justify-center sm:justify-end gap-2.5 shrink-0 pt-2 sm:pt-0">
               <button
                 type="button"
-                disabled={currentPage === 1}
-                onClick={() => handlePageChange(currentPage - 1)}
-                className="p-2 rounded-xl border border-brand-border dark:border-zinc-800 bg-white dark:bg-zinc-900 text-brand-text dark:text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-all"
-                title="Previous Page"
+                onClick={handlePrev}
+                disabled={currentIndex === 0}
+                className="w-10 h-10 rounded-xl border border-brand-border dark:border-zinc-800 bg-white dark:bg-zinc-900 text-brand-text dark:text-white flex items-center justify-center transition-all hover:bg-emerald-500/10 hover:border-emerald-500/40 hover:text-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed shadow-sm cursor-pointer"
+                title="Previous Case Studies"
+                aria-label="Previous Case Studies"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronLeft className="w-5 h-5" />
               </button>
-
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <button
-                  key={page}
-                  type="button"
-                  onClick={() => handlePageChange(page)}
-                  className={`w-9 h-9 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center border ${
-                    currentPage === page
-                      ? "bg-emerald-600 border-emerald-500 text-white shadow-md shadow-emerald-500/20"
-                      : "border-brand-border dark:border-zinc-800 bg-white dark:bg-zinc-900 text-brand-text dark:text-zinc-300 hover:bg-emerald-500/10 hover:border-emerald-500/30"
-                  }`}
-                >
-                  {page}
-                </button>
-              ))}
-
               <button
                 type="button"
-                disabled={currentPage === totalPages}
-                onClick={() => handlePageChange(currentPage + 1)}
-                className="p-2 rounded-xl border border-brand-border dark:border-zinc-800 bg-white dark:bg-zinc-900 text-brand-text dark:text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-all"
-                title="Next Page"
+                onClick={handleNext}
+                disabled={currentIndex >= maxIndex}
+                className="w-10 h-10 rounded-xl border border-brand-border dark:border-zinc-800 bg-white dark:bg-zinc-900 text-brand-text dark:text-white flex items-center justify-center transition-all hover:bg-emerald-500/10 hover:border-emerald-500/40 hover:text-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed shadow-sm cursor-pointer"
+                title="Next Case Studies"
+                aria-label="Next Case Studies"
               >
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-5 h-5" />
               </button>
             </div>
+          )}
+        </div>
+
+        {/* Carousel Viewport Container */}
+        <div 
+          className="overflow-hidden relative select-none"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseLeave}
+        >
+          <div
+            className="flex transition-transform duration-500 ease-out"
+            style={{
+              transform: `translateX(-${currentIndex * (100 / itemsPerView)}%)`,
+            }}
+          >
+            {results.map((item, idx) => {
+              const ytId = getYoutubeId(item.ytUrl);
+              const thumbImg = item.thumbnailUrl === "none" ? null : (item.thumbnailUrl || (ytId ? `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg` : null));
+
+              return (
+                <div
+                  key={item.id || idx}
+                  className="px-2.5 sm:px-3 shrink-0 transition-all duration-300 flex flex-col"
+                  style={{ width: `${100 / itemsPerView}%` }}
+                >
+                  <div 
+                    onClick={() => setSelectedCaseStudy(item)}
+                    className="group relative bg-white dark:bg-zinc-900 rounded-2xl p-5 sm:p-6 border border-brand-border dark:border-zinc-800 shadow-sm flex flex-col justify-between h-full transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-500/5 hover:border-emerald-500/40 dark:hover:border-emerald-500/40 overflow-hidden cursor-pointer"
+                  >
+                    {/* Ambient top border glow line */}
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+                    <div>
+                      {/* Thumbnail Image Banner */}
+                      {thumbImg && (
+                        <div className="relative aspect-video w-full rounded-xl overflow-hidden mb-5 bg-zinc-950 border border-brand-border/80 dark:border-zinc-800/80 shadow-sm group/thumb">
+                          <img 
+                            src={thumbImg} 
+                            alt={`${item.partnerName} Case Study Thumbnail`}
+                            loading="lazy" 
+                            decoding="async" 
+                            onError={(e) => {
+                              const target = e.currentTarget;
+                              if (target.src.includes("maxresdefault.jpg")) {
+                                target.src = target.src.replace("maxresdefault.jpg", "hqdefault.jpg");
+                              }
+                            }}
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                          />
+                          <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-black/60 backdrop-blur-md border border-white/30 text-white flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-110 group-hover:bg-emerald-600/90 group-hover:border-emerald-400">
+                              <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-current ml-0.5" />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="flex items-center justify-between gap-2 mb-4">
+                        {item.websiteUrl ? (
+                          <a
+                            href={item.websiteUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="inline-flex items-center gap-1.5 bg-brand-bg dark:bg-zinc-950 px-2.5 sm:px-3 py-1.5 rounded-xl border border-brand-border dark:border-zinc-800 font-bold text-xs sm:text-sm text-brand-text dark:text-white transition-all duration-300 hover:border-emerald-500/50 hover:bg-emerald-500/10 hover:text-emerald-400 group/link shrink-0 min-w-0"
+                            title={`Visit ${item.partnerName} Website`}
+                          >
+                            {item.logoUrl ? (
+                              <img src={item.logoUrl} alt={item.partnerName} width={18} height={18} loading="lazy" decoding="async" className="w-4 h-4 sm:w-4.5 sm:h-4.5 object-contain rounded shrink-0" />
+                            ) : null}
+                            <span className="whitespace-nowrap truncate">{item.partnerName}</span>
+                            <ExternalLink className="w-3 h-3 text-emerald-500 opacity-70 group-hover/link:opacity-100 group-hover/link:translate-x-0.5 transition-all shrink-0" />
+                          </a>
+                        ) : (
+                          <div className="bg-brand-bg dark:bg-zinc-950 px-2.5 sm:px-3 py-1.5 rounded-xl border border-brand-border dark:border-zinc-800 font-bold text-xs sm:text-sm text-brand-text dark:text-white flex items-center gap-1.5 shrink-0 min-w-0">
+                            {item.logoUrl ? (
+                              <img src={item.logoUrl} alt={item.partnerName} width={18} height={18} loading="lazy" decoding="async" className="w-4 h-4 sm:w-4.5 sm:h-4.5 object-contain rounded shrink-0" />
+                            ) : null}
+                            <span className="whitespace-nowrap truncate">{item.partnerName}</span>
+                          </div>
+                        )}
+
+                        <span className="text-[10px] sm:text-xs font-bold px-2.5 py-1 bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 rounded-full border border-emerald-500/20 leading-tight whitespace-nowrap shrink-0">
+                          {item.campaignType}
+                        </span>
+                      </div>
+
+                      {item.quote && (
+                        <p 
+                          style={{ fontFamily: item.quoteFont ? `'${item.quoteFont}', cursive, sans-serif` : undefined }}
+                          className="font-handwritten text-xl sm:text-2xl text-brand-text dark:text-zinc-200 mb-6 transition-colors duration-300 group-hover:text-brand-text dark:group-hover:text-white line-clamp-3"
+                        >
+                          &quot;{item.quote}&quot;
+                        </p>
+                      )}
+                    </div>
+                    
+                    <div>
+                      <div className="border-t border-brand-border dark:border-zinc-800 pt-4 transition-colors duration-300 group-hover:border-emerald-500/20 dark:group-hover:border-zinc-700 mb-4">
+                        <div className="p-2.5 rounded-xl bg-brand-bg/60 dark:bg-zinc-950/40 border border-brand-border/60 dark:border-zinc-800/60 transition-all duration-300 hover:bg-emerald-500/5 dark:hover:bg-zinc-800/50">
+                          <p className="text-xs text-brand-muted dark:text-zinc-400 mb-0.5 font-medium">{item.stat1Label}</p>
+                          <p className="text-lg sm:text-xl font-bold text-brand-text dark:text-white flex items-center justify-between">
+                            <span>{item.stat1Value}</span>
+                            <ArrowUpRight className="w-4 h-4 text-emerald-500" />
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between text-xs font-bold text-emerald-600 dark:text-emerald-400 group-hover:translate-x-1 transition-transform pt-1">
+                        <span>View Breakdown &amp; Deliverables &rarr;</span>
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Carousel Pagination Dots */}
+        {showControls && (
+          <div className="flex justify-center items-center gap-1.5 mt-8">
+            {Array.from({ length: maxIndex + 1 }).map((_, dotIdx) => (
+              <button
+                key={dotIdx}
+                type="button"
+                onClick={() => setCurrentIndex(dotIdx)}
+                className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                  currentIndex === dotIdx
+                    ? "w-8 bg-emerald-500"
+                    : "w-2 bg-brand-border dark:bg-zinc-800 hover:bg-emerald-500/40"
+                }`}
+                title={`Go to slide ${dotIdx + 1}`}
+                aria-label={`Go to slide ${dotIdx + 1}`}
+              />
+            ))}
           </div>
         )}
       </div>

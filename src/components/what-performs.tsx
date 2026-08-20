@@ -94,6 +94,9 @@ export default function WhatPerforms({ whatPerforms, isLoading }: WhatPerformsPr
     setCurrentIndex((prev) => Math.min(maxIndex, prev + 1));
   };
 
+  const isDraggingRef = useRef(false);
+  const dragStartXRef = useRef(0);
+
   // Touch Swipe Support
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
@@ -108,6 +111,27 @@ export default function WhatPerforms({ whatPerforms, isLoading }: WhatPerformsPr
       handlePrev();
     }
     touchStartX.current = null;
+  };
+
+  // Mouse Drag Support
+  const handleMouseDown = (e: React.MouseEvent) => {
+    isDraggingRef.current = true;
+    dragStartXRef.current = e.clientX;
+  };
+
+  const handleMouseUp = (e: React.MouseEvent) => {
+    if (!isDraggingRef.current) return;
+    const diff = dragStartXRef.current - e.clientX;
+    if (diff > 60) {
+      handleNext();
+    } else if (diff < -60) {
+      handlePrev();
+    }
+    isDraggingRef.current = false;
+  };
+
+  const handleMouseLeave = () => {
+    isDraggingRef.current = false;
   };
 
   if (loading) {
@@ -177,9 +201,12 @@ export default function WhatPerforms({ whatPerforms, isLoading }: WhatPerformsPr
 
         {/* Carousel Viewport Container */}
         <div 
-          className="overflow-hidden relative"
+          className="overflow-hidden relative select-none"
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseLeave}
         >
           <div
             className="flex transition-transform duration-500 ease-out"

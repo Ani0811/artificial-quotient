@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Check, Edit3, ShieldCheck, AlertCircle, X } from "lucide-react";
+import { Check, Edit3, ShieldCheck, AlertCircle, X, Save, Sparkles } from "lucide-react";
 import { PerformItem, SponsorItem, AdminUser, BrandItem, InterestItem, CountryItem, HeroConfig } from "@/types";
 import { parseGeographies } from "@/components/audience-snapshot";
 import { ALL_COUNTRIES } from "@/lib/countries";
@@ -206,6 +206,38 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
       return () => clearTimeout(timer);
     }
   }, [notification]);
+
+  // Global Keyboard Shortcut (Ctrl+S / Cmd+S) to Save Instantly
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        if (!isViewer && activeTab !== "backup") {
+          if (activeTab === "users") {
+            handleSaveUsers();
+          } else {
+            handleSaveAll();
+          }
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [
+    isViewer, 
+    activeTab, 
+    heroForm, 
+    statsForm, 
+    ratesForm, 
+    demoForm, 
+    geoForm, 
+    whatPerforms, 
+    sponsorResults, 
+    brandsList, 
+    audienceInterests, 
+    shoppingInterests, 
+    adminUsers
+  ]);
 
   const handleInlineMediaUpload = async (
     files: FileList | null, 
@@ -509,6 +541,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
           layoutMode={layoutMode}
           setLayoutMode={setLayoutMode}
           onSyncYoutube={handleSyncYoutube}
+          onSave={!isViewer && activeTab !== "backup" ? (activeTab === "users" ? handleSaveUsers : handleSaveAll) : undefined}
           onLogout={handleLogout}
         />
 
@@ -682,6 +715,23 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
         </div>
 
       </div>
+
+      {/* Floating Sticky Quick Save Bar */}
+      {!isViewer && activeTab !== "backup" && (
+        <div className="fixed bottom-6 right-6 sm:right-10 z-40 animate-fade-in flex items-center gap-2.5 bg-brand-card/90 dark:bg-[#0c201a]/90 backdrop-blur-xl border border-emerald-500/30 p-2 sm:p-2.5 rounded-2xl shadow-2xl shadow-emerald-950/40 transition-all hover:border-emerald-500/50">
+          <span className="hidden sm:inline-flex items-center gap-1.5 px-2 text-[11px] font-bold text-brand-muted dark:text-emerald-300/80">
+            <kbd className="px-1.5 py-0.5 bg-black/10 dark:bg-white/10 rounded text-[10px] font-mono border border-emerald-500/20">Ctrl+S</kbd> Quick Save
+          </span>
+          <button
+            type="button"
+            onClick={activeTab === "users" ? handleSaveUsers : handleSaveAll}
+            className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-emerald-600/30 hover:shadow-emerald-600/50 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+          >
+            <Save className="w-4 h-4" />
+            <span>Save Changes</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }

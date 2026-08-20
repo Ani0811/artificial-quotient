@@ -14,6 +14,7 @@ interface AdminHeaderProps {
   layoutMode: "split" | "edit" | "preview";
   setLayoutMode: (mode: "split" | "edit" | "preview") => void;
   onSyncYoutube: () => void;
+  onSave?: () => void;
   onLogout: () => void;
 }
 
@@ -25,6 +26,7 @@ export function AdminHeader({
   layoutMode,
   setLayoutMode,
   onSyncYoutube,
+  onSave,
   onLogout,
 }: AdminHeaderProps) {
   return (
@@ -49,7 +51,18 @@ export function AdminHeader({
         </div>
 
         {/* Action buttons */}
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap flex-shrink-0">
+          {!isViewer && onSave && (
+            <button
+              type="button"
+              onClick={onSave}
+              className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-sm flex items-center gap-1.5 transition-all cursor-pointer"
+              title="Save all changes (Ctrl+S)"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Save Changes</span>
+            </button>
+          )}
           <button
             type="button"
             onClick={onSyncYoutube}
