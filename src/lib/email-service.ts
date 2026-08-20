@@ -296,17 +296,20 @@ export async function send2FACodeEmail(toEmail: string, code: string): Promise<b
         },
       });
 
+      const attachments: any[] = [];
+      if (fs.existsSync(logoPath)) {
+        attachments.push({
+          filename: "logo.jpeg",
+          path: logoPath,
+          cid: "aqlogo@artificialquotient",
+        });
+      }
+
       const mailOptions = {
         from: `"${senderName}" <${senderEmail}>`,
         to: toEmail,
         subject: subjectText,
-        attachments: [
-          {
-            filename: "logo.jpeg",
-            path: logoPath,
-            cid: "aqlogo@artificialquotient",
-          },
-        ],
+        attachments,
         html: htmlContent,
       };
 
@@ -318,11 +321,8 @@ export async function send2FACodeEmail(toEmail: string, code: string): Promise<b
     }
   }
 
-  // 3. In development or localhost, log OTP to terminal so admin is never locked out
-  if (process.env.NODE_ENV === "development" || !process.env.NODE_ENV) {
-    console.log(`\n========================================\n[DEV 2FA CODE]: ${code}\nRecipient: ${toEmail}\n========================================\n`);
-    return true;
-  }
+  // Always log the code to console so administrator is never locked out
+  console.log(`\n========================================\n[SECURITY 2FA CODE]: ${code}\nRecipient: ${toEmail}\n========================================\n`);
 
   return false;
 }

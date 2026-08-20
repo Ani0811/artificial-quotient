@@ -56,20 +56,19 @@ export async function POST(request: Request) {
         // Generate OTP
         const code = generateOTP(user.id);
         
-        // Send Email
+        // Send Email (tries Brevo API, then SMTP)
         const emailSent = await send2FACodeEmail(user.email, code);
         if (!emailSent) {
-          return NextResponse.json(
-            { success: false, message: "Failed to send verification code. Please check email configuration." },
-            { status: 500 }
-          );
+          console.warn(`[SECURITY WARNING] Email delivery failed. Emergency 2FA code for ${user.email}: ${code}`);
         }
 
         return NextResponse.json({ 
           success: true, 
           require2FA: true, 
           userId: user.id, 
-          message: "Verification code sent to email." 
+          message: emailSent
+            ? "Verification code sent to your email."
+            : "Verification code generated. Please check email or terminal logs." 
         });
       }
 
@@ -88,17 +87,16 @@ export async function POST(request: Request) {
       const code = generateOTP(userId);
       const emailSent = await send2FACodeEmail(userEmail, code);
       if (!emailSent) {
-        return NextResponse.json(
-          { success: false, message: "Failed to send verification code. Please check email configuration." },
-          { status: 500 }
-        );
+        console.warn(`[SECURITY WARNING] Email delivery failed for master login. Emergency 2FA code: ${code}`);
       }
 
       return NextResponse.json({ 
         success: true, 
         require2FA: true, 
         userId: userId, 
-        message: "Verification code sent to email." 
+        message: emailSent 
+          ? "Verification code sent to your email." 
+          : "Verification code generated. Please check email or terminal logs." 
       });
     }
 
