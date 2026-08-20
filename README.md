@@ -607,6 +607,12 @@ Reduced vertical padding and internal gaps across all homepage sections on mobil
 - **Deduplicated DOM Anchor IDs**: Resolved an issue where multiple `<section>` and `<div>` tags shared `id="case-studies"`, causing unpredictable scroll jumps or cancelled animations on mobile viewports.
 - **Robust Hash Scroll & Navigation Engine**: Upgraded `src/lib/scroll.ts` and `src/app/page.tsx` with dynamic header offset calculation (`80px`), `hashchange` event listeners, and post-hydration scroll triggers ensuring *"Case Studies"* buttons and tabs work seamlessly across all routes.
 
+#### 5. Extended Case Study Details & Rich Presentation Engine (`CaseStudiesTab.tsx`, `sponsor-results.tsx`)
+- **Spacious Multiline Form Editors**: Upgraded **Campaign Overview & Goal** and **Videos & Deliverables Made** from cramped single-line inputs into comfortable 4-line textareas with clear guidelines.
+- **Dedicated ROI & Impact Breakdown Editor**: Fully exposed `roiBreakdown` inside the Admin Case Studies Tab with quick-insert action chips (`+ CPV Bonus`, `+ Engagement Stat`, `+ Tiered Model`).
+- **1-Click Narrative & Deliverable Helpers**: Added smart insertion chips (`+ Insert Goal Template`, `+ Bullet Point`, `+ Video Tutorial`, `+ Pinned Link`) to streamline campaign copy generation without manual syntax memorization.
+- **Structured Modal Rendering Engine**: Built `renderNarrativeText` and `renderStructuredList` to parse raw bullet points, auto-link URLs, format numbered steps (`01`, `02`, `03`) with emerald pill badges, and render glassmorphic cards with dedicated icons (`Target`, `CheckCircle`, `TrendingUp`).
+
 ---
 
 ## 📂 Project Structure
