@@ -196,6 +196,17 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
     loadData();
   }, []);
 
+  // Auto-scroll and auto-clear timer for inline alert notifications
+  useEffect(() => {
+    if (notification) {
+      bannerRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      const timer = setTimeout(() => {
+        setNotification(null);
+      }, 6000);
+      return () => clearTimeout(timer);
+    }
+  }, [notification]);
+
   const handleInlineMediaUpload = async (
     files: FileList | null, 
     setFieldUrl: (url: string) => void,
@@ -237,6 +248,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
 
   const handleSaveUsers = async () => {
     if (isViewer) return;
+    setNotification(null);
     try {
       const res = await fetch("/api/admin/users", {
         method: "POST",
@@ -246,15 +258,28 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
 
       if (res.ok) {
         setSavedSuccess(true);
+        setNotification({
+          type: "success",
+          message: "Admin users & permissions successfully updated in database!",
+        });
         setTimeout(() => setSavedSuccess(false), 3000);
+      } else {
+        setNotification({
+          type: "error",
+          message: "Failed to update admin users. Please try again.",
+        });
       }
     } catch {
-      // Ignore error
+      setNotification({
+        type: "error",
+        message: "Network error occurred while saving users.",
+      });
     }
   };
 
   const handleSaveAll = async () => {
     if (isViewer) return;
+    setNotification(null);
     const payload = {
       heroConfig: heroForm,
       stats: statsForm,
@@ -277,10 +302,22 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
 
       if (res.ok) {
         setSavedSuccess(true);
+        setNotification({
+          type: "success",
+          message: "All changes successfully saved and published live to database!",
+        });
         setTimeout(() => setSavedSuccess(false), 3000);
+      } else {
+        setNotification({
+          type: "error",
+          message: "Failed to save changes to database. Please check your connection.",
+        });
       }
     } catch {
-      // Ignore error
+      setNotification({
+        type: "error",
+        message: "Network error occurred while saving changes.",
+      });
     }
   };
 
@@ -572,6 +609,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                       isViewer={isViewer}
                       uploadingField={uploadingField}
                       handleInlineMediaUpload={handleInlineMediaUpload}
+                      setNotification={setNotification}
                       onSave={handleSaveAll}
                     />
                   )}
@@ -583,6 +621,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                       isViewer={isViewer}
                       uploadingField={uploadingField}
                       handleInlineMediaUpload={handleInlineMediaUpload}
+                      setNotification={setNotification}
                       onSave={handleSaveAll}
                     />
                   )}
@@ -594,6 +633,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                       isViewer={isViewer}
                       uploadingField={uploadingField}
                       handleInlineMediaUpload={handleInlineMediaUpload}
+                      setNotification={setNotification}
                       onSave={handleSaveAll}
                     />
                   )}

@@ -11,6 +11,7 @@ interface BrandsTabProps {
   isViewer: boolean;
   uploadingField: string | null;
   handleInlineMediaUpload: (files: FileList | null, setFieldUrl: (url: string) => void, fieldId: string) => Promise<void>;
+  setNotification?: React.Dispatch<React.SetStateAction<{ type: "success" | "error"; message: string } | null>>;
   onSave: () => Promise<void>;
 }
 
@@ -20,6 +21,7 @@ export function BrandsTab({
   isViewer,
   uploadingField,
   handleInlineMediaUpload,
+  setNotification,
   onSave,
 }: BrandsTabProps) {
   return (
@@ -33,6 +35,10 @@ export function BrandsTab({
             onClick={() => {
               if (window.confirm("Reset Brands & Partners to the latest default seeded brands (including Flova AI)?")) {
                 setBrandsList(defaultSiteData.brandItems as any);
+                setNotification?.({
+                  type: "success",
+                  message: "Brands & Partners reset to default seed data (including Flova AI)! Click 'Save Changes' to publish.",
+                });
               }
             }}
             className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 border border-emerald-500/30 disabled:opacity-50 transition-colors cursor-pointer"

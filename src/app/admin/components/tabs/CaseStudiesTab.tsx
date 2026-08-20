@@ -13,6 +13,7 @@ interface CaseStudiesTabProps {
   isViewer: boolean;
   uploadingField: string | null;
   handleInlineMediaUpload: (files: FileList | null, setFieldUrl: (url: string) => void, fieldId: string) => Promise<void>;
+  setNotification?: React.Dispatch<React.SetStateAction<{ type: "success" | "error"; message: string } | null>>;
   onSave: () => Promise<void>;
 }
 
@@ -22,6 +23,7 @@ export function CaseStudiesTab({
   isViewer,
   uploadingField,
   handleInlineMediaUpload,
+  setNotification,
   onSave,
 }: CaseStudiesTabProps) {
   return (
@@ -35,6 +37,10 @@ export function CaseStudiesTab({
             onClick={() => {
               if (window.confirm("Reset Sponsor Case Studies to the latest default seeded case studies (including Flova AI)?")) {
                 setSponsorResults(defaultSiteData.sponsorResults as any);
+                setNotification?.({
+                  type: "success",
+                  message: "Sponsor Case Studies reset to default seed data (including Flova AI)! Click 'Save Changes' to publish.",
+                });
               }
             }}
             className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 border border-emerald-500/30 disabled:opacity-50 transition-colors cursor-pointer"
@@ -123,6 +129,12 @@ export function CaseStudiesTab({
                           thumbnailUrl: ytId ? `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg` : "" 
                         };
                         setSponsorResults(next);
+                        if (ytId && setNotification) {
+                          setNotification({
+                            type: "success",
+                            message: `High-resolution thumbnail auto-generated for ${item.partnerName}! Click 'Save Changes' to publish.`,
+                          });
+                        }
                       }}
                       className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 transition-colors disabled:opacity-50 cursor-pointer"
                     >

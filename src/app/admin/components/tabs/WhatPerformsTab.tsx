@@ -12,6 +12,7 @@ interface WhatPerformsTabProps {
   isViewer: boolean;
   uploadingField: string | null;
   handleInlineMediaUpload: (files: FileList | null, setFieldUrl: (url: string) => void, fieldId: string) => Promise<void>;
+  setNotification?: React.Dispatch<React.SetStateAction<{ type: "success" | "error"; message: string } | null>>;
   onSave: () => Promise<void>;
 }
 
@@ -21,6 +22,7 @@ export function WhatPerformsTab({
   isViewer,
   uploadingField,
   handleInlineMediaUpload,
+  setNotification,
   onSave,
 }: WhatPerformsTabProps) {
   return (
@@ -34,6 +36,10 @@ export function WhatPerformsTab({
             onClick={() => {
               if (window.confirm("Reset What Performs cards to the latest 3 default seeded videos?")) {
                 setWhatPerforms(defaultSiteData.whatPerforms as any);
+                setNotification?.({
+                  type: "success",
+                  message: "What Performs cards reset to default seed data! Click 'Save Changes' to publish.",
+                });
               }
             }}
             className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 border border-emerald-500/30 disabled:opacity-50 transition-colors cursor-pointer"
@@ -148,6 +154,12 @@ export function WhatPerformsTab({
                           const next = [...whatPerforms];
                           next[idx].thumbnail = `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`;
                           setWhatPerforms(next);
+                          if (setNotification) {
+                            setNotification({
+                              type: "success",
+                              message: `High-resolution thumbnail auto-generated for "${item.title}"! Click 'Save Changes' to publish.`,
+                            });
+                          }
                         }
                       }}
                       className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 transition-colors disabled:opacity-50 cursor-pointer"
