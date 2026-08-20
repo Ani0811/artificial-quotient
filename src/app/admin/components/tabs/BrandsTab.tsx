@@ -1,8 +1,9 @@
 "use client";
 
 import React from "react";
-import { Plus, Trash2, Save } from "lucide-react";
+import { Plus, Trash2, Save, Sparkles } from "lucide-react";
 import { BrandItem } from "@/types";
+import defaultSiteData from "@/data/site-data.json";
 
 interface BrandsTabProps {
   brandsList: BrandItem[];
@@ -23,24 +24,38 @@ export function BrandsTab({
 }: BrandsTabProps) {
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center flex-wrap gap-2">
         <h3 className="font-heading font-bold text-sm text-brand-text dark:text-emerald-400 uppercase tracking-wider">Brands &amp; Partner Directory</h3>
-        <button
-          type="button"
-          disabled={isViewer}
-          onClick={() => setBrandsList([...brandsList, {
-            id: Date.now().toString(),
-            name: "New Brand",
-            category: "Sponsor",
-            tagline: "Brand tagline goes here.",
-            logoText: "🚀 New Brand",
-            ytUrl: "",
-            logoUrl: "",
-          }])}
-          className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold px-4 py-2 rounded-xl text-xs sm:text-sm flex items-center gap-1.5 border border-emerald-500/30 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-        >
-          <Plus className="w-4 h-4" /> Add Brand
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            disabled={isViewer}
+            onClick={() => {
+              if (window.confirm("Reset Brands & Partners to the latest default seeded brands (including Flova AI)?")) {
+                setBrandsList(defaultSiteData.brandItems as any);
+              }
+            }}
+            className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 border border-emerald-500/30 disabled:opacity-50 transition-colors cursor-pointer"
+          >
+            <Sparkles className="w-3.5 h-3.5" /> Reset to Default Seed Data
+          </button>
+          <button
+            type="button"
+            disabled={isViewer}
+            onClick={() => setBrandsList([...brandsList, {
+              id: Date.now().toString(),
+              name: "New Brand",
+              category: "Sponsor",
+              tagline: "Brand tagline goes here.",
+              logoText: "🚀 New Brand",
+              ytUrl: "",
+              logoUrl: "",
+            }])}
+            className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold px-3.5 py-2 rounded-xl text-xs flex items-center gap-1.5 border border-emerald-500/30 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          >
+            <Plus className="w-4 h-4" /> Add Brand
+          </button>
+        </div>
       </div>
 
       <div className="space-y-5">

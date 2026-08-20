@@ -18,6 +18,7 @@ import { BrandsTab } from "./components/tabs/BrandsTab";
 import { UsersTab } from "./components/tabs/UsersTab";
 import { BackupTab } from "./components/tabs/BackupTab";
 import { AdminPreviewPanel } from "./components/preview/AdminPreviewPanel";
+import defaultSiteData from "@/data/site-data.json";
 
 export default function DashboardClient({ currentUser }: { currentUser?: AdminUser }) {
   const isViewer = Boolean(currentUser?.role === "Viewer");
@@ -389,6 +390,49 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
     }
   };
 
+  const handleResetAllDefaultSeed = async () => {
+    if (isViewer) return;
+    if (!window.confirm("Are you sure you want to reset ALL sections (Stats, What Performs, Case Studies, Brands, Interests) to the latest default repository seed data?")) {
+      return;
+    }
+    setNotification(null);
+    try {
+      if (defaultSiteData.stats) setStatsForm(defaultSiteData.stats);
+      if (defaultSiteData.heroConfig) setHeroForm(defaultSiteData.heroConfig);
+      if (defaultSiteData.rates) setRatesForm(defaultSiteData.rates);
+      if (defaultSiteData.demographics) setDemoForm(defaultSiteData.demographics);
+      if (defaultSiteData.geographies) setGeoForm(parseGeographies(defaultSiteData.geographies));
+      if (defaultSiteData.whatPerforms) setWhatPerforms(defaultSiteData.whatPerforms as any);
+      if (defaultSiteData.sponsorResults) setSponsorResults(defaultSiteData.sponsorResults as any);
+      if (defaultSiteData.brandItems) setBrandsList(defaultSiteData.brandItems as any);
+      if (defaultSiteData.audienceInterests) setAudienceInterests(defaultSiteData.audienceInterests);
+      if (defaultSiteData.shoppingInterests) setShoppingInterests(defaultSiteData.shoppingInterests);
+
+      const res = await fetch("/api/admin/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(defaultSiteData),
+      });
+
+      if (res.ok) {
+        setNotification({
+          type: "success",
+          message: "All sections successfully reset to latest default seed data and saved to database!",
+        });
+      } else {
+        setNotification({
+          type: "error",
+          message: "Failed to save reset data to database.",
+        });
+      }
+    } catch {
+      setNotification({
+        type: "error",
+        message: "An error occurred while resetting seed data.",
+      });
+    }
+  };
+
   const handleLogout = async () => {
     await fetch("/api/auth/logout", { method: "POST" });
     window.location.href = "/";
@@ -568,6 +612,7 @@ export default function DashboardClient({ currentUser }: { currentUser?: AdminUs
                       isViewer={isViewer}
                       onDownloadBackup={handleDownloadBackup}
                       onRestoreBackup={handleRestoreBackup}
+                      onResetSeed={handleResetAllDefaultSeed}
                     />
                   )}
                 </div>

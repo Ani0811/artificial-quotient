@@ -5,6 +5,7 @@ import { Plus, Trash2, Sparkles, Save } from "lucide-react";
 import { SponsorItem } from "@/types";
 import { QUOTE_FONT_OPTIONS, loadGoogleFont } from "@/components/font-provider";
 import { getYoutubeId } from "../../utils";
+import defaultSiteData from "@/data/site-data.json";
 
 interface CaseStudiesTabProps {
   sponsorResults: SponsorItem[];
@@ -25,25 +26,39 @@ export function CaseStudiesTab({
 }: CaseStudiesTabProps) {
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center flex-wrap gap-2">
         <h3 className="font-heading font-bold text-sm text-brand-text dark:text-emerald-400 uppercase tracking-wider">Partner Case Studies</h3>
-        <button
-          type="button"
-          disabled={isViewer}
-          onClick={() => setSponsorResults([...sponsorResults, {
-            id: Date.now().toString(),
-            partnerName: "New Sponsor",
-            campaignType: "Integration",
-            quote: "Awesome results!",
-            stat1Label: "Conversions",
-            stat1Value: "200+",
-            stat2Label: "ROI",
-            stat2Value: "2.5x"
-          }])}
-          className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold px-4 py-2 rounded-xl text-xs sm:text-sm flex items-center gap-1.5 border border-emerald-500/30 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-        >
-          <Plus className="w-4 h-4" /> Add Case Study
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            disabled={isViewer}
+            onClick={() => {
+              if (window.confirm("Reset Sponsor Case Studies to the latest default seeded case studies (including Flova AI)?")) {
+                setSponsorResults(defaultSiteData.sponsorResults as any);
+              }
+            }}
+            className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 border border-emerald-500/30 disabled:opacity-50 transition-colors cursor-pointer"
+          >
+            <Sparkles className="w-3.5 h-3.5" /> Reset to Default Seed Data
+          </button>
+          <button
+            type="button"
+            disabled={isViewer}
+            onClick={() => setSponsorResults([...sponsorResults, {
+              id: Date.now().toString(),
+              partnerName: "New Sponsor",
+              campaignType: "Integration",
+              quote: "Awesome results!",
+              stat1Label: "Conversions",
+              stat1Value: "200+",
+              stat2Label: "ROI",
+              stat2Value: "2.5x"
+            }])}
+            className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold px-3.5 py-2 rounded-xl text-xs flex items-center gap-1.5 border border-emerald-500/30 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          >
+            <Plus className="w-4 h-4" /> Add Case Study
+          </button>
+        </div>
       </div>
 
       <div className="space-y-5">

@@ -1,18 +1,20 @@
 "use client";
 
 import React from "react";
-import { UploadCloud } from "lucide-react";
+import { UploadCloud, Sparkles } from "lucide-react";
 
 interface BackupTabProps {
   isViewer: boolean;
   onDownloadBackup: () => Promise<void>;
   onRestoreBackup: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
+  onResetSeed?: () => Promise<void>;
 }
 
 export function BackupTab({
   isViewer,
   onDownloadBackup,
   onRestoreBackup,
+  onResetSeed,
 }: BackupTabProps) {
   return (
     <div className="space-y-6">
@@ -21,11 +23,11 @@ export function BackupTab({
           Data Backup &amp; Disaster Recovery
         </h3>
         <p className="text-xs sm:text-sm text-brand-muted dark:text-emerald-200/70">
-          Export complete system backups or restore your website data from a previously saved JSON snapshot.
+          Export complete system backups, restore your website data from a saved JSON snapshot, or reset all sections to default seed data.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         <div className="p-6 rounded-2xl border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] flex flex-col justify-between space-y-5">
           <div>
             <div className="flex items-center gap-2.5 text-emerald-500 font-bold text-base mb-1.5">
@@ -58,6 +60,27 @@ export function BackupTab({
             <input type="file" accept=".json" disabled={isViewer} onChange={onRestoreBackup} className="hidden" />
           </label>
         </div>
+
+        {onResetSeed && (
+          <div className="p-6 rounded-2xl border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] flex flex-col justify-between space-y-5">
+            <div>
+              <div className="flex items-center gap-2.5 text-emerald-500 font-bold text-base mb-1.5">
+                <Sparkles className="w-5 h-5" /> Reset to Seed Data
+              </div>
+              <p className="text-xs sm:text-sm text-brand-muted dark:text-emerald-200/70 leading-relaxed">
+                Restore all sections (Stats, What Performs, Case Studies, Brands, Interests) to the latest default repository seed data.
+              </p>
+            </div>
+            <button
+              type="button"
+              disabled={isViewer}
+              onClick={onResetSeed}
+              className="w-full bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/40 text-emerald-600 dark:text-emerald-300 font-bold text-xs sm:text-sm py-3 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+            >
+              <Sparkles className="w-4 h-4" /> Reset All Default Seed Data
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
