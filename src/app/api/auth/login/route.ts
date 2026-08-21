@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-import { getAdminPassword, getAdminUsers } from "@/lib/auth-store";
-import { generateOTP } from "@/lib/otp-store";
-import { send2FACodeEmail } from "@/lib/email-service";
+import { cookies } from "next/headers";
+import { getAdminPassword, getAdminUsers, saveAdminUsers } from "@/lib/auth-store";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
@@ -34,16 +33,18 @@ export async function POST(request: Request) {
     // 1. Strict email + password authentication
     if (email) {
       const normalizedEmail = email.trim().toLowerCase();
-      const user = adminUsers.find(
+      const userIndex = adminUsers.findIndex(
         (u) => u.email.toLowerCase() === normalizedEmail
       );
 
-      if (!user) {
+      if (userIndex === -1) {
         return NextResponse.json(
           { success: false, message: "Invalid administrator credentials. Permission to access the Admin Portal must be granted by an existing System Administrator." },
           { status: 401 }
         );
       }
+
+      const user = adminUsers[userIndex];
 
       if (user.status !== "Active") {
         return NextResponse.json(
@@ -53,22 +54,36 @@ export async function POST(request: Request) {
       }
 
       if (user.password === password || password === masterPassword) {
-        // Generate OTP
-        const code = generateOTP(user.id);
-        
-        // Send Email (tries Brevo API, then SMTP)
-        const emailSent = await send2FACodeEmail(user.email, code);
-        if (!emailSent) {
-          console.warn(`[SECURITY WARNING] Email delivery failed. Emergency 2FA code for ${user.email}: ${code}`);
-        }
+        // Update last login timestamp
+        adminUsers[userIndex].lastLogin = new Date().toISOString();
+        await saveAdminUsers(adminUsers);
 
-        return NextResponse.json({ 
-          success: true, 
-          require2FA: true, 
-          userId: user.id, 
-          message: emailSent
-            ? "Verification code sent to your email."
-            : "Verification code generated. Please check email or terminal logs." 
+        // Set session cookies
+        const cookieStore = await cookies();
+        cookieStore.set("admin_session", "authenticated", {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          maxAge: 60 * 60 * 24 * 7,
+          path: "/",
+        });
+        cookieStore.set("admin_user_id", user.id, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          maxAge: 60 * 60 * 24 * 7,
+          path: "/",
+        });
+
+        return NextResponse.json({
+          success: true,
+          message: `Welcome back, ${user.name}! Redirecting...`,
+          user: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+          },
         });
       }
 
@@ -82,21 +97,32 @@ export async function POST(request: Request) {
     if (password === masterPassword) {
       const primaryAdmin = adminUsers.find((u) => u.status === "Active" && u.role === "Super Admin") || adminUsers[0];
       const userId = primaryAdmin?.id || "admin-1";
-      const userEmail = primaryAdmin?.email || process.env.CONTACT_RECEIVER_EMAIL || "admin@artificialquotient.com";
 
-      const code = generateOTP(userId);
-      const emailSent = await send2FACodeEmail(userEmail, code);
-      if (!emailSent) {
-        console.warn(`[SECURITY WARNING] Email delivery failed for master login. Emergency 2FA code: ${code}`);
-      }
+      const cookieStore = await cookies();
+      cookieStore.set("admin_session", "authenticated", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 60 * 60 * 24 * 7,
+        path: "/",
+      });
+      cookieStore.set("admin_user_id", userId, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 60 * 60 * 24 * 7,
+        path: "/",
+      });
 
-      return NextResponse.json({ 
-        success: true, 
-        require2FA: true, 
-        userId: userId, 
-        message: emailSent 
-          ? "Verification code sent to your email." 
-          : "Verification code generated. Please check email or terminal logs." 
+      return NextResponse.json({
+        success: true,
+        message: "Authenticated with Master Key! Redirecting...",
+        user: {
+          id: userId,
+          name: primaryAdmin?.name || "System Admin",
+          email: primaryAdmin?.email || "admin@artificialquotient.com",
+          role: primaryAdmin?.role || "Super Admin",
+        },
       });
     }
 
