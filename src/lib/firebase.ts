@@ -1,5 +1,6 @@
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
+import { getAuth, GoogleAuthProvider, Auth } from "firebase/auth";
+import { getAnalytics, isSupported, Analytics } from "firebase/analytics";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "",
@@ -18,19 +19,40 @@ export const isFirebaseConfigured = () => {
   );
 };
 
-export function getFirebaseApp() {
+export function getFirebaseApp(): FirebaseApp {
   if (!getApps().length) {
     return initializeApp(firebaseConfig);
   }
   return getApp();
 }
 
-export function getFirebaseAuth() {
+export function getFirebaseAuth(): Auth {
   const app = getFirebaseApp();
   return getAuth(app);
+}
+
+let analyticsInstance: Analytics | null = null;
+
+export async function getFirebaseAnalytics(): Promise<Analytics | null> {
+  if (typeof window !== "undefined") {
+    try {
+      const supported = await isSupported();
+      if (supported) {
+        const app = getFirebaseApp();
+        if (!analyticsInstance) {
+          analyticsInstance = getAnalytics(app);
+        }
+        return analyticsInstance;
+      }
+    } catch (err) {
+      console.warn("Firebase Analytics could not be initialized:", err);
+    }
+  }
+  return null;
 }
 
 export const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({
   prompt: "select_account",
 });
+
