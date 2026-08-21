@@ -114,7 +114,8 @@
       "publishDate": "Contract: 2 Videos @ $700",
       "logoUrl": "/logo/revid.png",
       "websiteUrl": "https://www.revid.ai/",
-      "thumbnailUrl": "https://img.youtube.com/vi/G_MW3vpfLxA/maxresdefault.jpg"
+      "thumbnailUrl": "https://img.youtube.com/vi/G_MW3vpfLxA/maxresdefault.jpg",
+      "hidden": false
     },
     {
       "id": "2",
@@ -133,7 +134,8 @@
       "publishDate": "Dedicated Video Integration",
       "logoUrl": "/logo/flashloop.png",
       "websiteUrl": "https://www.flashloop.app/",
-      "thumbnailUrl": "https://img.youtube.com/vi/CO59xAteGRM/maxresdefault.jpg"
+      "thumbnailUrl": "https://img.youtube.com/vi/CO59xAteGRM/maxresdefault.jpg",
+      "hidden": false
     },
     {
       "id": "3",
@@ -152,7 +154,8 @@
       "publishDate": "Dedicated Video Integration",
       "logoUrl": "/uploads/1786695121509_easypeasy.png",
       "websiteUrl": "https://easy-peasy.ai/marky",
-      "thumbnailUrl": "https://img.youtube.com/vi/Oo9H89i6SYk/maxresdefault.jpg"
+      "thumbnailUrl": "https://img.youtube.com/vi/Oo9H89i6SYk/maxresdefault.jpg",
+      "hidden": false
     },
     {
       "id": "4",
@@ -171,7 +174,8 @@
       "publishDate": "Dedicated Video Integration",
       "logoUrl": "/logo/flova.png",
       "websiteUrl": "https://www.flova.ai/en/",
-      "thumbnailUrl": "https://img.youtube.com/vi/1tbJ3WJ9_po/maxresdefault.jpg"
+      "thumbnailUrl": "https://img.youtube.com/vi/1tbJ3WJ9_po/maxresdefault.jpg",
+      "hidden": false
     }
   ],
   "brandItems": [

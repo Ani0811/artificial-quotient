@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS sponsor_case_studies (
   roi_breakdown VARCHAR(128),
   publish_date VARCHAR(64),
   logo_url VARCHAR(255),
+  is_hidden BOOLEAN DEFAULT FALSE,
   display_order INT DEFAULT 0,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );

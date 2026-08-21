@@ -640,6 +640,20 @@ Reduced vertical padding and internal gaps across all homepage sections on mobil
 
 ---
 
+### 📅 Day 22 — Case Study Temporary Hiding & Visibility Toggle Architecture
+
+#### 1. Interactive Visibility Toggle for Case Studies (`CaseStudiesTab.tsx`, `sponsor-results.tsx`)
+- **Non-Destructive Case Study Draft & Pause**: Implemented an interactive **Visible / Hidden** toggle button (`Eye` / `EyeOff` from `lucide-react`) on each Case Study card in the Admin Management Portal. Admins can now temporarily hide or pause any case study from the live public site without deleting or losing any of its rich deliverables, YouTube URLs, metrics, custom typography, or ROI breakdowns.
+- **Visual Status Indicators & Draft Alerts**: Hidden case studies feature distinct visual badges (`Hidden from Public Site (Draft / Paused)`), an amber border, and real-time feedback notifications prompting admins to save and publish changes.
+- **Dynamic Public Filtering**: Upgraded `src/components/sponsor-results.tsx` to automatically filter out hidden case studies (`hidden: true`), dynamically adjusting the multi-card carousel slide count, navigation arrows, pagination dots, and hash links (`#case-study-*`).
+
+#### 2. Database Schema Migration & Persistence (`src/schema/sponsor-case-studies.ts`, `src/lib/schema.sql`)
+- **MySQL `is_hidden` Column**: Added `is_hidden BOOLEAN DEFAULT FALSE` to `sponsor_case_studies` table definition with automatic non-destructive column migration checks on launch.
+- **Knex & Raw SQL Operations**: Updated `getSponsorCaseStudies`, `syncSponsorCaseStudies`, raw query modules (`raw-sponsor-case-studies.ts`), and standalone SQL scripts (`sponsor-case-studies.sql`, `schema.sql`) to persist and retrieve the `hidden` status.
+- **Admin Live Pre-Publish Preview & Auto-Sync**: Updated `AdminPreviewPanel.tsx` to display real-time `Live` vs `Hidden` badges and public count ratios (e.g. `3 Public / 4 Total`). Enhanced `src/app/api/admin/data/route.ts` auto-sync comparisons to detect `hidden` field updates.
+
+---
+
 ## 📂 Project Structure
 
 ```
@@ -745,6 +759,7 @@ artificial-quotient/
 │       └── index.ts                  # Centralized TypeScript Type Definitions
 ├── next.config.mjs
 ├── tailwind.config.ts
+├── LICENSE.txt
 ├── README.md
 └── package.json
 ```
@@ -865,3 +880,9 @@ Artificial Quotient is optimized for deployment on **GreenGeeks Hosting** using 
    - Crawl Directives: `https://artificial-quotient.com/robots.txt`
    - Web App Manifest: `https://artificial-quotient.com/manifest.webmanifest`
 4. Register `https://artificial-quotient.com` in **Google Search Console** and submit `sitemap.xml`.
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE.txt](LICENSE.txt) file for details.

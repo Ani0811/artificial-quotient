@@ -41,6 +41,7 @@ export interface SponsorItem {
   logoUrl?: string;
   websiteUrl?: string;
   thumbnailUrl?: string;
+  hidden?: boolean;
 }
 
 export interface AdminUser {

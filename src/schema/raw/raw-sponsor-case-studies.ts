@@ -21,6 +21,7 @@ export async function getRawSponsorCaseStudies() {
     roiBreakdown: r.roi_breakdown,
     publishDate: r.publish_date,
     logoUrl: r.logo_url,
+    hidden: Boolean(r.is_hidden || r.hidden),
   }));
 }
 
@@ -33,8 +34,8 @@ export async function syncRawSponsorCaseStudies(items: any[]) {
       const item = items[i];
       await k.raw(
         `INSERT INTO sponsor_case_studies
-          (id, partner_name, campaign_type, quote, quote_font, stat1_label, stat1_value, stat2_label, stat2_value, description, deliverables, yt_url, roi_breakdown, publish_date, logo_url, display_order)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+          (id, partner_name, campaign_type, quote, quote_font, stat1_label, stat1_value, stat2_label, stat2_value, description, deliverables, yt_url, roi_breakdown, publish_date, logo_url, is_hidden, display_order)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
         [
           String(item.id || `cs-${i + 1}`),
           item.partnerName,
@@ -51,6 +52,7 @@ export async function syncRawSponsorCaseStudies(items: any[]) {
           item.roiBreakdown || "",
           item.publishDate || "",
           item.logoUrl || "",
+          Boolean(item.hidden || item.isHidden),
           i,
         ]
       );

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Plus, Trash2, Sparkles, Save } from "lucide-react";
+import { Plus, Trash2, Sparkles, Save, Eye, EyeOff } from "lucide-react";
 import { SponsorItem } from "@/types";
 import { QUOTE_FONT_OPTIONS, loadGoogleFont } from "@/components/font-provider";
 import { getYoutubeId } from "../../utils";
@@ -58,7 +58,8 @@ export function CaseStudiesTab({
               stat1Label: "Conversions",
               stat1Value: "200+",
               stat2Label: "ROI",
-              stat2Value: "2.5x"
+              stat2Value: "2.5x",
+              hidden: false,
             }])}
             className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold px-3.5 py-2 rounded-xl text-xs flex items-center gap-1.5 border border-emerald-500/30 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
@@ -69,17 +70,71 @@ export function CaseStudiesTab({
 
       <div className="space-y-5">
         {sponsorResults.map((item, idx) => (
-          <div key={item.id} className="p-5 rounded-2xl border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] space-y-4 relative">
-            <button
-              type="button"
-              disabled={isViewer}
-              onClick={() => setSponsorResults(sponsorResults.filter(s => s.id !== item.id))}
-              className="absolute top-4 right-4 text-red-500 hover:text-red-600 p-1.5 bg-red-500/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-              title="Delete case study"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pr-10">
+          <div 
+            key={item.id} 
+            className={`p-5 rounded-2xl border bg-brand-bg dark:bg-[#061612] space-y-4 relative transition-all ${
+              item.hidden 
+                ? "border-amber-500/40 dark:border-amber-500/30 bg-amber-500/[0.02]" 
+                : "border-brand-border dark:border-[#16382e]"
+            }`}
+          >
+            <div className="absolute top-4 right-4 flex items-center gap-2">
+              <button
+                type="button"
+                disabled={isViewer}
+                onClick={() => {
+                  const next = [...sponsorResults];
+                  const newHidden = !next[idx].hidden;
+                  next[idx] = { ...next[idx], hidden: newHidden };
+                  setSponsorResults(next);
+                  if (setNotification) {
+                    setNotification({
+                      type: "success",
+                      message: newHidden
+                        ? `"${item.partnerName}" is now hidden from the public landing page. Click 'Save Sponsor Results' to publish.`
+                        : `"${item.partnerName}" is now visible on the public landing page. Click 'Save Sponsor Results' to publish.`,
+                    });
+                  }
+                }}
+                className={`px-2.5 py-1.5 rounded-xl transition-all flex items-center gap-1.5 text-xs font-bold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-sm ${
+                  item.hidden
+                    ? "bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 hover:bg-amber-500/25"
+                    : "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25"
+                }`}
+                title={item.hidden ? "Case study is currently hidden from the public site. Click to make visible." : "Case study is currently visible on the public site. Click to hide."}
+              >
+                {item.hidden ? (
+                  <>
+                    <EyeOff className="w-3.5 h-3.5" />
+                    <span>Hidden</span>
+                  </>
+                ) : (
+                  <>
+                    <Eye className="w-3.5 h-3.5" />
+                    <span>Visible</span>
+                  </>
+                )}
+              </button>
+
+              <button
+                type="button"
+                disabled={isViewer}
+                onClick={() => setSponsorResults(sponsorResults.filter(s => s.id !== item.id))}
+                className="text-red-500 hover:text-red-600 p-1.5 bg-red-500/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                title="Delete case study"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
+
+            {item.hidden && (
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-[11px] font-bold">
+                <EyeOff className="w-3 h-3" />
+                <span>Hidden from Public Site (Draft / Paused)</span>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pr-28">
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Partner Brand Name</label>
                 <input 

@@ -23,6 +23,7 @@ export interface SponsorResult {
   logoUrl?: string;
   websiteUrl?: string;
   thumbnailUrl?: string;
+  hidden?: boolean;
 }
 
 function renderNarrativeText(text?: string) {
@@ -170,6 +171,9 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
 
   const isActualDragRef = useRef(false);
 
+  // Filter out hidden case studies for public viewing
+  const visibleResults = results.filter((r) => !r.hidden);
+
   // Responsive window resize listener for cards per view
   useEffect(() => {
     function updateItemsPerView() {
@@ -187,7 +191,7 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
     return () => window.removeEventListener("resize", updateItemsPerView);
   }, []);
 
-  const maxIndex = Math.max(0, results.length - itemsPerView);
+  const maxIndex = Math.max(0, visibleResults.length - itemsPerView);
 
   // Clamp current index if itemsPerView changes
   useEffect(() => {
@@ -268,7 +272,7 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
   };
 
   useEffect(() => {
-    if (loading || results.length === 0 || typeof window === "undefined") return;
+    if (loading || visibleResults.length === 0 || typeof window === "undefined") return;
 
     const handleHash = () => {
       const hash = window.location.hash;
@@ -279,14 +283,14 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
         }
       } else if (hash.startsWith("#case-study-") || hash.startsWith("#case-studies-")) {
         const query = hash.replace(/^#case-stud(y|ies)-/, "").toLowerCase();
-        const found = results.find(
+        const found = visibleResults.find(
           (r) =>
             r.id.toLowerCase() === query ||
             r.partnerName.toLowerCase().replace(/[^a-z0-9]/g, "").includes(query.replace(/[^a-z0-9]/g, "")) ||
             query.replace(/[^a-z0-9]/g, "").includes(r.partnerName.toLowerCase().replace(/[^a-z0-9]/g, ""))
         );
         if (found) {
-          const itemIndex = results.findIndex((r) => r.id === found.id);
+          const itemIndex = visibleResults.findIndex((r) => r.id === found.id);
           if (itemIndex !== -1) {
             setCurrentIndex(Math.min(maxIndex, itemIndex));
           }
@@ -302,7 +306,7 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
     const handleOpenCaseStudy = (e: Event) => {
       const customEvent = e as CustomEvent<{ id?: string; partnerName?: string }>;
       const { id, partnerName } = customEvent.detail || {};
-      const found = results.find((r) => {
+      const found = visibleResults.find((r) => {
         if (id && r.id.toLowerCase() === id.toLowerCase()) return true;
         if (partnerName) {
           const normP = partnerName.toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -313,7 +317,7 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
       });
 
       if (found) {
-        const itemIndex = results.findIndex((r) => r.id === found.id);
+        const itemIndex = visibleResults.findIndex((r) => r.id === found.id);
         if (itemIndex !== -1) {
           setCurrentIndex(Math.min(maxIndex, itemIndex));
         }
@@ -335,7 +339,7 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
       window.removeEventListener("hashchange", handleHash);
       clearTimeout(timer);
     };
-  }, [loading, results, maxIndex]);
+  }, [loading, visibleResults, maxIndex]);
 
   if (loading) {
     return (
@@ -352,9 +356,9 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
     );
   }
 
-  if (results.length === 0) return null;
+  if (visibleResults.length === 0) return null;
 
-  const showControls = results.length > itemsPerView;
+  const showControls = visibleResults.length > itemsPerView;
 
   return (
     <section className="w-full py-16 sm:py-20 px-4 bg-brand-bg dark:bg-[#061612] border-t border-brand-border dark:border-[#14352b] transition-colors">
@@ -417,7 +421,7 @@ export default function SponsorResults({ sponsorResults, isLoading }: SponsorRes
               transform: `translateX(-${currentIndex * (100 / itemsPerView)}%)`,
             }}
           >
-            {results.map((item, idx) => {
+            {visibleResults.map((item, idx) => {
               const ytId = getYoutubeId(item.ytUrl);
               const thumbImg = item.thumbnailUrl === "none" ? null : (item.thumbnailUrl || (ytId ? `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg` : null));
 

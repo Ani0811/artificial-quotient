@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Eye, Sparkles, CheckCircle2, Play, Users, TrendingUp, Globe, ShieldCheck } from "lucide-react";
+import { Eye, EyeOff, Sparkles, CheckCircle2, Play, Users, TrendingUp, Globe, ShieldCheck } from "lucide-react";
 import { LogoImage } from "@/components/ui/logo-image";
 import { CountryFlag } from "@/components/audience-snapshot";
 import { AdminTabType } from "../AdminSidebar";
@@ -213,14 +213,26 @@ export function AdminPreviewPanel({
       {/* PREVIEW TAB 2: SPONSOR CASE STUDIES */}
       {activeTab === "case-studies" && (
         <div className="space-y-5">
-          <div className="text-sm font-bold text-brand-text dark:text-white mb-2">Live Case Studies Preview</div>
+          <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
+            <div className="text-sm font-bold text-brand-text dark:text-white">Live Case Studies Preview</div>
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500">
+              {sponsorResults.filter(s => !s.hidden).length} Public / {sponsorResults.length} Total
+            </span>
+          </div>
           <div className="space-y-4">
             {sponsorResults.map((item) => {
               const ytId = getYoutubeId(item.ytUrl);
               const thumbImg = item.thumbnailUrl === "none" ? null : (item.thumbnailUrl || (ytId ? `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg` : null));
 
               return (
-                <div key={item.id} className="p-4 rounded-xl border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] space-y-3">
+                <div 
+                  key={item.id} 
+                  className={`p-4 rounded-xl border space-y-3 transition-all ${
+                    item.hidden 
+                      ? "border-amber-500/30 bg-amber-500/[0.02] opacity-80" 
+                      : "border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612]"
+                  }`}
+                >
                   {/* Thumbnail preview banner */}
                   {thumbImg && (
                     <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-black border border-brand-border/60 dark:border-[#16382e]/60 shadow-inner">
@@ -234,7 +246,18 @@ export function AdminPreviewPanel({
                   )}
 
                   <div className="flex justify-between items-center flex-wrap gap-2">
-                    <span className="font-bold text-sm text-brand-text dark:text-white truncate min-w-0">{item.partnerName}</span>
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="font-bold text-sm text-brand-text dark:text-white truncate min-w-0">{item.partnerName}</span>
+                      {item.hidden ? (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-500 border border-amber-500/30 shrink-0">
+                          <EyeOff className="w-2.5 h-2.5" /> Hidden
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-500 border border-emerald-500/30 shrink-0">
+                          <Eye className="w-2.5 h-2.5" /> Live
+                        </span>
+                      )}
+                    </div>
                     <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 shrink-0">{item.campaignType}</span>
                   </div>
                   {item.quote && item.quote.trim() !== "" && (

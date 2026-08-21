@@ -64,7 +64,8 @@ export async function GET() {
               dbCs.partnerName === fileCs.partnerName && 
               (dbCs.logoUrl || "") === (fileCs.logoUrl || "") &&
               (dbCs.thumbnailUrl || "") === (fileCs.thumbnailUrl || "") &&
-              (dbCs.ytUrl || "") === (fileCs.ytUrl || "")
+              (dbCs.ytUrl || "") === (fileCs.ytUrl || "") &&
+              Boolean(dbCs.hidden) === Boolean(fileCs.hidden)
             )
           ) && sponsorResults.length === fileData.sponsorResults.length;
 
