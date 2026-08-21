@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
-export default function SponsorPage() {
+export default function PricingPage() {
   redirect("/#pricing");
 }

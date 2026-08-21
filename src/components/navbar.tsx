@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Lock, Menu, X, Sparkles, BarChart3, PlayCircle, Mail, ChevronRight } from "lucide-react";
+import { Lock, Menu, X, Sparkles, BarChart3, PlayCircle, DollarSign, Mail, ChevronRight } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
 import { LogoImage } from "@/components/ui/logo-image";
 
@@ -101,6 +101,7 @@ function MobileDrawer({
               { href: "/#brands", targetId: "brands", label: "Brands", Icon: Sparkles },
               { href: "/#stats", targetId: "stats", label: "Stats", Icon: BarChart3 },
               { href: "/#case-studies", targetId: "case-studies", label: "Case Studies", Icon: PlayCircle },
+              { href: "/#pricing", targetId: "pricing", label: "Pricing", Icon: DollarSign },
               { href: "/contact", targetId: null, label: "Contact", Icon: Mail },
             ].map(({ href, targetId, label, Icon }) => (
               <Link
@@ -226,6 +227,13 @@ export default function Navbar({ isAdmin = false }: NavbarProps) {
               className="text-sm font-medium text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white transition-colors"
             >
               Case Studies
+            </Link>
+            <Link 
+              href="/#pricing" 
+              onClick={(e) => handleSmoothScroll(e, "pricing")}
+              className="text-sm font-medium text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white transition-colors"
+            >
+              Pricing
             </Link>
             <Link href="/contact" className="text-sm font-medium text-brand-muted dark:text-zinc-400 hover:text-brand-text dark:hover:text-white transition-colors">
               Contact

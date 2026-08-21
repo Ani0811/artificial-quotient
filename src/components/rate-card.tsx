@@ -37,7 +37,7 @@ export default function RateCard({ ratesData }: RateCardProps) {
   }, [ratesData]);
 
   return (
-    <section className="w-full py-12 sm:py-16 px-4 border-t border-brand-border dark:border-zinc-800 transition-colors">
+    <section id="pricing" className="w-full py-12 sm:py-16 px-4 border-t border-brand-border dark:border-zinc-800 transition-colors">
       <div className="max-w-5xl mx-auto">
         <div className="flex flex-col gap-2 mb-12 text-center">
           <h2 className="font-heading text-3xl md:text-4xl font-bold text-brand-text dark:text-white">

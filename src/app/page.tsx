@@ -44,6 +44,8 @@ export default function Home() {
 
       const cleanId = hash.startsWith("case-study-") || hash.startsWith("case-studies-")
         ? "case-studies"
+        : hash === "sponsor"
+        ? "pricing"
         : hash;
 
       const elem = document.getElementById(cleanId) || document.getElementById(`${cleanId}-section`);
@@ -86,7 +88,7 @@ export default function Home() {
       <div id="what-performs" className="scroll-mt-16">
         <WhatPerforms whatPerforms={data?.whatPerforms} isLoading={loading} />
       </div>
-      <div id="sponsor" className="scroll-mt-16">
+      <div id="pricing" className="scroll-mt-16">
         <RateCard ratesData={data?.rates} />
       </div>
       <div id="workflow" className="scroll-mt-16">

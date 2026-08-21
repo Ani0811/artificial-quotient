@@ -129,6 +129,13 @@ export default function Footer({ subscribersCount, isAdmin = false }: FooterProp
               Case Studies
             </Link>
             <Link 
+              href="/#pricing" 
+              onClick={(e) => handleSmoothScroll(e, "pricing")}
+              className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors"
+            >
+              Pricing
+            </Link>
+            <Link 
               href="/contact" 
               className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors"
             >

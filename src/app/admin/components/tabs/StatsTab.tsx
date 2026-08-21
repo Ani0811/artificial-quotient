@@ -131,7 +131,7 @@ export function StatsTab({
             />
           </div>
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Unique Viewers</label>
+            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Monthly Viewers</label>
             <input 
               type="text" 
               value={statsForm.uniqueViewers} 

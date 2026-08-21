@@ -302,10 +302,26 @@ Reduced vertical padding and internal gaps across all homepage sections on mobil
 
 ---
 
+### 📅 Day 10 — YouTube Stats Label Correction, Pricing Anchor & Firebase Google Authentication Integration
+
+#### 1. YouTube Stats Label Correction
+- **Monthly Viewers**: Renamed `"Unique Viewers"` card label to `"Monthly Viewers"` in both main website views and Admin preview/edit screens.
+- **Removed Views Subtext**: Removed the `~120K monthly views` tag subtext from under the Total Views card to match the requested design cleanup.
+
+#### 2. Pricing Anchor & Navigation Links
+- **Pricing Anchor**: Added `id="pricing"` to the Rates/Pricing section, enabling smooth scrolling from desktop nav, mobile slide-out drawer, and footer Explore links.
+- **Redirects**: Enabled automatic URL redirection from `/pricing` and `/sponsor` directly to the home page's `/#pricing` section.
+
+#### 3. Firebase Google Authentication for Admin Portal
+- **One-Click Google Sign-In**: Integrated a native **Sign in with Google** button in the Admin Login portal using the Firebase Client SDK.
+- **Google Auth Route**: Created a secure server-side verification API route `/api/auth/google` to verify Google credentials and authenticate verified email addresses against Active administrators registered in the database, setting secure HTTP-only cookies.
+
+---
+
 ### 📅 Day 9 — YouTube Analytics Data Expansion, Revid.AI & Flashloop.AI Case Studies, Direct Partner Links, Dynamic 1-3 Card Layouts & Interactive Pagination
 
 #### 1. YouTube Analytics Data Expansion (8 Key Channel Stats & Extended Demographics)
-- **8-Card Channel Metrics Grid**: Expanded `AudienceSnapshot` to render 8 lifetime and monthly performance stat cards: *Subscribers (Lifetime)*, *Videos Published (Lifetime)*, *Unique Viewers*, *Views*, *Watch Time (Hours)*, *Average View Duration*, *Average Percentage Viewed*, and *Returning Viewers*.
+- **8-Card Channel Metrics Grid**: Expanded `AudienceSnapshot` to render 8 lifetime and monthly performance stat cards: *Subscribers (Lifetime)*, *Videos Published (Lifetime)*, *Monthly Viewers*, *Views*, *Watch Time (Hours)*, *Average View Duration*, *Average Percentage Viewed*, and *Returning Viewers*.
 - **7 Age Demographics**: Expanded demographics mapping across the full range of YouTube age buckets (`13-17`, `18-24`, `25-34`, `35-44`, `45-54`, `55-64`, `65+`).
 - **Vector Country Flags**: Added custom vector SVG flags for top audience reach: India, USA, Pakistan, Nigeria, and Bangladesh.
 

@@ -269,7 +269,7 @@ export default function AudienceSnapshot({ siteData, isLoading }: AudienceSnapsh
       bg: "bg-red-500/10 border-red-500/20",
     },
     {
-      label: "Unique Viewers",
+      label: "Monthly Viewers",
       value: stats.uniqueViewers || "0",
       sub: "",
       icon: Eye,
@@ -279,7 +279,7 @@ export default function AudienceSnapshot({ siteData, isLoading }: AudienceSnapsh
     {
       label: "Total Views",
       value: stats.monthlyViews || "0",
-      sub: stats.monthlyViewsSub || "",
+      sub: "",
       icon: BarChart3,
       color: "text-amber-500 dark:text-amber-400",
       bg: "bg-amber-500/10 border-amber-500/20",
