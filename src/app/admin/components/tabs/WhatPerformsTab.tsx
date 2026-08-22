@@ -289,83 +289,114 @@ export function WhatPerformsTab({
           return (
             <div 
               key={item.id} 
-              className={`p-5 rounded-2xl border bg-brand-bg dark:bg-[#061612] space-y-4 relative transition-all ${
+              className={`p-4 sm:p-5 rounded-2xl border bg-brand-bg dark:bg-[#061612] space-y-4 transition-all ${
                 item.hidden 
                   ? "border-amber-500/40 dark:border-amber-500/30 bg-amber-500/[0.02]" 
                   : "border-brand-border dark:border-[#16382e]"
               }`}
             >
-              {/* Card Action Buttons (Refresh Data + Eye Toggle + Delete) */}
-              <div className="absolute top-4 right-4 flex items-center gap-2">
-                {item.ytUrl && getYoutubeId(item.ytUrl) && (
+              {/* Card Header: Info summary on left, Action Buttons on right */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-brand-border/60 dark:border-[#16382e]/80">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <span className="text-xl shrink-0 p-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                    {item.thumb || "🎬"}
+                  </span>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h4 className="font-heading font-bold text-sm text-brand-text dark:text-white truncate max-w-[200px] sm:max-w-xs md:max-w-sm">
+                        {item.title || "New Video Highlight"}
+                      </h4>
+                      {item.hidden && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-[10px] font-bold">
+                          <EyeOff className="w-2.5 h-2.5" />
+                          Hidden
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 text-[11px] text-brand-muted dark:text-emerald-200/60 font-medium">
+                      <span className="text-emerald-600 dark:text-emerald-400 font-semibold">{item.type || "Dedicated Video"}</span>
+                      <span>·</span>
+                      <span>{item.views || "0"} views</span>
+                      <span>·</span>
+                      <span>{item.clicks || "0"} clicks</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Header Action Buttons */}
+                <div className="flex items-center gap-2 shrink-0 flex-wrap">
+                  {item.ytUrl && getYoutubeId(item.ytUrl) && (
+                    <button
+                      type="button"
+                      disabled={isViewer || isCardFetching}
+                      onClick={() => handleAutoFetchCard(idx)}
+                      className="px-2.5 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 transition-all flex items-center gap-1.5 text-xs font-bold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                      title="Refresh live views, clicks, title, and HD thumbnail from YouTube"
+                    >
+                      {isCardFetching ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <RefreshCw className="w-3.5 h-3.5" />
+                      )}
+                      <span>{isCardFetching ? "Syncing..." : "Refresh Data"}</span>
+                    </button>
+                  )}
+
                   <button
                     type="button"
-                    disabled={isViewer || isCardFetching}
-                    onClick={() => handleAutoFetchCard(idx)}
-                    className="px-2.5 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 transition-all flex items-center gap-1.5 text-xs font-bold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
-                    title="Refresh live views, clicks, title, and HD thumbnail from YouTube for this video"
+                    disabled={isViewer}
+                    onClick={() => {
+                      const next = [...whatPerforms];
+                      const newHidden = !next[idx].hidden;
+                      next[idx] = { ...next[idx], hidden: newHidden };
+                      setWhatPerforms(next);
+                      if (setNotification) {
+                        setNotification({
+                          type: "success",
+                          message: newHidden
+                            ? `"${item.title}" is now hidden from the public landing page. Click 'Save What Performs' to publish.`
+                            : `"${item.title}" is now visible on the public landing page. Click 'Save What Performs' to publish.`,
+                        });
+                      }
+                    }}
+                    className={`px-2.5 py-1.5 rounded-xl transition-all flex items-center gap-1.5 text-xs font-bold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-sm ${
+                      item.hidden
+                        ? "bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 hover:bg-amber-500/25"
+                        : "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25"
+                    }`}
+                    title={item.hidden ? "Card is currently hidden. Click to make visible." : "Card is currently visible. Click to hide."}
                   >
-                    {isCardFetching ? (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    {item.hidden ? (
+                      <>
+                        <EyeOff className="w-3.5 h-3.5" />
+                        <span>Hidden</span>
+                      </>
                     ) : (
-                      <RefreshCw className="w-3.5 h-3.5" />
+                      <>
+                        <Eye className="w-3.5 h-3.5" />
+                        <span>Visible</span>
+                      </>
                     )}
-                    <span className="hidden sm:inline">{isCardFetching ? "Syncing..." : "Refresh Data"}</span>
                   </button>
-                )}
 
-                <button
-                  type="button"
-                  disabled={isViewer}
-                  onClick={() => {
-                    const next = [...whatPerforms];
-                    const newHidden = !next[idx].hidden;
-                    next[idx] = { ...next[idx], hidden: newHidden };
-                    setWhatPerforms(next);
-                    if (setNotification) {
-                      setNotification({
-                        type: "success",
-                        message: newHidden
-                          ? `"${item.title}" is now hidden from the public landing page. Click 'Save What Performs' to publish.`
-                          : `"${item.title}" is now visible on the public landing page. Click 'Save What Performs' to publish.`,
-                      });
-                    }
-                  }}
-                  className={`px-2.5 py-1.5 rounded-xl transition-all flex items-center gap-1.5 text-xs font-bold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-sm ${
-                    item.hidden
-                      ? "bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 hover:bg-amber-500/25"
-                      : "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25"
-                  }`}
-                  title={item.hidden ? "Card is currently hidden from the public site. Click to make visible." : "Card is currently visible on the public site. Click to hide."}
-                >
-                  {item.hidden ? (
-                    <>
-                      <EyeOff className="w-3.5 h-3.5" />
-                      <span>Hidden</span>
-                    </>
-                  ) : (
-                    <>
-                      <Eye className="w-3.5 h-3.5" />
-                      <span>Visible</span>
-                    </>
-                  )}
-                </button>
-
-                <button
-                  type="button"
-                  disabled={isViewer}
-                  onClick={() => setWhatPerforms(whatPerforms.filter(w => w.id !== item.id))}
-                  className="text-red-500 hover:text-red-600 p-1.5 bg-red-500/10 rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
-                  title="Delete item"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+                  <button
+                    type="button"
+                    disabled={isViewer}
+                    onClick={() => setWhatPerforms(whatPerforms.filter(w => w.id !== item.id))}
+                    className="text-red-500 hover:text-red-600 p-1.5 bg-red-500/10 rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
+                    title="Delete item"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
 
-              {/* Title and Sponsorship Type */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pr-36 sm:pr-56">
+              {/* Row 1: Title and Sponsorship Type */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Title / Video Topic</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">
+                    Title / Video Topic
+                  </label>
                   <input 
                     type="text" 
                     value={item.title} 
@@ -379,7 +410,9 @@ export function WhatPerformsTab({
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Sponsorship Type</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">
+                    Sponsorship Type
+                  </label>
                   <input 
                     type="text" 
                     value={item.type} 
@@ -394,31 +427,13 @@ export function WhatPerformsTab({
                 </div>
               </div>
 
-              {/* YouTube Link & Auto-Fetch Button + Thumbnail Media */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Row 2: YouTube Video Link & Thumbnail Media */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
                 <div>
-                  <div className="flex items-center justify-between gap-2 mb-1.5">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80">
-                      YouTube Video Link
-                    </label>
-                    {item.ytUrl && getYoutubeId(item.ytUrl) && (
-                      <button
-                        type="button"
-                        disabled={isViewer || isCardFetching}
-                        onClick={() => handleAutoFetchCard(idx)}
-                        className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 transition-colors disabled:opacity-50 cursor-pointer"
-                        title="Auto-pull title, thumbnail, views & clicks from YouTube for this video"
-                      >
-                        {isCardFetching ? (
-                          <Loader2 className="w-3 h-3 animate-spin" />
-                        ) : (
-                          <RefreshCw className="w-3 h-3" />
-                        )}
-                        <span>{isCardFetching ? "Refreshing..." : "Refresh Stats"}</span>
-                      </button>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">
+                    YouTube Video Link
+                  </label>
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <input 
                       type="text" 
                       placeholder="https://youtube.com/watch?v=..."
@@ -444,14 +459,14 @@ export function WhatPerformsTab({
                         };
                         setWhatPerforms(next);
                       }}
-                      className="flex-1 min-w-0 border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-xs sm:text-sm disabled:opacity-50" 
+                      className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm disabled:opacity-50" 
                     />
                     {item.ytUrl && getYoutubeId(item.ytUrl) && (
                       <button
                         type="button"
                         disabled={isViewer || isCardFetching}
                         onClick={() => handleAutoFetchCard(idx)}
-                        className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 border border-emerald-500/30 shrink-0 whitespace-nowrap disabled:opacity-50 cursor-pointer shadow-sm"
+                        className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold px-3 py-2 rounded-xl text-xs flex items-center justify-center gap-1.5 border border-emerald-500/30 shrink-0 whitespace-nowrap disabled:opacity-50 cursor-pointer shadow-sm"
                         title="Pull live views, clicks, and thumbnail from YouTube"
                       >
                         {isCardFetching ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
@@ -463,7 +478,9 @@ export function WhatPerformsTab({
 
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-1.5">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80">Thumbnail Media</label>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80">
+                      Thumbnail Media
+                    </label>
                     {getYoutubeId(item.ytUrl) && (
                       <button
                         type="button"
@@ -489,7 +506,7 @@ export function WhatPerformsTab({
                       </button>
                     )}
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap sm:flex-nowrap items-center gap-2">
                     {(() => {
                       const ytId = getYoutubeId(item.ytUrl);
                       const effectiveThumb = item.thumbnail || (ytId ? `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg` : null);
@@ -509,7 +526,7 @@ export function WhatPerformsTab({
                         next[idx] = { ...next[idx], thumbnail: e.target.value };
                         setWhatPerforms(next);
                       }}
-                      className="flex-1 min-w-0 border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs sm:text-sm disabled:opacity-50" 
+                      className="flex-1 min-w-[140px] border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs sm:text-sm disabled:opacity-50" 
                     />
                     <label 
                       htmlFor={`perform-thumb-input-${item.id}`}
@@ -536,10 +553,12 @@ export function WhatPerformsTab({
                 </div>
               </div>
 
-              {/* Metrics Row: Views, Clicks, Highlight Tag, and Emoji */}
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+              {/* Row 3: Metrics - 2 cols on mobile/split, 4 cols on desktop */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
                 <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">Views Count</label>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">
+                    Views Count
+                  </label>
                   <input 
                     type="text" 
                     placeholder="e.g. 105.3k"
@@ -550,11 +569,13 @@ export function WhatPerformsTab({
                       next[idx] = { ...next[idx], views: e.target.value };
                       setWhatPerforms(next);
                     }}
-                    className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs disabled:opacity-50" 
+                    className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs sm:text-sm disabled:opacity-50" 
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">Clicks Count</label>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">
+                    Clicks Count
+                  </label>
                   <input 
                     type="text" 
                     placeholder="e.g. 4.2k+"
@@ -565,11 +586,13 @@ export function WhatPerformsTab({
                       next[idx] = { ...next[idx], clicks: e.target.value };
                       setWhatPerforms(next);
                     }}
-                    className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs disabled:opacity-50" 
+                    className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs sm:text-sm disabled:opacity-50" 
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">Highlight Badge</label>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">
+                    Highlight Badge
+                  </label>
                   <input 
                     type="text" 
                     placeholder="e.g. AI Lip Sync"
@@ -580,11 +603,13 @@ export function WhatPerformsTab({
                       next[idx] = { ...next[idx], highlight: e.target.value };
                       setWhatPerforms(next);
                     }}
-                    className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs disabled:opacity-50" 
+                    className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs sm:text-sm disabled:opacity-50" 
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">Emoji Icon</label>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/60 mb-1">
+                    Emoji Icon
+                  </label>
                   <input 
                     type="text" 
                     value={item.thumb || "🎬"} 
@@ -594,7 +619,7 @@ export function WhatPerformsTab({
                       next[idx] = { ...next[idx], thumb: e.target.value };
                       setWhatPerforms(next);
                     }}
-                    className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs disabled:opacity-50" 
+                    className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs sm:text-sm text-center disabled:opacity-50" 
                   />
                 </div>
               </div>
@@ -602,7 +627,7 @@ export function WhatPerformsTab({
           );
         })}
       </div>
-
+      
       {/* Save Button */}
       <div className="flex justify-end pt-5 border-t border-brand-border dark:border-[#16382e]">
         <button 

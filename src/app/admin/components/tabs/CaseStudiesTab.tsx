@@ -72,69 +72,88 @@ export function CaseStudiesTab({
         {sponsorResults.map((item, idx) => (
           <div 
             key={item.id} 
-            className={`p-5 rounded-2xl border bg-brand-bg dark:bg-[#061612] space-y-4 relative transition-all ${
+            className={`p-4 sm:p-5 rounded-2xl border bg-brand-bg dark:bg-[#061612] space-y-4 transition-all ${
               item.hidden 
                 ? "border-amber-500/40 dark:border-amber-500/30 bg-amber-500/[0.02]" 
                 : "border-brand-border dark:border-[#16382e]"
             }`}
           >
-            <div className="absolute top-4 right-4 flex items-center gap-2">
-              <button
-                type="button"
-                disabled={isViewer}
-                onClick={() => {
-                  const next = [...sponsorResults];
-                  const newHidden = !next[idx].hidden;
-                  next[idx] = { ...next[idx], hidden: newHidden };
-                  setSponsorResults(next);
-                  if (setNotification) {
-                    setNotification({
-                      type: "success",
-                      message: newHidden
-                        ? `"${item.partnerName}" is now hidden from the public landing page. Click 'Save Sponsor Results' to publish.`
-                        : `"${item.partnerName}" is now visible on the public landing page. Click 'Save Sponsor Results' to publish.`,
-                    });
-                  }
-                }}
-                className={`px-2.5 py-1.5 rounded-xl transition-all flex items-center gap-1.5 text-xs font-bold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-sm ${
-                  item.hidden
-                    ? "bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 hover:bg-amber-500/25"
-                    : "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25"
-                }`}
-                title={item.hidden ? "Case study is currently hidden from the public site. Click to make visible." : "Case study is currently visible on the public site. Click to hide."}
-              >
-                {item.hidden ? (
-                  <>
-                    <EyeOff className="w-3.5 h-3.5" />
-                    <span>Hidden</span>
-                  </>
-                ) : (
-                  <>
-                    <Eye className="w-3.5 h-3.5" />
-                    <span>Visible</span>
-                  </>
-                )}
-              </button>
+            {/* Card Header: Case Study Summary on left, Action Buttons on right */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-brand-border/60 dark:border-[#16382e]/80">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-xs font-bold text-emerald-500 shrink-0">
+                  {idx + 1}
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h4 className="font-heading font-bold text-sm text-brand-text dark:text-white truncate">
+                      {item.partnerName || "Untitled Partner"}
+                    </h4>
+                    {item.hidden && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-[10px] font-bold">
+                        <EyeOff className="w-2.5 h-2.5" />
+                        Hidden (Draft)
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
+                    {item.campaignType || "Dedicated Review"}{item.stat1Value ? ` · ${item.stat1Value} ${item.stat1Label || ""}` : ""}
+                  </span>
+                </div>
+              </div>
 
-              <button
-                type="button"
-                disabled={isViewer}
-                onClick={() => setSponsorResults(sponsorResults.filter(s => s.id !== item.id))}
-                className="text-red-500 hover:text-red-600 p-1.5 bg-red-500/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                title="Delete case study"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
+              {/* Action Buttons */}
+              <div className="flex items-center gap-2 shrink-0 flex-wrap">
+                <button
+                  type="button"
+                  disabled={isViewer}
+                  onClick={() => {
+                    const next = [...sponsorResults];
+                    const newHidden = !next[idx].hidden;
+                    next[idx] = { ...next[idx], hidden: newHidden };
+                    setSponsorResults(next);
+                    if (setNotification) {
+                      setNotification({
+                        type: "success",
+                        message: newHidden
+                          ? `"${item.partnerName}" is now hidden from the public landing page. Click 'Save Sponsor Results' to publish.`
+                          : `"${item.partnerName}" is now visible on the public landing page. Click 'Save Sponsor Results' to publish.`,
+                      });
+                    }
+                  }}
+                  className={`px-2.5 py-1.5 rounded-xl transition-all flex items-center gap-1.5 text-xs font-bold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-sm ${
+                    item.hidden
+                      ? "bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 hover:bg-amber-500/25"
+                      : "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25"
+                  }`}
+                  title={item.hidden ? "Case study is currently hidden from the public site. Click to make visible." : "Case study is currently visible on the public site. Click to hide."}
+                >
+                  {item.hidden ? (
+                    <>
+                      <EyeOff className="w-3.5 h-3.5" />
+                      <span>Hidden</span>
+                    </>
+                  ) : (
+                    <>
+                      <Eye className="w-3.5 h-3.5" />
+                      <span>Visible</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  disabled={isViewer}
+                  onClick={() => setSponsorResults(sponsorResults.filter(s => s.id !== item.id))}
+                  className="text-red-500 hover:text-red-600 p-1.5 bg-red-500/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                  title="Delete case study"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
             </div>
 
-            {item.hidden && (
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-[11px] font-bold">
-                <EyeOff className="w-3 h-3" />
-                <span>Hidden from Public Site (Draft / Paused)</span>
-              </div>
-            )}
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pr-28">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Partner Brand Name</label>
                 <input 
