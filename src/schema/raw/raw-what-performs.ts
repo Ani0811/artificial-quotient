@@ -15,6 +15,7 @@ export async function getRawWhatPerforms() {
     thumbnail: r.thumbnail || "",
     ytUrl: r.yt_url || "",
     highlight: r.highlight || "",
+    hidden: Boolean(r.is_hidden || r.hidden),
   }));
 }
 
@@ -27,8 +28,8 @@ export async function syncRawWhatPerforms(items: any[]) {
       const item = items[i];
       await k.raw(
         `INSERT INTO what_performs_cards
-          (id, title, views, clicks, type, thumb, thumbnail, yt_url, highlight, display_order)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+          (id, title, views, clicks, type, thumb, thumbnail, yt_url, highlight, is_hidden, display_order)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
         [
           String(item.id || `wp-${i + 1}`),
           item.title || "Campaign",
@@ -39,6 +40,7 @@ export async function syncRawWhatPerforms(items: any[]) {
           item.thumbnail || "",
           item.ytUrl || item.yt_url || "",
           item.highlight || "",
+          Boolean(item.hidden || item.isHidden),
           i,
         ]
       );

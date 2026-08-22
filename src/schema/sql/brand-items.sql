@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS brand_items (
   logo_text VARCHAR(128),
   yt_url VARCHAR(255),
   logo_url VARCHAR(255),
+  is_hidden BOOLEAN DEFAULT FALSE,
   display_order INT DEFAULT 0,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -21,5 +22,5 @@ TRUNCATE TABLE brand_items;
 
 -- 4. Insert Brand Item (Parameterized)
 INSERT INTO brand_items
-  (id, name, category, tagline, logo_text, yt_url, logo_url, display_order)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+  (id, name, category, tagline, logo_text, yt_url, logo_url, is_hidden, display_order)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);

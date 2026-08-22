@@ -82,7 +82,8 @@ export async function GET() {
               dbB.name === fileB.name && 
               (dbB.logoUrl || "") === (fileB.logoUrl || "") &&
               (dbB.category || "") === (fileB.category || "") &&
-              (dbB.tagline || "") === (fileB.tagline || "")
+              (dbB.tagline || "") === (fileB.tagline || "") &&
+              Boolean(dbB.hidden) === Boolean(fileB.hidden)
             )
           ) && brandItems.length === fileData.brandItems.length;
 
@@ -102,7 +103,8 @@ export async function GET() {
               dbW.title === fileW.title && 
               dbW.views === fileW.views &&
               (dbW.thumbnail || "") === (fileW.thumbnail || "") &&
-              (dbW.ytUrl || "") === (fileW.ytUrl || "")
+              (dbW.ytUrl || "") === (fileW.ytUrl || "") &&
+              Boolean(dbW.hidden) === Boolean(fileW.hidden)
             )
           ) && whatPerforms.length === fileData.whatPerforms.length;
 

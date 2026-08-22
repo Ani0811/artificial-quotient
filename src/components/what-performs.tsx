@@ -13,13 +13,14 @@ interface PerformItem {
   thumbnail?: string;
   ytUrl?: string;
   highlight?: string;
+  hidden?: boolean;
 }
 
 function getYoutubeId(url?: string) {
   if (!url) return null;
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const regExp = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts|live)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/i;
   const match = url.match(regExp);
-  return (match && match[2].length === 11) ? match[2] : null;
+  return (match && match[1]?.length === 11) ? match[1] : null;
 }
 
 interface WhatPerformsProps {
@@ -60,6 +61,9 @@ export default function WhatPerforms({ whatPerforms, isLoading }: WhatPerformsPr
     load();
   }, [whatPerforms, isLoading]);
 
+  // Filter visible items for public display
+  const visibleItems = items.filter((item) => !item.hidden);
+
   // Responsive window resize listener for cards per view
   useEffect(() => {
     function updateItemsPerView() {
@@ -77,7 +81,7 @@ export default function WhatPerforms({ whatPerforms, isLoading }: WhatPerformsPr
     return () => window.removeEventListener("resize", updateItemsPerView);
   }, []);
 
-  const maxIndex = Math.max(0, items.length - itemsPerView);
+  const maxIndex = Math.max(0, visibleItems.length - itemsPerView);
 
   // Clamp current index if itemsPerView changes
   useEffect(() => {
@@ -157,9 +161,9 @@ export default function WhatPerforms({ whatPerforms, isLoading }: WhatPerformsPr
     );
   }
 
-  if (items.length === 0) return null;
+  if (visibleItems.length === 0) return null;
 
-  const showControls = items.length > itemsPerView;
+  const showControls = visibleItems.length > itemsPerView;
   const totalPages = maxIndex + 1;
 
   return (
@@ -223,7 +227,7 @@ export default function WhatPerforms({ whatPerforms, isLoading }: WhatPerformsPr
               transform: `translateX(-${currentIndex * (100 / itemsPerView)}%)`,
             }}
           >
-            {items.map((study, idx) => {
+            {visibleItems.map((study, idx) => {
               const ytId = getYoutubeId(study.ytUrl);
               const thumbImg = study.thumbnail || (ytId ? `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg` : null);
 

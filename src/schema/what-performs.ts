@@ -10,6 +10,7 @@ export interface PerformItem {
   thumbnail?: string;
   ytUrl?: string;
   highlight?: string;
+  hidden?: boolean;
 }
 
 export async function createWhatPerformsTable() {
@@ -25,9 +26,20 @@ export async function createWhatPerformsTable() {
       t.string("thumbnail", 255);
       t.string("yt_url", 255);
       t.string("highlight", 64);
+      t.boolean("is_hidden").defaultTo(false);
       t.integer("display_order").defaultTo(0);
       t.timestamp("updated_at").defaultTo(k.raw("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"));
     });
+  } else {
+    try {
+      if (!(await k.schema.hasColumn("what_performs_cards", "is_hidden"))) {
+        await k.schema.alterTable("what_performs_cards", (t) => {
+          t.boolean("is_hidden").defaultTo(false);
+        });
+      }
+    } catch {
+      // Ignore alter errors if already modified
+    }
   }
 }
 
@@ -45,6 +57,7 @@ export async function getWhatPerforms(): Promise<PerformItem[]> {
     thumbnail: r.thumbnail || "",
     ytUrl: r.yt_url || "",
     highlight: r.highlight || "",
+    hidden: Boolean(r.is_hidden || r.hidden),
   }));
 }
 
@@ -63,6 +76,7 @@ export async function syncWhatPerforms(items: any[]) {
       thumbnail: item.thumbnail || "",
       yt_url: item.ytUrl || item.yt_url || "",
       highlight: item.highlight || "",
+      is_hidden: Boolean(item.hidden || item.isHidden),
       display_order: i,
     }));
     await k("what_performs_cards").insert(rows);

@@ -56,15 +56,18 @@ export default function BrandCarousel({ brands }: BrandCarouselProps) {
     };
   }, []);
 
+  // Filter visible brands for public viewing
+  const visibleItems = items.filter((b) => !b.hidden);
+
   // Multiply items by SETS_COUNT for seamless infinite buffer
-  const displayItems = items.length > 0
-    ? Array.from({ length: SETS_COUNT }, () => items).flat()
+  const displayItems = visibleItems.length > 0
+    ? Array.from({ length: SETS_COUNT }, () => visibleItems).flat()
     : [];
 
   // Normalize scroll to stay within middle sets seamlessly
   const normalizeScroll = useCallback(() => {
     const el = scrollRef.current;
-    if (!el || items.length === 0) return;
+    if (!el || visibleItems.length === 0) return;
 
     const setWidth = el.scrollWidth / SETS_COUNT;
     if (setWidth <= 0) return;
@@ -74,22 +77,22 @@ export default function BrandCarousel({ brands }: BrandCarouselProps) {
     } else if (el.scrollLeft <= setWidth * 1) {
       el.scrollLeft += setWidth * 2;
     }
-  }, [items.length]);
+  }, [visibleItems.length]);
 
   // Initialize scroll position in the middle
   useEffect(() => {
     const el = scrollRef.current;
-    if (!el || items.length === 0) return;
+    if (!el || visibleItems.length === 0) return;
 
     const setWidth = el.scrollWidth / SETS_COUNT;
     if (setWidth > 0) {
       el.scrollLeft = setWidth * 2;
     }
-  }, [items]);
+  }, [visibleItems]);
 
   // Smooth continuous marquee glide via requestAnimationFrame
   useEffect(() => {
-    if (isPaused || items.length === 0) return;
+    if (isPaused || visibleItems.length === 0) return;
 
     let animId: number;
     let lastTime = performance.now();
@@ -109,7 +112,7 @@ export default function BrandCarousel({ brands }: BrandCarouselProps) {
 
     animId = requestAnimationFrame(step);
     return () => cancelAnimationFrame(animId);
-  }, [isPaused, items.length, normalizeScroll]);
+  }, [isPaused, visibleItems.length, normalizeScroll]);
 
   // Manual scroll with Previous / Next buttons
   const handleManualScroll = (direction: "left" | "right") => {
@@ -160,7 +163,7 @@ export default function BrandCarousel({ brands }: BrandCarouselProps) {
     }
   };
 
-  if (items.length === 0) {
+  if (visibleItems.length === 0) {
     return (
       <section id="brands" className="w-full py-12 sm:py-16 px-4 border-t border-brand-border dark:border-zinc-800/80 transition-colors relative overflow-hidden bg-brand-bg/50 dark:bg-zinc-950/40">
         <div className="max-w-6xl mx-auto text-center py-10 text-brand-muted dark:text-zinc-500 text-sm font-medium">

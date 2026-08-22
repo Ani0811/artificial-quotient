@@ -654,6 +654,27 @@ Reduced vertical padding and internal gaps across all homepage sections on mobil
 
 ---
 
+### 📅 Day 23 — Brands & Partners and What Performs Visibility Toggles & Automated YouTube Video Importer Engine
+
+#### 1. Universal Visibility Toggles for Brands Directory & What Performs (`BrandsTab.tsx`, `WhatPerformsTab.tsx`, `brand-carousel.tsx`, `what-performs.tsx`)
+- **Interactive Hide / Show Toggles Across All Sections**: Extended the non-destructive **Visible / Hidden** toggle button architecture (`Eye` / `EyeOff` with emerald/amber badges) to the **Brands & Partners** tab and **What Performs on the Channel** tab. Admins can now pause or hide individual partner logos and video highlight cards without deleting them.
+- **Visual Draft Border & Toast Feedback**: Hidden items display an amber accent border in the admin view and trigger real-time toast alerts reminding admins to save and publish changes.
+- **Dynamic Public Filtering**: Upgraded [`brand-carousel.tsx`](file:///src/components/brand-carousel.tsx) and [`what-performs.tsx`](file:///src/components/what-performs.tsx) to automatically filter out hidden items (`hidden: true`), dynamically recalculating marquee track widths, slideshow pagination dots, arrow navigation, and empty states.
+- **MySQL Schema Migration & Knex Sync**: Added `is_hidden BOOLEAN DEFAULT FALSE` to both `brand_items` and `what_performs_cards` tables with automatic non-destructive schema migration checks (`k.schema.hasColumn`) on database initialization, raw SQL helpers, and seed datasets.
+
+#### 2. Automated YouTube Video Importer & Metadata Extractor (`/api/admin/youtube-video`, `WhatPerformsTab.tsx`, `utils.ts`)
+- **Dedicated YouTube Video Extraction API (`POST /api/admin/youtube-video`)**: Built a robust multi-stage metadata extractor that accepts any YouTube link and automatically pulls:
+  - **Accurate Video Title**: Extracted from YouTube Data API v3, oEmbed fallback, or HTML OpenGraph tags.
+  - **High-Resolution Thumbnail Media**: Automatically resolves `maxresdefault.jpg` and `hqdefault.jpg` with fallback support.
+  - **Formatted View Counts**: Converts raw statistics into clean reader-friendly formats (e.g. `105.3k`, `1.2M`).
+  - **Conversion Click Estimations**: Intelligently models realistic tracked CTR conversions (e.g. `4.2k+`, `1.2k+`, `850+`) based on view volume with full admin editing capabilities.
+  - **Smart Category, Emoji & Highlight Badges**: Contextually suggests category types (*"Dedicated Video"*, *"Integration"*), relevant emojis (🎙️, ✨, 🐱, 🤖, ⚡, 🔥), and punchy highlight tags (*"AI Lip Sync"*, *"Motion Graphics"*, *"Viral Animation"*).
+- **1-Click "Auto-Create Card" Top Bar**: Added an automated import bar at the top of the What Performs tab where admins can paste a YouTube link and instantly generate a fully configured card with zero manual typing.
+- **Per-Card "Auto-Fetch Info" & Global Batch Refresh**: Added a dedicated `⚡ Auto-Fetch Info` button next to the YouTube link field on each card, alongside a header `Refresh All Videos` button to update stats across all existing cards in one click.
+- **Comprehensive YouTube URL Regex Parser**: Enhanced `getYoutubeId` in [`src/app/admin/utils.ts`](file:///src/app/admin/utils.ts) to flawlessly parse standard watch URLs, shortened `youtu.be`, `/shorts/`, `/embed/`, `/live/`, mobile URLs, and URLs with tracking query parameters.
+
+---
+
 ## 📂 Project Structure
 
 ```
@@ -691,6 +712,7 @@ artificial-quotient/
 │   │   │   ├── admin/upload/         # Media File Upload API
 │   │   │   ├── admin/users/          # Admin User Management API
 │   │   │   ├── admin/youtube-sync/   # YouTube Data API Live Stats & High-Res Thumbnails
+│   │   │   ├── admin/youtube-video/  # Single YouTube Video Automated Importer & Metadata Extractor
 │   │   │   ├── auth/                 # Login, Logout, 2FA & Reset Password APIs
 │   │   │   └── contact/              # Sponsorship Inquiry API (Brevo/SMTP)
 │   │   ├── contact/                  # Contact & Sponsorship Booking Page

@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS what_performs_cards (
   thumbnail VARCHAR(255),
   yt_url VARCHAR(255),
   highlight VARCHAR(64),
+  is_hidden BOOLEAN DEFAULT FALSE,
   display_order INT DEFAULT 0,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -23,5 +24,5 @@ TRUNCATE TABLE what_performs_cards;
 
 -- 4. Insert Single Card (Parameterized)
 INSERT INTO what_performs_cards
-  (id, title, views, clicks, type, thumb, thumbnail, yt_url, highlight, display_order)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+  (id, title, views, clicks, type, thumb, thumbnail, yt_url, highlight, is_hidden, display_order)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);

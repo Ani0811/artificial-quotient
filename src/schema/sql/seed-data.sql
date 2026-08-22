@@ -182,12 +182,13 @@ ON DUPLICATE KEY UPDATE
   roi_breakdown=VALUES(roi_breakdown),
   publish_date=VALUES(publish_date),
   logo_url=VALUES(logo_url),
+  is_hidden=VALUES(is_hidden),
   display_order=VALUES(display_order);
 
 
 -- 4. Seed What Performs Cards
-INSERT INTO what_performs_cards 
-  (id, title, views, clicks, type, thumb, thumbnail, yt_url, highlight, display_order)
+INSERT INTO what_performs_cards
+  (id, title, views, clicks, type, thumb, thumbnail, yt_url, highlight, is_hidden, display_order)
 VALUES 
   (
     '1', 
@@ -199,6 +200,7 @@ VALUES
     'https://img.youtube.com/vi/FMnBEyQSPGQ/maxresdefault.jpg', 
     'https://youtu.be/FMnBEyQSPGQ?si=r2QQ0V3ymofPR66Z', 
     'AI Lip Sync', 
+    FALSE,
     0
   ),
   (
@@ -211,6 +213,7 @@ VALUES
     'https://img.youtube.com/vi/OjN4u-b0xnQ/maxresdefault.jpg', 
     'https://youtu.be/OjN4u-b0xnQ?si=HbK87q1HcyZ7h4Zm', 
     'Motion Graphics', 
+    FALSE,
     1
   ),
   (
@@ -223,6 +226,7 @@ VALUES
     'https://img.youtube.com/vi/jkUY_VYLHNM/maxresdefault.jpg', 
     'https://youtu.be/jkUY_VYLHNM?si=Jv2eyaoll4rtmBxy', 
     'Viral Animation', 
+    FALSE,
     2
   )
 ON DUPLICATE KEY UPDATE 
@@ -234,6 +238,7 @@ ON DUPLICATE KEY UPDATE
   thumbnail=VALUES(thumbnail), 
   yt_url=VALUES(yt_url), 
   highlight=VALUES(highlight), 
+  is_hidden=VALUES(is_hidden),
   display_order=VALUES(display_order);
 
 
@@ -248,23 +253,43 @@ VALUES
     'Automation', 
     '20% OFF 1st Year', 
     'The ultimate visual automation platform for building advanced workflows without code.', 
-    'https://make.com', 
+    'https://www.make.com/en/register?pc=aqmedia', 
     0
+  ),
+  (
+    '2', 
+    'Flashloop AI', 
+    '', 
+    'Video Generation', 
+    'Exclusive 15% OFF', 
+    'Cutting-edge generative video AI model with ultra-consistent characters and lip syncing.', 
+    'https://www.flashloop.app/?ref=aq', 
+    1
+  ),
+  (
+    '3', 
+    'HeyGen', 
+    '', 
+    'Avatar Creation', 
+    'Free Trial + 10% OFF', 
+    'Create studio-quality custom AI avatars and multilingual voice translations seamlessly.', 
+    'https://www.heygen.com/?via=aqmedia', 
+    2
   )
-ON DUPLICATE KEY UPDATE
-  name=VALUES(name),
-  logo=VALUES(logo),
-  category=VALUES(category),
-  discount=VALUES(discount),
-  description=VALUES(description),
-  try_url=VALUES(try_url),
+ON DUPLICATE KEY UPDATE 
+  name=VALUES(name), 
+  logo=VALUES(logo), 
+  category=VALUES(category), 
+  discount=VALUES(discount), 
+  description=VALUES(description), 
+  try_url=VALUES(try_url), 
   display_order=VALUES(display_order);
 
 
--- 6. Seed Brand Items
+-- 6. Seed Brand Directory Items
 INSERT INTO brand_items
-  (id, name, category, tagline, logo_text, yt_url, logo_url, display_order)
-VALUES
+  (id, name, category, tagline, logo_text, yt_url, logo_url, is_hidden, display_order)
+VALUES 
   (
     'revid',
     'Revid.AI',
@@ -273,6 +298,7 @@ VALUES
     '🎬 Revid.AI',
     'https://youtu.be/G_MW3vpfLxA?si=J-vDcmEjOt_P_M6u',
     '',
+    FALSE,
     0
   ),
   (
@@ -283,6 +309,7 @@ VALUES
     '⚡ Flashloop',
     'https://youtu.be/CO59xAteGRM?si=JMLIywF1ydT1MOsJ',
     '',
+    FALSE,
     1
   ),
   (
@@ -293,6 +320,7 @@ VALUES
     'EasyPeasy',
     'https://youtu.be/Oo9H89i6SYk?si=flMdazfrd1ef-feb',
     '/uploads/1786695121509_easypeasy.png',
+    FALSE,
     2
   ),
   (
@@ -303,6 +331,7 @@ VALUES
     'Flova AI',
     'https://youtu.be/1tbJ3WJ9_po',
     '/logo/flova.png',
+    FALSE,
     3
   )
 ON DUPLICATE KEY UPDATE
@@ -312,5 +341,5 @@ ON DUPLICATE KEY UPDATE
   logo_text=VALUES(logo_text),
   yt_url=VALUES(yt_url),
   logo_url=VALUES(logo_url),
+  is_hidden=VALUES(is_hidden),
   display_order=VALUES(display_order);
-

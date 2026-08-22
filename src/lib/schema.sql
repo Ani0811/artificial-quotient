@@ -51,13 +51,28 @@ CREATE TABLE IF NOT EXISTS sponsor_case_studies (
 
 CREATE TABLE IF NOT EXISTS what_performs_cards (
   id VARCHAR(64) PRIMARY KEY,
-  category VARCHAR(64) NOT NULL,
   title VARCHAR(255) NOT NULL,
-  description TEXT NOT NULL,
-  metric VARCHAR(64),
-  highlight VARCHAR(64),
-  yt_url VARCHAR(255),
+  views VARCHAR(64) NOT NULL,
+  clicks VARCHAR(64) NOT NULL,
+  type VARCHAR(64) NOT NULL,
+  thumb VARCHAR(32),
   thumbnail VARCHAR(255),
+  yt_url VARCHAR(255),
+  highlight VARCHAR(64),
+  is_hidden BOOLEAN DEFAULT FALSE,
+  display_order INT DEFAULT 0,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS brand_items (
+  id VARCHAR(64) PRIMARY KEY,
+  name VARCHAR(128) NOT NULL,
+  category VARCHAR(64) NOT NULL,
+  tagline TEXT,
+  logo_text VARCHAR(128),
+  yt_url VARCHAR(255),
+  logo_url VARCHAR(255),
+  is_hidden BOOLEAN DEFAULT FALSE,
   display_order INT DEFAULT 0,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );

@@ -8,6 +8,7 @@ export interface BrandItem {
   logoText: string;
   ytUrl?: string;
   logoUrl?: string;
+  hidden?: boolean;
   displayOrder?: number;
 }
 
@@ -22,9 +23,20 @@ export async function createBrandItemsTable() {
       t.string("logo_text", 128);
       t.string("yt_url", 255);
       t.string("logo_url", 255);
+      t.boolean("is_hidden").defaultTo(false);
       t.integer("display_order").defaultTo(0);
       t.timestamp("updated_at").defaultTo(k.raw("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"));
     });
+  } else {
+    try {
+      if (!(await k.schema.hasColumn("brand_items", "is_hidden"))) {
+        await k.schema.alterTable("brand_items", (t) => {
+          t.boolean("is_hidden").defaultTo(false);
+        });
+      }
+    } catch {
+      // Ignore alter errors if already modified
+    }
   }
 }
 
@@ -40,6 +52,7 @@ export async function getBrandItems(): Promise<BrandItem[]> {
     logoText: r.logo_text,
     ytUrl: r.yt_url,
     logoUrl: r.logo_url,
+    hidden: Boolean(r.is_hidden || r.hidden),
     displayOrder: r.display_order,
   }));
 }
@@ -57,6 +70,7 @@ export async function syncBrandItems(items: any[]) {
       logo_text: item.logoText || item.name || "",
       yt_url: item.ytUrl || "",
       logo_url: item.logoUrl || "",
+      is_hidden: Boolean(item.hidden || item.isHidden),
       display_order: i,
     }));
     await k("brand_items").insert(rows);

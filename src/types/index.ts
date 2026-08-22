@@ -21,6 +21,7 @@ export interface PerformItem {
   highlight: string;
   ytUrl?: string;
   thumbnail?: string;
+  hidden?: boolean;
 }
 
 export interface SponsorItem {
@@ -64,6 +65,7 @@ export interface BrandItem {
   logoText: string;
   ytUrl?: string;
   logoUrl?: string;
+  hidden?: boolean;
 }
 
 export interface ChannelStats {

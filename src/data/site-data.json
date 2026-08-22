@@ -71,7 +71,8 @@
       "thumb": "🎙️",
       "thumbnail": "https://img.youtube.com/vi/FMnBEyQSPGQ/maxresdefault.jpg",
       "ytUrl": "https://youtu.be/FMnBEyQSPGQ?si=r2QQ0V3ymofPR66Z",
-      "highlight": "AI Lip Sync"
+      "highlight": "AI Lip Sync",
+      "hidden": false
     },
     {
       "id": "2",
@@ -82,7 +83,8 @@
       "thumb": "✨",
       "thumbnail": "https://img.youtube.com/vi/OjN4u-b0xnQ/maxresdefault.jpg",
       "ytUrl": "https://youtu.be/OjN4u-b0xnQ?si=HbK87q1HcyZ7h4Zm",
-      "highlight": "Motion Graphics"
+      "highlight": "Motion Graphics",
+      "hidden": false
     },
     {
       "id": "3",
@@ -93,7 +95,8 @@
       "thumb": "🐱",
       "thumbnail": "https://img.youtube.com/vi/jkUY_VYLHNM/maxresdefault.jpg",
       "ytUrl": "https://youtu.be/jkUY_VYLHNM?si=Jv2eyaoll4rtmBxy",
-      "highlight": "Viral Animation"
+      "highlight": "Viral Animation",
+      "hidden": false
     }
   ],
   "sponsorResults": [
@@ -187,7 +190,8 @@
       "logoText": "Revid.AI",
       "ytUrl": "https://youtu.be/G_MW3vpfLxA?si=J-vDcmEjOt_P_M6u",
       "logoUrl": "/logo/revid.png",
-      "displayOrder": 0
+      "displayOrder": 0,
+      "hidden": false
     },
     {
       "id": "flashloop",
@@ -197,7 +201,8 @@
       "logoText": "Flashloop",
       "ytUrl": "https://youtu.be/CO59xAteGRM?si=JMLIywF1ydT1MOsJ",
       "logoUrl": "/logo/flashloop.png",
-      "displayOrder": 1
+      "displayOrder": 1,
+      "hidden": false
     },
     {
       "id": "easypeasy",
@@ -207,7 +212,8 @@
       "logoText": "EasyPeasy",
       "ytUrl": "https://youtu.be/Oo9H89i6SYk?si=flMdazfrd1ef-feb",
       "logoUrl": "/uploads/1786695121509_easypeasy.png",
-      "displayOrder": 2
+      "displayOrder": 2,
+      "hidden": false
     },
     {
       "id": "flova",
@@ -217,7 +223,8 @@
       "logoText": "Flova AI",
       "ytUrl": "https://youtu.be/1tbJ3WJ9_po",
       "logoUrl": "/logo/flova.png",
-      "displayOrder": 3
+      "displayOrder": 3,
+      "hidden": false
     }
   ],
   "audienceInterests": [

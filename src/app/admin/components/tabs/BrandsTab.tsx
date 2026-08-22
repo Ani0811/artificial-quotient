@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Plus, Trash2, Save, Sparkles } from "lucide-react";
+import { Plus, Trash2, Save, Sparkles, Eye, EyeOff } from "lucide-react";
 import { BrandItem } from "@/types";
 import defaultSiteData from "@/data/site-data.json";
 
@@ -56,6 +56,7 @@ export function BrandsTab({
               logoText: "🚀 New Brand",
               ytUrl: "",
               logoUrl: "",
+              hidden: false,
             }])}
             className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold px-3.5 py-2 rounded-xl text-xs flex items-center gap-1.5 border border-emerald-500/30 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
@@ -66,16 +67,62 @@ export function BrandsTab({
 
       <div className="space-y-5">
         {brandsList.map((brand, idx) => (
-          <div key={brand.id} className="p-5 rounded-2xl border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] space-y-4 relative">
-            <button
-              type="button"
-              onClick={() => setBrandsList(brandsList.filter(b => b.id !== brand.id))}
-              disabled={isViewer}
-              className="absolute top-4 right-4 text-red-500 hover:text-red-600 p-1.5 bg-red-500/10 rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
-              title="Delete brand"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
+          <div 
+            key={brand.id} 
+            className={`p-5 rounded-2xl border bg-brand-bg dark:bg-[#061612] space-y-4 relative transition-all ${
+              brand.hidden 
+                ? "border-amber-500/40 dark:border-amber-500/30 bg-amber-500/[0.02]" 
+                : "border-brand-border dark:border-[#16382e]"
+            }`}
+          >
+            <div className="absolute top-4 right-4 flex items-center gap-2">
+              <button
+                type="button"
+                disabled={isViewer}
+                onClick={() => {
+                  const next = [...brandsList];
+                  const newHidden = !next[idx].hidden;
+                  next[idx] = { ...next[idx], hidden: newHidden };
+                  setBrandsList(next);
+                  if (setNotification) {
+                    setNotification({
+                      type: "success",
+                      message: newHidden
+                        ? `"${brand.name}" is now hidden from the public landing page. Click 'Save Brands' to publish.`
+                        : `"${brand.name}" is now visible on the public landing page. Click 'Save Brands' to publish.`,
+                    });
+                  }
+                }}
+                className={`px-2.5 py-1.5 rounded-xl transition-all flex items-center gap-1.5 text-xs font-bold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-sm ${
+                  brand.hidden
+                    ? "bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 hover:bg-amber-500/25"
+                    : "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25"
+                }`}
+                title={brand.hidden ? "Brand is currently hidden from the public site. Click to make visible." : "Brand is currently visible on the public site. Click to hide."}
+              >
+                {brand.hidden ? (
+                  <>
+                    <EyeOff className="w-3.5 h-3.5" />
+                    <span>Hidden</span>
+                  </>
+                ) : (
+                  <>
+                    <Eye className="w-3.5 h-3.5" />
+                    <span>Visible</span>
+                  </>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setBrandsList(brandsList.filter(b => b.id !== brand.id))}
+                disabled={isViewer}
+                className="text-red-500 hover:text-red-600 p-1.5 bg-red-500/10 rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
+                title="Delete brand"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pr-10">
               <div>
