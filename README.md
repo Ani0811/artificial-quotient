@@ -816,7 +816,7 @@ artificial-quotient/
    # Transactional Email (Brevo Multi-Key Pool & Fallback)
    # You can supply a single key or a comma-separated list of keys for automatic failover
    BREVO_API_KEY=xkeysib-key1,xkeysib-key2
-   CONTACT_RECEIVER_EMAIL=anirudha.basuthakur@gmail.com
+   CONTACT_RECEIVER_EMAIL=contact@yourdomain.com
 
    # SMTP Fallback Settings (Optional)
    SMTP_HOST=mail.yourdomain.com
@@ -882,11 +882,11 @@ Artificial Quotient is optimized for deployment on **GreenGeeks Hosting** using 
    MYSQL_USER=cpaneluser_aq_user
    MYSQL_PASSWORD=your_database_password
    MYSQL_DATABASE=cpaneluser_aq_dashboard
-   ADMIN_MASTER_KEY=AQ-RESET-2026
+   ADMIN_MASTER_KEY=AQ-RESET-YOUR-STRONG-KEY
 
    # Transactional Email (Brevo Multi-Key Failover Pool)
    BREVO_API_KEY=xkeysib-production-key1,xkeysib-production-key2
-   CONTACT_RECEIVER_EMAIL=anirudha.basuthakur@gmail.com
+   CONTACT_RECEIVER_EMAIL=contact@yourdomain.com
 
    # Production SEO & Analytics
    NEXT_PUBLIC_SITE_URL=https://artificial-quotient.com

@@ -38,8 +38,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# scratch
+# scratch & backups
 /scratch
 *.zip
+/src/data/backups/*
+!/src/data/backups/.gitkeep
 
 

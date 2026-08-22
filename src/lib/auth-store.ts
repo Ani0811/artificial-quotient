@@ -50,11 +50,11 @@ export async function getAdminUsers(): Promise<AdminUser[]> {
       {
         id: "admin-1",
         name: "Primary Admin",
-        email: "admin@artificialquotient.com",
+        email: process.env.ADMIN_EMAIL || "admin@artificialquotient.com",
         password: currentAdminPassword,
         role: "Super Admin",
         permissions: ["hero", "stats", "case-studies", "what-performs", "brands", "backup", "users"],
-        recoveryKey: "AQ-SEC-9842",
+        recoveryKey: process.env.ADMIN_RECOVERY_KEY || "AQ-SEC-0000",
         status: "Active",
         lastLogin: new Date().toISOString(),
       },

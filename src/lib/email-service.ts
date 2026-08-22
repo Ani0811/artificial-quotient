@@ -12,7 +12,7 @@ export function getBrevoConfigs(): BrevoConfig[] {
     process.env.BREVO_SENDER ||
     process.env.SMTP_USER ||
     process.env.CONTACT_RECEIVER_EMAIL ||
-    "anirudha.basuthakur@gmail.com";
+    "contact@artificialquotient.com";
 
   // 1. Check for BREVO_API_KEYS (comma-separated list: key1,key2,key3)
   if (process.env.BREVO_API_KEYS) {

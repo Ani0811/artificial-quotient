@@ -1,9 +1,9 @@
 [
   {
     "id": "admin-1",
-    "name": "Anirudha Basu Thakur",
-    "email": "anirudha.basuthakur@gmail.com",
-    "password": "admin123",
+    "name": "System Administrator",
+    "email": "admin@artificialquotient.com",
+    "password": "CHANGE_ME_IN_PRODUCTION",
     "role": "Super Admin",
     "permissions": [
       "hero",
@@ -14,21 +14,8 @@
       "backup",
       "users"
     ],
-    "recoveryKey": "AQ-SEC-9842",
+    "recoveryKey": "AQ-SEC-0000",
     "status": "Active",
-    "lastLogin": "2026-08-11T12:48:39.795Z"
-  },
-  {
-    "id": "admin-1786286891836",
-    "name": "Vasudev Sharma",
-    "email": "vasudevsharma3223@gmail.com",
-    "password": "VasuRocks",
-    "role": "Viewer",
-    "permissions": [
-      "stats"
-    ],
-    "recoveryKey": "AQ-SEC-8475",
-    "status": "Active",
-    "lastLogin": "2026-08-09T14:48:12.000Z"
+    "lastLogin": "2026-08-01T00:00:00.000Z"
   }
 ]
