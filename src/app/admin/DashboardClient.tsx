@@ -372,13 +372,19 @@ export default function DashboardClient({ currentUser }: DashboardClientProps) {
       const res = await fetch("/api/admin/youtube-sync", { method: "POST" });
       const data = await res.json();
       if (res.ok) {
+        if (data.data?.whatPerforms) {
+          setWhatPerforms(data.data.whatPerforms);
+        }
+        if (data.data?.sponsorResults) {
+          setSponsorResults(data.data.sponsorResults);
+        }
+        if (data.data?.stats) {
+          setStatsForm(data.data.stats);
+        }
         setNotification({
           type: "success",
-          message: data.message || "Successfully synced YouTube stats!",
+          message: data.message || "Successfully refreshed YouTube stats across What Performs, Case Studies & Channel stats!",
         });
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000);
       } else {
         setNotification({
           type: "error",

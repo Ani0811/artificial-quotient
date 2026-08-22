@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { initDatabase } from "@/lib/db";
 import { 
   getSiteConfig, 
@@ -10,15 +9,9 @@ import {
   syncSponsorCaseStudies
 } from "@/schema";
 import { verifyAdminSession } from "@/lib/admin-auth";
+import { getYoutubeId, formatViewsCount, estimateClicksFromViews } from "@/app/admin/utils";
 import fs from "fs/promises";
 import path from "path";
-
-function getYoutubeId(url?: string): string | null {
-  if (!url) return null;
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-  const match = url.match(regExp);
-  return (match && match[2].length === 11) ? match[2] : null;
-}
 
 function getHighResYoutubeThumbnail(thumbnails?: any, vId?: string | null): string {
   if (thumbnails?.maxres?.url) {
@@ -34,18 +27,6 @@ function getHighResYoutubeThumbnail(thumbnails?: any, vId?: string | null): stri
     return thumbnails.high.url;
   }
   return thumbnails?.default?.url || "";
-}
-
-function formatViews(views: string): string {
-  const num = parseInt(views, 10);
-  if (isNaN(num)) return views;
-  if (num >= 1000000) {
-    return (num / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
-  }
-  if (num >= 1000) {
-    return (num / 1000).toFixed(1).replace(/\.0$/, "") + "k";
-  }
-  return num.toString();
 }
 
 export async function POST(request: Request) {
@@ -83,12 +64,12 @@ export async function POST(request: Request) {
       const stats = channelData.items[0].statistics;
       const currentConfig = await getSiteConfig();
       if (currentConfig) {
-        const formattedSubs = formatViews(stats.subscriberCount);
+        const formattedSubs = formatViewsCount(stats.subscriberCount);
         currentConfig.stats = {
           ...currentConfig.stats,
           subscribers: formattedSubs,
           videosCount: stats.videoCount + "+",
-          monthlyViews: formatViews(stats.viewCount),
+          monthlyViews: formatViewsCount(stats.viewCount),
         };
         if (currentConfig.heroConfig) {
           currentConfig.heroConfig.subscribersCount = formattedSubs;
@@ -129,7 +110,8 @@ export async function POST(request: Request) {
             if (wpItem) {
               const viewCount = v.statistics?.viewCount;
               if (viewCount) {
-                wpItem.views = formatViews(viewCount);
+                wpItem.views = formatViewsCount(viewCount);
+                wpItem.clicks = estimateClicksFromViews(viewCount);
               }
               const snippet = v.snippet;
               if (snippet) {
@@ -216,6 +198,8 @@ export async function POST(request: Request) {
       message: `Successfully synced live stats and upscaled thumbnails (${updatedCount} items updated).`,
       data: {
         stats: syncedStats,
+        whatPerforms: updatedWpList,
+        sponsorResults: updatedCsList,
         whatPerformsCount: updatedWpList.length,
         sponsorResultsCount: updatedCsList.length,
       }

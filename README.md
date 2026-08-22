@@ -662,7 +662,7 @@ Reduced vertical padding and internal gaps across all homepage sections on mobil
 - **Dynamic Public Filtering**: Upgraded [`brand-carousel.tsx`](file:///src/components/brand-carousel.tsx) and [`what-performs.tsx`](file:///src/components/what-performs.tsx) to automatically filter out hidden items (`hidden: true`), dynamically recalculating marquee track widths, slideshow pagination dots, arrow navigation, and empty states.
 - **MySQL Schema Migration & Knex Sync**: Added `is_hidden BOOLEAN DEFAULT FALSE` to both `brand_items` and `what_performs_cards` tables with automatic non-destructive schema migration checks (`k.schema.hasColumn`) on database initialization, raw SQL helpers, and seed datasets.
 
-#### 2. Automated YouTube Video Importer & Metadata Extractor (`/api/admin/youtube-video`, `WhatPerformsTab.tsx`, `utils.ts`)
+#### 2. Automated YouTube Video Importer & Real-Time Data Refresh Engine (`/api/admin/youtube-video`, `/api/admin/youtube-sync`, `WhatPerformsTab.tsx`, `DashboardClient.tsx`, `utils.ts`)
 - **Dedicated YouTube Video Extraction API (`POST /api/admin/youtube-video`)**: Built a robust multi-stage metadata extractor that accepts any YouTube link and automatically pulls:
   - **Accurate Video Title**: Extracted from YouTube Data API v3, oEmbed fallback, or HTML OpenGraph tags.
   - **High-Resolution Thumbnail Media**: Automatically resolves `maxresdefault.jpg` and `hqdefault.jpg` with fallback support.
@@ -670,7 +670,9 @@ Reduced vertical padding and internal gaps across all homepage sections on mobil
   - **Conversion Click Estimations**: Intelligently models realistic tracked CTR conversions (e.g. `4.2k+`, `1.2k+`, `850+`) based on view volume with full admin editing capabilities.
   - **Smart Category, Emoji & Highlight Badges**: Contextually suggests category types (*"Dedicated Video"*, *"Integration"*), relevant emojis (🎙️, ✨, 🐱, 🤖, ⚡, 🔥), and punchy highlight tags (*"AI Lip Sync"*, *"Motion Graphics"*, *"Viral Animation"*).
 - **1-Click "Auto-Create Card" Top Bar**: Added an automated import bar at the top of the What Performs tab where admins can paste a YouTube link and instantly generate a fully configured card with zero manual typing.
-- **Per-Card "Auto-Fetch Info" & Global Batch Refresh**: Added a dedicated `⚡ Auto-Fetch Info` button next to the YouTube link field on each card, alongside a header `Refresh All Videos` button to update stats across all existing cards in one click.
+- **Dedicated Per-Card Data Refresh Actions**: Added prominent **"🔄 Refresh Data"** buttons in the card header action bar and **"🔄 Refresh Stats"** buttons directly beside the YouTube link input on every existing card. Clicking instantly re-queries YouTube for updated view counts, conversion click estimates, high-res thumbnails, and titles.
+- **Live Batch Refresh with Counter Progress**: Enhanced the header **"Refresh All Videos"** button with a real-time progress indicator (`Refreshing (1/4)...`), updating all existing cards simultaneously and notifying the admin upon completion.
+- **Instant Client State Synchronization**: Upgraded `/api/admin/youtube-sync` and `DashboardClient.tsx` to return and apply updated arrays (`whatPerforms`, `sponsorResults`, `stats`) immediately into the local React state without requiring page reloads.
 - **Comprehensive YouTube URL Regex Parser**: Enhanced `getYoutubeId` in [`src/app/admin/utils.ts`](file:///src/app/admin/utils.ts) to flawlessly parse standard watch URLs, shortened `youtu.be`, `/shorts/`, `/embed/`, `/live/`, mobile URLs, and URLs with tracking query parameters.
 
 ---
