@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Plus, Trash2, Sparkles, Save, Eye, EyeOff, ChevronUp, ChevronDown, GripVertical } from "lucide-react";
+import { Plus, Trash2, Sparkles, Save, Eye, EyeOff, ChevronUp, ChevronDown, ChevronsUp, ChevronsDown, GripVertical } from "lucide-react";
 import { SponsorItem } from "@/types";
 import { QUOTE_FONT_OPTIONS, loadGoogleFont } from "@/components/font-provider";
 import { getYoutubeId } from "../../utils";
@@ -35,6 +35,12 @@ export function CaseStudiesTab({
     const [movedItem] = next.splice(fromIdx, 1);
     next.splice(toIdx, 0, movedItem);
     setSponsorResults(next);
+    if (setNotification) {
+      setNotification({
+        type: "success",
+        message: `Moved "${movedItem.partnerName}" to position #${toIdx + 1}. Click 'Save Sponsor Results' to publish.`,
+      });
+    }
   };
 
   return (
@@ -42,7 +48,9 @@ export function CaseStudiesTab({
       <div className="flex justify-between items-center flex-wrap gap-2">
         <div>
           <h3 className="font-heading font-bold text-sm text-brand-text dark:text-emerald-400 uppercase tracking-wider">Partner Case Studies</h3>
-          <p className="text-xs text-brand-muted dark:text-emerald-200/60 mt-0.5">Reorder with arrows or drag &amp; drop to control public case study showcase sequence.</p>
+          <p className="text-xs text-brand-muted dark:text-emerald-200/60 mt-0.5">
+            Reorder freely: pick any position from the <strong>Pos #</strong> dropdown, use <strong>arrow buttons</strong>, or <strong>drag &amp; drop</strong>.
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -90,14 +98,9 @@ export function CaseStudiesTab({
           return (
             <div 
               key={item.id} 
-              draggable={!isViewer}
-              onDragStart={(e) => {
-                setDraggedIdx(idx);
-                e.dataTransfer.effectAllowed = "move";
-                e.dataTransfer.setData("text/plain", idx.toString());
-              }}
               onDragOver={(e) => {
                 e.preventDefault();
+                e.dataTransfer.dropEffect = "move";
                 if (dragOverIdx !== idx) setDragOverIdx(idx);
               }}
               onDragLeave={() => {
@@ -105,21 +108,19 @@ export function CaseStudiesTab({
               }}
               onDrop={(e) => {
                 e.preventDefault();
-                if (draggedIdx !== null && draggedIdx !== idx) {
-                  moveCaseStudy(draggedIdx, idx);
+                const fromStr = e.dataTransfer.getData("text/plain");
+                const fromIdx = fromStr !== "" ? parseInt(fromStr, 10) : draggedIdx;
+                if (fromIdx !== null && !isNaN(fromIdx) && fromIdx !== idx) {
+                  moveCaseStudy(fromIdx, idx);
                 }
-                setDraggedIdx(null);
-                setDragOverIdx(null);
-              }}
-              onDragEnd={() => {
                 setDraggedIdx(null);
                 setDragOverIdx(null);
               }}
               className={`p-5 rounded-2xl border bg-brand-bg dark:bg-[#061612] space-y-4 relative transition-all ${
                 isDraggingThis 
-                  ? "opacity-40 scale-[0.99] border-dashed border-emerald-500" 
+                  ? "opacity-30 scale-[0.99] border-dashed border-emerald-500" 
                   : isOverThis
-                  ? "border-emerald-500 ring-2 ring-emerald-500/40 bg-emerald-500/[0.05]"
+                  ? "border-emerald-500 ring-2 ring-emerald-500/50 bg-emerald-500/[0.08]"
                   : item.hidden 
                   ? "border-amber-500/40 dark:border-amber-500/30 bg-amber-500/[0.02]" 
                   : "border-brand-border dark:border-[#16382e]"
@@ -127,14 +128,24 @@ export function CaseStudiesTab({
             >
               {/* Card Action Controls: Reorder, Visibility, Delete */}
               <div className="absolute top-4 right-4 flex items-center gap-1.5 sm:gap-2">
-                {/* Reorder Buttons (Move Up / Move Down) */}
+                {/* Reorder Buttons (Top, Up, Down, Bottom) */}
                 <div className="flex items-center bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] rounded-xl p-0.5 shadow-sm">
                   <button
                     type="button"
                     disabled={isViewer || idx === 0}
+                    onClick={() => moveCaseStudy(idx, 0)}
+                    className="p-1 sm:p-1.5 text-brand-muted hover:text-emerald-600 dark:text-emerald-200/70 dark:hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors disabled:opacity-20 disabled:cursor-not-allowed cursor-pointer"
+                    title={idx === 0 ? "Already at the top" : "Jump to first position (#1)"}
+                    aria-label="Jump to top"
+                  >
+                    <ChevronsUp className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    disabled={isViewer || idx === 0}
                     onClick={() => moveCaseStudy(idx, idx - 1)}
-                    className="p-1 sm:p-1.5 text-brand-muted hover:text-emerald-600 dark:text-emerald-200/70 dark:hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer"
-                    title={idx === 0 ? "Already at the top" : "Move case study up"}
+                    className="p-1 sm:p-1.5 text-brand-muted hover:text-emerald-600 dark:text-emerald-200/70 dark:hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors disabled:opacity-20 disabled:cursor-not-allowed cursor-pointer"
+                    title={idx === 0 ? "Already at the top" : "Move case study up 1 position"}
                     aria-label="Move case study up"
                   >
                     <ChevronUp className="w-4 h-4" />
@@ -143,11 +154,21 @@ export function CaseStudiesTab({
                     type="button"
                     disabled={isViewer || idx === sponsorResults.length - 1}
                     onClick={() => moveCaseStudy(idx, idx + 1)}
-                    className="p-1 sm:p-1.5 text-brand-muted hover:text-emerald-600 dark:text-emerald-200/70 dark:hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer"
-                    title={idx === sponsorResults.length - 1 ? "Already at the bottom" : "Move case study down"}
+                    className="p-1 sm:p-1.5 text-brand-muted hover:text-emerald-600 dark:text-emerald-200/70 dark:hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors disabled:opacity-20 disabled:cursor-not-allowed cursor-pointer"
+                    title={idx === sponsorResults.length - 1 ? "Already at the bottom" : "Move case study down 1 position"}
                     aria-label="Move case study down"
                   >
                     <ChevronDown className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    disabled={isViewer || idx === sponsorResults.length - 1}
+                    onClick={() => moveCaseStudy(idx, sponsorResults.length - 1)}
+                    className="p-1 sm:p-1.5 text-brand-muted hover:text-emerald-600 dark:text-emerald-200/70 dark:hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors disabled:opacity-20 disabled:cursor-not-allowed cursor-pointer"
+                    title={idx === sponsorResults.length - 1 ? "Already at the bottom" : `Jump to last position (#${sponsorResults.length})`}
+                    aria-label="Jump to bottom"
+                  >
+                    <ChevronsDown className="w-3.5 h-3.5" />
                   </button>
                 </div>
 
@@ -202,17 +223,47 @@ export function CaseStudiesTab({
                 </button>
               </div>
 
-              {/* Position Badge & Drag Grip Handle */}
-              <div className="flex items-center gap-2 pb-1">
+              {/* Position Jump Dropdown & Drag Handle */}
+              <div className="flex items-center gap-2.5 pb-1 flex-wrap">
                 <div 
-                  className={`flex items-center gap-1 text-brand-muted dark:text-emerald-300/60 ${!isViewer ? "cursor-grab active:cursor-grabbing hover:text-emerald-500 dark:hover:text-emerald-400" : ""}`}
-                  title={!isViewer ? "Drag to reorder case study" : ""}
+                  draggable={!isViewer}
+                  onDragStart={(e) => {
+                    setDraggedIdx(idx);
+                    e.dataTransfer.effectAllowed = "move";
+                    e.dataTransfer.setData("text/plain", idx.toString());
+                  }}
+                  onDragEnd={() => {
+                    setDraggedIdx(null);
+                    setDragOverIdx(null);
+                  }}
+                  className={`flex items-center gap-1.5 text-brand-muted dark:text-emerald-300/70 p-1 rounded-lg hover:bg-brand-card dark:hover:bg-[#0c201a] border border-transparent hover:border-brand-border dark:hover:border-[#16382e] ${!isViewer ? "cursor-grab active:cursor-grabbing hover:text-emerald-500 dark:hover:text-emerald-400" : ""}`}
+                  title={!isViewer ? "Drag this handle to place card at any position" : ""}
                 >
                   <GripVertical className="w-4 h-4 shrink-0" />
-                  <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] text-brand-text dark:text-emerald-400">
-                    #{idx + 1}
-                  </span>
+                  <span className="text-[11px] font-bold uppercase tracking-wider">Drag</span>
                 </div>
+
+                {/* Direct Position Dropdown */}
+                <div className="flex items-center gap-1.5 bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] px-2 py-0.5 rounded-lg">
+                  <span className="text-[11px] font-bold text-brand-muted dark:text-emerald-200/60 uppercase">Pos:</span>
+                  <select
+                    disabled={isViewer}
+                    value={idx + 1}
+                    onChange={(e) => {
+                      const targetPos = parseInt(e.target.value, 10) - 1;
+                      moveCaseStudy(idx, targetPos);
+                    }}
+                    className="bg-transparent text-emerald-600 dark:text-emerald-400 font-mono font-bold text-xs py-0.5 pr-1 focus:outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    title="Change position sequence number"
+                  >
+                    {sponsorResults.map((_, i) => (
+                      <option key={i + 1} value={i + 1} className="bg-white dark:bg-[#061612] text-brand-text dark:text-white">
+                        #{i + 1}{i === 0 ? " (First)" : i === sponsorResults.length - 1 ? " (Last)" : ""}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
                 {item.hidden && (
                   <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-[11px] font-bold">
                     <EyeOff className="w-3 h-3" />
