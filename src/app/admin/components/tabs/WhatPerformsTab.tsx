@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Plus, Trash2, Sparkles, Save, Eye, EyeOff, Loader2, Link2, RefreshCw, Zap } from "lucide-react";
+import { Plus, Trash2, Sparkles, Save, Eye, EyeOff, Loader2, Link2, RefreshCw, Zap, ChevronUp, ChevronDown, GripVertical } from "lucide-react";
 import { PerformItem } from "@/types";
 import defaultSiteData from "@/data/site-data.json";
 import { getYoutubeId } from "../../utils";
@@ -30,6 +30,16 @@ export function WhatPerformsTab({
   const [fetchingCardId, setFetchingCardId] = useState<string | null>(null);
   const [isBatchRefreshing, setIsBatchRefreshing] = useState(false);
   const [batchProgress, setBatchProgress] = useState<{ current: number; total: number } | null>(null);
+  const [draggedIdx, setDraggedIdx] = useState<number | null>(null);
+  const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
+
+  const moveWhatPerforms = (fromIdx: number, toIdx: number) => {
+    if (toIdx < 0 || toIdx >= whatPerforms.length || fromIdx === toIdx) return;
+    const next = [...whatPerforms];
+    const [movedItem] = next.splice(fromIdx, 1);
+    next.splice(toIdx, 0, movedItem);
+    setWhatPerforms(next);
+  };
 
   // Helper to fetch details for a single video link
   const fetchVideoDetails = async (url: string) => {
@@ -175,7 +185,7 @@ export function WhatPerformsTab({
       <div className="flex justify-between items-center flex-wrap gap-2">
         <div>
           <h3 className="font-heading font-bold text-sm text-brand-text dark:text-emerald-400 uppercase tracking-wider">What Performs on Channel</h3>
-          <p className="text-xs text-brand-muted dark:text-emerald-200/60 mt-0.5">Showcase high-performing video case studies, tutorials, and sponsor breakdowns.</p>
+          <p className="text-xs text-brand-muted dark:text-emerald-200/60 mt-0.5">Showcase high-performing video case studies. Reorder with arrows or drag &amp; drop.</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <button
@@ -285,18 +295,74 @@ export function WhatPerformsTab({
       <div className="space-y-5">
         {whatPerforms.map((item, idx) => {
           const isCardFetching = fetchingCardId === item.id;
+          const isDraggingThis = draggedIdx === idx;
+          const isOverThis = dragOverIdx === idx && draggedIdx !== idx;
 
           return (
             <div 
               key={item.id} 
+              draggable={!isViewer}
+              onDragStart={(e) => {
+                setDraggedIdx(idx);
+                e.dataTransfer.effectAllowed = "move";
+                e.dataTransfer.setData("text/plain", idx.toString());
+              }}
+              onDragOver={(e) => {
+                e.preventDefault();
+                if (dragOverIdx !== idx) setDragOverIdx(idx);
+              }}
+              onDragLeave={() => {
+                if (dragOverIdx === idx) setDragOverIdx(null);
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                if (draggedIdx !== null && draggedIdx !== idx) {
+                  moveWhatPerforms(draggedIdx, idx);
+                }
+                setDraggedIdx(null);
+                setDragOverIdx(null);
+              }}
+              onDragEnd={() => {
+                setDraggedIdx(null);
+                setDragOverIdx(null);
+              }}
               className={`p-5 rounded-2xl border bg-brand-bg dark:bg-[#061612] space-y-4 relative transition-all ${
-                item.hidden 
+                isDraggingThis 
+                  ? "opacity-40 scale-[0.99] border-dashed border-emerald-500" 
+                  : isOverThis
+                  ? "border-emerald-500 ring-2 ring-emerald-500/40 bg-emerald-500/[0.05]"
+                  : item.hidden 
                   ? "border-amber-500/40 dark:border-amber-500/30 bg-amber-500/[0.02]" 
                   : "border-brand-border dark:border-[#16382e]"
               }`}
             >
-              {/* Card Action Buttons (Eye Toggle + Delete) */}
-              <div className="absolute top-4 right-4 flex items-center gap-2">
+              {/* Card Action Buttons (Reorder + Eye Toggle + Delete) */}
+              <div className="absolute top-4 right-4 flex items-center gap-1.5 sm:gap-2">
+                {/* Reorder Buttons (Move Up / Move Down) */}
+                <div className="flex items-center bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] rounded-xl p-0.5 shadow-sm">
+                  <button
+                    type="button"
+                    disabled={isViewer || idx === 0}
+                    onClick={() => moveWhatPerforms(idx, idx - 1)}
+                    className="p-1 sm:p-1.5 text-brand-muted hover:text-emerald-600 dark:text-emerald-200/70 dark:hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer"
+                    title={idx === 0 ? "Already at the top" : "Move card up"}
+                    aria-label="Move card up"
+                  >
+                    <ChevronUp className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    disabled={isViewer || idx === whatPerforms.length - 1}
+                    onClick={() => moveWhatPerforms(idx, idx + 1)}
+                    className="p-1 sm:p-1.5 text-brand-muted hover:text-emerald-600 dark:text-emerald-200/70 dark:hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer"
+                    title={idx === whatPerforms.length - 1 ? "Already at the bottom" : "Move card down"}
+                    aria-label="Move card down"
+                  >
+                    <ChevronDown className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Visibility Toggle Button */}
                 <button
                   type="button"
                   disabled={isViewer}
@@ -310,7 +376,7 @@ export function WhatPerformsTab({
                         type: "success",
                         message: newHidden
                           ? `"${item.title}" is now hidden from the public landing page. Click 'Save What Performs' to publish.`
-                          : `"${item.title}" is now visible on the public landing page. Click 'Save What Performs' to publish.`,
+                          : `"${item.title}" is now visible on the public landing page. Click 'Save What Performs' to publish.`
                       });
                     }
                   }}
@@ -324,29 +390,49 @@ export function WhatPerformsTab({
                   {item.hidden ? (
                     <>
                       <EyeOff className="w-3.5 h-3.5" />
-                      <span>Hidden</span>
+                      <span className="hidden sm:inline">Hidden</span>
                     </>
                   ) : (
                     <>
                       <Eye className="w-3.5 h-3.5" />
-                      <span>Visible</span>
+                      <span className="hidden sm:inline">Visible</span>
                     </>
                   )}
                 </button>
 
+                {/* Delete Button */}
                 <button
                   type="button"
                   disabled={isViewer}
                   onClick={() => setWhatPerforms(whatPerforms.filter(w => w.id !== item.id))}
                   className="text-red-500 hover:text-red-600 p-1.5 bg-red-500/10 rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
                   title="Delete item"
+                  aria-label="Delete item"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
 
+              {/* Position Badge & Drag Grip Handle */}
+              <div className="flex items-center gap-2 pb-1">
+                <div 
+                  className={`flex items-center gap-1 text-brand-muted dark:text-emerald-300/60 ${!isViewer ? "cursor-grab active:cursor-grabbing hover:text-emerald-500 dark:hover:text-emerald-400" : ""}`}
+                  title={!isViewer ? "Drag to reorder card" : ""}
+                >
+                  <GripVertical className="w-4 h-4 shrink-0" />
+                  <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] text-brand-text dark:text-emerald-400">
+                    #{idx + 1}
+                  </span>
+                </div>
+                {item.hidden && (
+                  <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400">
+                    (Hidden from Public Landing Page)
+                  </span>
+                )}
+              </div>
+
               {/* Row 1: Title and Sponsorship Type */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pr-28">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pr-36 sm:pr-48">
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">
                     Title / Video Topic

@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { Plus, Trash2, Sparkles, Save, Eye, EyeOff } from "lucide-react";
+import React, { useState } from "react";
+import { Plus, Trash2, Sparkles, Save, Eye, EyeOff, ChevronUp, ChevronDown, GripVertical } from "lucide-react";
 import { SponsorItem } from "@/types";
 import { QUOTE_FONT_OPTIONS, loadGoogleFont } from "@/components/font-provider";
 import { getYoutubeId } from "../../utils";
@@ -26,10 +26,24 @@ export function CaseStudiesTab({
   setNotification,
   onSave,
 }: CaseStudiesTabProps) {
+  const [draggedIdx, setDraggedIdx] = useState<number | null>(null);
+  const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
+
+  const moveCaseStudy = (fromIdx: number, toIdx: number) => {
+    if (toIdx < 0 || toIdx >= sponsorResults.length || fromIdx === toIdx) return;
+    const next = [...sponsorResults];
+    const [movedItem] = next.splice(fromIdx, 1);
+    next.splice(toIdx, 0, movedItem);
+    setSponsorResults(next);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center flex-wrap gap-2">
-        <h3 className="font-heading font-bold text-sm text-brand-text dark:text-emerald-400 uppercase tracking-wider">Partner Case Studies</h3>
+        <div>
+          <h3 className="font-heading font-bold text-sm text-brand-text dark:text-emerald-400 uppercase tracking-wider">Partner Case Studies</h3>
+          <p className="text-xs text-brand-muted dark:text-emerald-200/60 mt-0.5">Reorder with arrows or drag &amp; drop to control public case study showcase sequence.</p>
+        </div>
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -69,86 +83,159 @@ export function CaseStudiesTab({
       </div>
 
       <div className="space-y-5">
-        {sponsorResults.map((item, idx) => (
-          <div 
-            key={item.id} 
-            className={`p-5 rounded-2xl border bg-brand-bg dark:bg-[#061612] space-y-4 relative transition-all ${
-              item.hidden 
-                ? "border-amber-500/40 dark:border-amber-500/30 bg-amber-500/[0.02]" 
-                : "border-brand-border dark:border-[#16382e]"
-            }`}
-          >
-            <div className="absolute top-4 right-4 flex items-center gap-2">
-              <button
-                type="button"
-                disabled={isViewer}
-                onClick={() => {
-                  const next = [...sponsorResults];
-                  const newHidden = !next[idx].hidden;
-                  next[idx] = { ...next[idx], hidden: newHidden };
-                  setSponsorResults(next);
-                  if (setNotification) {
-                    setNotification({
-                      type: "success",
-                      message: newHidden
-                        ? `"${item.partnerName}" is now hidden from the public landing page. Click 'Save Sponsor Results' to publish.`
-                        : `"${item.partnerName}" is now visible on the public landing page. Click 'Save Sponsor Results' to publish.`,
-                    });
-                  }
-                }}
-                className={`px-2.5 py-1.5 rounded-xl transition-all flex items-center gap-1.5 text-xs font-bold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-sm ${
-                  item.hidden
-                    ? "bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 hover:bg-amber-500/25"
-                    : "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25"
-                }`}
-                title={item.hidden ? "Case study is currently hidden from the public site. Click to make visible." : "Case study is currently visible on the public site. Click to hide."}
-              >
-                {item.hidden ? (
-                  <>
-                    <EyeOff className="w-3.5 h-3.5" />
-                    <span>Hidden</span>
-                  </>
-                ) : (
-                  <>
-                    <Eye className="w-3.5 h-3.5" />
-                    <span>Visible</span>
-                  </>
-                )}
-              </button>
+        {sponsorResults.map((item, idx) => {
+          const isDraggingThis = draggedIdx === idx;
+          const isOverThis = dragOverIdx === idx && draggedIdx !== idx;
 
-              <button
-                type="button"
-                disabled={isViewer}
-                onClick={() => setSponsorResults(sponsorResults.filter(s => s.id !== item.id))}
-                className="text-red-500 hover:text-red-600 p-1.5 bg-red-500/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                title="Delete case study"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </div>
+          return (
+            <div 
+              key={item.id} 
+              draggable={!isViewer}
+              onDragStart={(e) => {
+                setDraggedIdx(idx);
+                e.dataTransfer.effectAllowed = "move";
+                e.dataTransfer.setData("text/plain", idx.toString());
+              }}
+              onDragOver={(e) => {
+                e.preventDefault();
+                if (dragOverIdx !== idx) setDragOverIdx(idx);
+              }}
+              onDragLeave={() => {
+                if (dragOverIdx === idx) setDragOverIdx(null);
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                if (draggedIdx !== null && draggedIdx !== idx) {
+                  moveCaseStudy(draggedIdx, idx);
+                }
+                setDraggedIdx(null);
+                setDragOverIdx(null);
+              }}
+              onDragEnd={() => {
+                setDraggedIdx(null);
+                setDragOverIdx(null);
+              }}
+              className={`p-5 rounded-2xl border bg-brand-bg dark:bg-[#061612] space-y-4 relative transition-all ${
+                isDraggingThis 
+                  ? "opacity-40 scale-[0.99] border-dashed border-emerald-500" 
+                  : isOverThis
+                  ? "border-emerald-500 ring-2 ring-emerald-500/40 bg-emerald-500/[0.05]"
+                  : item.hidden 
+                  ? "border-amber-500/40 dark:border-amber-500/30 bg-amber-500/[0.02]" 
+                  : "border-brand-border dark:border-[#16382e]"
+              }`}
+            >
+              {/* Card Action Controls: Reorder, Visibility, Delete */}
+              <div className="absolute top-4 right-4 flex items-center gap-1.5 sm:gap-2">
+                {/* Reorder Buttons (Move Up / Move Down) */}
+                <div className="flex items-center bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] rounded-xl p-0.5 shadow-sm">
+                  <button
+                    type="button"
+                    disabled={isViewer || idx === 0}
+                    onClick={() => moveCaseStudy(idx, idx - 1)}
+                    className="p-1 sm:p-1.5 text-brand-muted hover:text-emerald-600 dark:text-emerald-200/70 dark:hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer"
+                    title={idx === 0 ? "Already at the top" : "Move case study up"}
+                    aria-label="Move case study up"
+                  >
+                    <ChevronUp className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    disabled={isViewer || idx === sponsorResults.length - 1}
+                    onClick={() => moveCaseStudy(idx, idx + 1)}
+                    className="p-1 sm:p-1.5 text-brand-muted hover:text-emerald-600 dark:text-emerald-200/70 dark:hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer"
+                    title={idx === sponsorResults.length - 1 ? "Already at the bottom" : "Move case study down"}
+                    aria-label="Move case study down"
+                  >
+                    <ChevronDown className="w-4 h-4" />
+                  </button>
+                </div>
 
-            {item.hidden && (
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-[11px] font-bold">
-                <EyeOff className="w-3 h-3" />
-                <span>Hidden from Public Site (Draft / Paused)</span>
-              </div>
-            )}
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pr-28">
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Partner Brand Name</label>
-                <input 
-                  type="text" 
-                  value={item.partnerName} 
+                {/* Visibility Toggle Button */}
+                <button
+                  type="button"
                   disabled={isViewer}
-                  onChange={(e) => {
+                  onClick={() => {
                     const next = [...sponsorResults];
-                    next[idx].partnerName = e.target.value;
+                    const newHidden = !next[idx].hidden;
+                    next[idx] = { ...next[idx], hidden: newHidden };
                     setSponsorResults(next);
+                    if (setNotification) {
+                      setNotification({
+                        type: "success",
+                        message: newHidden
+                          ? `"${item.partnerName}" is now hidden from the public landing page. Click 'Save Sponsor Results' to publish.`
+                          : `"${item.partnerName}" is now visible on the public landing page. Click 'Save Sponsor Results' to publish.`,
+                      });
+                    }
                   }}
-                  className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm disabled:opacity-50" 
-                />
+                  className={`px-2.5 py-1.5 rounded-xl transition-all flex items-center gap-1.5 text-xs font-bold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-sm ${
+                    item.hidden
+                      ? "bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 hover:bg-amber-500/25"
+                      : "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25"
+                  }`}
+                  title={item.hidden ? "Case study is currently hidden from the public site. Click to make visible." : "Case study is currently visible on the public site. Click to hide."}
+                >
+                  {item.hidden ? (
+                    <>
+                      <EyeOff className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">Hidden</span>
+                    </>
+                  ) : (
+                    <>
+                      <Eye className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">Visible</span>
+                    </>
+                  )}
+                </button>
+
+                {/* Delete Button */}
+                <button
+                  type="button"
+                  disabled={isViewer}
+                  onClick={() => setSponsorResults(sponsorResults.filter(s => s.id !== item.id))}
+                  className="text-red-500 hover:text-red-600 p-1.5 bg-red-500/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                  title="Delete case study"
+                  aria-label="Delete case study"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
               </div>
+
+              {/* Position Badge & Drag Grip Handle */}
+              <div className="flex items-center gap-2 pb-1">
+                <div 
+                  className={`flex items-center gap-1 text-brand-muted dark:text-emerald-300/60 ${!isViewer ? "cursor-grab active:cursor-grabbing hover:text-emerald-500 dark:hover:text-emerald-400" : ""}`}
+                  title={!isViewer ? "Drag to reorder case study" : ""}
+                >
+                  <GripVertical className="w-4 h-4 shrink-0" />
+                  <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-brand-card dark:bg-[#0c201a] border border-brand-border dark:border-[#16382e] text-brand-text dark:text-emerald-400">
+                    #{idx + 1}
+                  </span>
+                </div>
+                {item.hidden && (
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-[11px] font-bold">
+                    <EyeOff className="w-3 h-3" />
+                    <span>Hidden from Public Site (Draft / Paused)</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pr-36 sm:pr-48">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Partner Brand Name</label>
+                  <input 
+                    type="text" 
+                    value={item.partnerName} 
+                    disabled={isViewer}
+                    onChange={(e) => {
+                      const next = [...sponsorResults];
+                      next[idx].partnerName = e.target.value;
+                      setSponsorResults(next);
+                    }}
+                    className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm disabled:opacity-50" 
+                  />
+                </div>
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Campaign Type</label>
                 <input 
@@ -617,10 +704,10 @@ export function CaseStudiesTab({
                   className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl p-3 text-xs sm:text-sm font-sans leading-relaxed disabled:opacity-50 focus:border-emerald-500 focus:outline-none" 
                 />
               </div>
-
             </div>
           </div>
-        ))}
+        );
+      })}
       </div>
 
       <div className="flex justify-end pt-5 border-t border-brand-border dark:border-[#16382e]">

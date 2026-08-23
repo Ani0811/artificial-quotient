@@ -220,7 +220,7 @@ export function AdminPreviewPanel({
             </span>
           </div>
           <div className="space-y-4">
-            {sponsorResults.map((item) => {
+            {sponsorResults.map((item, idx) => {
               const ytId = getYoutubeId(item.ytUrl);
               const thumbImg = item.thumbnailUrl === "none" ? null : (item.thumbnailUrl || (ytId ? `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg` : null));
 
@@ -242,11 +242,19 @@ export function AdminPreviewPanel({
                           <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
                         </div>
                       </div>
+                      <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/70 text-[10px] font-bold text-white">
+                        #{idx + 1}
+                      </div>
                     </div>
                   )}
 
                   <div className="flex justify-between items-center flex-wrap gap-2">
                     <div className="flex items-center gap-2 min-w-0">
+                      {!thumbImg && (
+                        <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                          #{idx + 1}
+                        </span>
+                      )}
                       <span className="font-bold text-sm text-brand-text dark:text-white truncate min-w-0">{item.partnerName}</span>
                       {item.hidden ? (
                         <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-500 border border-amber-500/30 shrink-0">
@@ -283,7 +291,7 @@ export function AdminPreviewPanel({
         <div className="space-y-5">
           <div className="text-sm font-bold text-brand-text dark:text-white mb-2">What Performs Preview ({whatPerforms.length} Videos)</div>
           <div className="grid grid-cols-1 gap-4">
-            {whatPerforms.map((item) => {
+            {whatPerforms.map((item, idx) => {
               const ytId = getYoutubeId(item.ytUrl);
               const thumbImg = item.thumbnail || (ytId ? `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg` : null);
 
@@ -297,12 +305,17 @@ export function AdminPreviewPanel({
                           <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
                         </div>
                       </div>
-                      <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/70 text-[10px] font-bold text-white">
-                        {item.type || "Video"}
+                      <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/70 text-[10px] font-bold text-white flex items-center gap-1">
+                        <span>#{idx + 1}</span>
+                        <span>•</span>
+                        <span>{item.type || "Video"}</span>
                       </div>
                     </div>
                   )}
-                  <div className="font-bold text-sm text-brand-text dark:text-white line-clamp-2">{item.title}</div>
+                  <div className="font-bold text-sm text-brand-text dark:text-white line-clamp-2">
+                    {!thumbImg && <span className="text-emerald-500 font-mono mr-1.5">#{idx + 1}</span>}
+                    {item.title}
+                  </div>
                   <div className="flex justify-between items-center text-xs font-bold border-t border-brand-border dark:border-[#16382e] pt-2">
                     <span className="text-brand-muted dark:text-emerald-200/70">{item.views} views</span>
                     <span className="text-emerald-500">{item.clicks} clicks</span>
@@ -327,7 +340,12 @@ export function AdminPreviewPanel({
             <div key={brand.id} className="bg-brand-bg dark:bg-[#061612] rounded-xl border border-brand-border dark:border-[#16382e] p-4 shadow-sm relative overflow-hidden">
               <div className={`absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r ${["from-emerald-500 to-teal-400","from-amber-400 to-orange-500","from-indigo-500 to-purple-500","from-purple-500 to-pink-500","from-cyan-400 to-blue-500","from-rose-500 to-red-400"][idx % 6]}`}></div>
               <div className="flex justify-between items-start mb-2 gap-2">
-                <span className="font-heading font-bold text-sm text-brand-text dark:text-white truncate">{brand.logoText || brand.name}</span>
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 shrink-0">
+                    #{idx + 1}
+                  </span>
+                  <span className="font-heading font-bold text-sm text-brand-text dark:text-white truncate">{brand.logoText || brand.name}</span>
+                </div>
                 <span className="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shrink-0">Sponsor</span>
               </div>
               <div className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mb-1">{brand.category}</div>
