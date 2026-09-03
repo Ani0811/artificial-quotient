@@ -381,6 +381,9 @@ export default function DashboardClient({ currentUser }: DashboardClientProps) {
         if (data.data?.stats) {
           setStatsForm(data.data.stats);
         }
+        if (data.data?.heroConfig) {
+          setHeroForm((prev) => ({ ...prev, ...data.data.heroConfig }));
+        }
         setNotification({
           type: "success",
           message: data.message || "Successfully refreshed YouTube stats across What Performs, Case Studies & Channel stats!",

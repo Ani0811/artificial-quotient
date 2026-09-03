@@ -26,6 +26,22 @@ app.prepare()
     }).listen(port, (err) => {
       if (err) throw err;
       console.log(`> Ready on ${port}`);
+
+      // Background periodic YouTube stats auto-refresh
+      const triggerAutoSync = () => {
+        const http = require("http");
+        const req = http.get(`http://127.0.0.1:${port}/api/admin/data`, (res) => {
+          res.resume();
+        });
+        req.on("error", (e) => {
+          // Non-critical background ping
+        });
+      };
+
+      // Trigger warm-up sync 5 seconds after server start
+      setTimeout(triggerAutoSync, 5000);
+      // Periodic 1-hour maintenance refresh
+      setInterval(triggerAutoSync, 60 * 60 * 1000);
     });
   })
   .catch((err) => {

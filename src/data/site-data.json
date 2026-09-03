@@ -1,12 +1,12 @@
 {
   "stats": {
-    "subscribers": "10.0K",
+    "subscribers": "10.4k",
     "subscribersSub": "+12.4% this month",
-    "monthlyViews": "69.5K",
+    "monthlyViews": "1.3M",
     "monthlyViewsSub": "",
     "newSubs": "+1,200",
     "newSubsSub": "High velocity growth",
-    "videosCount": "229",
+    "videosCount": "232",
     "videosCountSub": "Active weekly cadence",
     "retention": "27",
     "channelBanner": "",
@@ -30,9 +30,9 @@
     "channelLogo": "",
     "subscribeUrl": "https://www.youtube.com/@ArtificialQuotient01",
     "subscribeButtonText": "Subscribe",
-    "subscribersCount": "10.1k",
+    "subscribersCount": "10.4k",
     "subscribersBadge": "Active",
-    "monthlyViewsCount": "69.5k",
+    "monthlyViewsCount": "1.3M",
     "monthlyViewsBadge": "Growing",
     "retentionPercent": "27%",
     "retentionLabel": "Avg. Viewer Retention",
@@ -56,10 +56,26 @@
     "femalePercent": "15.6%"
   },
   "geographies": [
-    { "id": "geo-1", "name": "USA", "percent": "10.7%" },
-    { "id": "geo-2", "name": "England", "percent": "13.5%" },
-    { "id": "geo-3", "name": "India", "percent": "21.8%" },
-    { "id": "geo-4", "name": "Germany", "percent": "9.4%" }
+    {
+      "id": "geo-1",
+      "name": "USA",
+      "percent": "10.7%"
+    },
+    {
+      "id": "geo-2",
+      "name": "England",
+      "percent": "13.5%"
+    },
+    {
+      "id": "geo-3",
+      "name": "India",
+      "percent": "21.8%"
+    },
+    {
+      "id": "geo-4",
+      "name": "Germany",
+      "percent": "9.4%"
+    }
   ],
   "whatPerforms": [
     {

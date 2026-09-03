@@ -34,9 +34,18 @@ import defaultSiteData from "@/data/site-data.json";
 const filePath = path.join(process.cwd(), "src", "data", "site-data.json");
 const backupDir = path.join(process.cwd(), "src", "data", "backups");
 
+import { syncYouTubeData } from "@/lib/youtube-sync";
+
 export async function GET() {
   try {
     await initDatabase();
+
+    // Trigger automatic live YouTube synchronization (throttled by 15-minute cache)
+    try {
+      await syncYouTubeData({ force: false });
+    } catch (ytErr) {
+      console.warn("Background YouTube auto-sync warning in GET /api/admin/data:", ytErr);
+    }
 
     const siteConfigData = await getSiteConfig();
     const allDbCountries = await getCountriesFromDb();
@@ -131,6 +140,7 @@ export async function GET() {
       return NextResponse.json(
         {
           stats: siteConfigData.stats,
+          heroConfig: siteConfigData.heroConfig,
           rates: siteConfigData.rates,
           demographics: siteConfigData.demographics,
           geographies: siteConfigData.geographies,
@@ -153,9 +163,15 @@ export async function GET() {
       );
     }
 
-    // Fallback to bundled JSON if database rows empty
+    // Fallback to latest JSON if database rows empty
+    let fallbackData = defaultSiteData;
+    try {
+      const fileContents = await fs.readFile(filePath, "utf8");
+      fallbackData = JSON.parse(fileContents);
+    } catch {}
+
     return NextResponse.json(
-      { ...defaultSiteData, dbStatus: "Fallback JSON Data Store" },
+      { ...fallbackData, dbStatus: "Fallback JSON Data Store" },
       {
         headers: {
           "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
@@ -164,8 +180,14 @@ export async function GET() {
     );
   } catch (err: any) {
     console.error("GET site data error:", err);
+    let fallbackData = defaultSiteData;
+    try {
+      const fileContents = await fs.readFile(filePath, "utf8");
+      fallbackData = JSON.parse(fileContents);
+    } catch {}
+
     return NextResponse.json(
-      { ...defaultSiteData, dbStatus: "Fallback Bundled JSON (MySQL Error)" },
+      { ...fallbackData, dbStatus: "Fallback Bundled JSON (MySQL Error)" },
       {
         headers: {
           "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",

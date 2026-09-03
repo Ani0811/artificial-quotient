@@ -12,7 +12,7 @@ interface FooterProps {
 }
 
 export default function Footer({ subscribersCount, isAdmin = false }: FooterProps) {
-  const [subs, setSubs] = useState<string>(subscribersCount || "10.1k");
+  const [subs, setSubs] = useState<string>(subscribersCount || "10.4k");
 
   useEffect(() => {
     if (subscribersCount) {
