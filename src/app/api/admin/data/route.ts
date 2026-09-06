@@ -45,7 +45,26 @@ export async function GET() {
   }
 
   try {
-    await initDatabase();
+    const isDbReady = await initDatabase();
+
+    if (!isDbReady) {
+      let fallbackData = defaultSiteData;
+      try {
+        const fileContents = await fs.readFile(filePath, "utf8");
+        fallbackData = JSON.parse(fileContents);
+      } catch {}
+
+      return NextResponse.json(
+        { ...fallbackData, dbStatus: "Fallback Local JSON Store" },
+        {
+          headers: {
+            "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0",
+          },
+        }
+      );
+    }
 
     const siteConfigData = await getSiteConfig();
     const allDbCountries = await getCountriesFromDb();
@@ -180,7 +199,11 @@ export async function GET() {
       }
     );
   } catch (err: any) {
-    console.error("GET site data error:", err);
+    if (process.env.NODE_ENV === "development") {
+      console.warn("GET site data notice (using fallback JSON):", err.message || err);
+    } else {
+      console.error("GET site data error:", err);
+    }
     let fallbackData = defaultSiteData;
     try {
       const fileContents = await fs.readFile(filePath, "utf8");

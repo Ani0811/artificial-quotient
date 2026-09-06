@@ -19,19 +19,24 @@ export async function GET() {
   }
 
   try {
-    await initDatabase();
-    const users = await getAdminUsersFromDb();
-
-    if (users && users.length > 0) {
-      return NextResponse.json({ success: true, users, dbStatus: "Connected to MySQL (AQ-Dashboard) via Knex Schema" });
+    const isDbReady = await initDatabase();
+    if (isDbReady) {
+      const users = await getAdminUsersFromDb();
+      if (users && users.length > 0) {
+        return NextResponse.json({ success: true, users, dbStatus: "Connected to MySQL (AQ-Dashboard) via Knex Schema" });
+      }
     }
 
-    // Fallback to JSON file if table empty
+    // Fallback to JSON file if table empty or DB offline
     const fileContents = await fs.readFile(usersFilePath, "utf8");
     const jsonUsers = JSON.parse(fileContents);
     return NextResponse.json({ success: true, users: jsonUsers, dbStatus: "Fallback JSON Store" });
   } catch (err: any) {
-    console.error("GET admin users error:", err);
+    if (process.env.NODE_ENV === "development") {
+      console.warn("GET admin users notice (using fallback JSON):", err.message || err);
+    } else {
+      console.error("GET admin users error:", err);
+    }
     try {
       const fileContents = await fs.readFile(usersFilePath, "utf8");
       const users = JSON.parse(fileContents);

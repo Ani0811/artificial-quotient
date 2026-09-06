@@ -33,13 +33,15 @@ export function setAdminPassword(newPassword: string): void {
 
 export async function getAdminUsers(): Promise<AdminUser[]> {
   try {
-    await initDatabase();
-    const dbUsers = await getAdminUsersFromDb();
-    if (dbUsers && dbUsers.length > 0) {
-      return dbUsers;
+    const isDbReady = await initDatabase();
+    if (isDbReady) {
+      const dbUsers = await getAdminUsersFromDb();
+      if (dbUsers && dbUsers.length > 0) {
+        return dbUsers;
+      }
     }
   } catch (err) {
-    console.error("MySQL query failed in getAdminUsers:", err);
+    // Fallback to JSON
   }
 
   try {

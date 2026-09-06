@@ -55,22 +55,23 @@ export async function checkDatabaseConnection(): Promise<{ connected: boolean; m
   }
 }
 
-export async function ensureDatabaseExists(): Promise<void> {
+export async function ensureDatabaseExists(): Promise<boolean> {
   try {
     const rootConn = await mysql.createConnection({
       host: poolConfig.host,
       port: poolConfig.port,
       user: poolConfig.user,
       password: poolConfig.password,
-      connectTimeout: 2000,
+      connectTimeout: 1500,
     }).catch(() => null);
 
-    if (!rootConn) return;
+    if (!rootConn) return false;
 
     await rootConn.query(`CREATE DATABASE IF NOT EXISTS \`${poolConfig.database}\``).catch(() => {});
     await rootConn.end().catch(() => {});
+    return true;
   } catch {
-    // Ignore error
+    return false;
   }
 }
 
@@ -93,11 +94,27 @@ import {
 import defaultSiteData from "@/data/site-data.json";
 import defaultAdminUsers from "@/data/admin-users.json";
 
+let isDbReachable = false;
+let lastDbCheckTime = 0;
+const DB_CHECK_THROTTLE_MS = 30000;
+
 export async function initDatabase(): Promise<boolean> {
   if (isInitialized) return true;
 
+  const now = Date.now();
+  if (!isDbReachable && lastDbCheckTime > 0 && now - lastDbCheckTime < DB_CHECK_THROTTLE_MS) {
+    return false;
+  }
+  lastDbCheckTime = now;
+
+  const canConnect = await ensureDatabaseExists();
+  if (!canConnect) {
+    isDbReachable = false;
+    return false;
+  }
+  isDbReachable = true;
+
   try {
-    await ensureDatabaseExists();
     const k = getKnex();
 
     // 1. Create tables if not exist using Knex Schema Builder from @/schema modules
@@ -135,7 +152,7 @@ export async function initDatabase(): Promise<boolean> {
     isInitialized = true;
     return true;
   } catch (err) {
-    console.error("Database initialization warning:", err);
+    console.warn("Database initialization notice (using JSON fallback):", err);
     return false;
   }
 }

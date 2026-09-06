@@ -6,15 +6,17 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    await initDatabase();
-    const countries = await getCountriesFromDb();
-    return NextResponse.json({ countries }, {
-      headers: {
-        "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
-      },
-    });
+    const isDbReady = await initDatabase();
+    if (isDbReady) {
+      const countries = await getCountriesFromDb();
+      return NextResponse.json({ countries }, {
+        headers: {
+          "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+        },
+      });
+    }
+    return NextResponse.json({ countries: [] });
   } catch (err: any) {
-    console.error("GET /api/admin/countries error:", err);
-    return NextResponse.json({ error: "Failed to fetch countries" }, { status: 500 });
+    return NextResponse.json({ countries: [] });
   }
 }
