@@ -131,7 +131,12 @@ export function StatsTab({
             />
           </div>
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Monthly Viewers</label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80">Monthly Viewers</label>
+              <span className="text-[10px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-500/10 border border-blue-500/20 px-1.5 py-0.5 rounded">
+                Dynamic 30D Velocity
+              </span>
+            </div>
             <input 
               type="text" 
               value={statsForm.uniqueViewers} 

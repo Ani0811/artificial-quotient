@@ -146,6 +146,7 @@ export async function GET() {
           geographies: siteConfigData.geographies,
           audienceInterests: siteConfigData.audienceInterests,
           shoppingInterests: siteConfigData.shoppingInterests,
+          channelSnapshots: siteConfigData.channelSnapshots,
           sponsorResults,
           whatPerforms,
           tools,

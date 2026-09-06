@@ -175,6 +175,7 @@ interface SiteData {
     videosCount?: string;
     videosCountSub?: string;
     uniqueViewers?: string;
+    uniqueViewersSub?: string;
     watchTimeHours?: string;
     avgViewDuration?: string;
     avgPercentageViewed?: string;
@@ -271,7 +272,7 @@ export default function AudienceSnapshot({ siteData, isLoading }: AudienceSnapsh
     {
       label: "Monthly Viewers",
       value: stats.uniqueViewers || "0",
-      sub: "",
+      sub: stats.uniqueViewersSub || "Live 30-day velocity",
       icon: Eye,
       color: "text-blue-500 dark:text-blue-400",
       bg: "bg-blue-500/10 border-blue-500/20",

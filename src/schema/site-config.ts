@@ -18,6 +18,7 @@ export interface SiteConfig {
   audienceInterests?: any[];
   shoppingInterests?: any[];
   heroConfig?: any;
+  channelSnapshots?: any[];
 }
 
 export async function createSiteConfigTable() {
@@ -41,11 +42,13 @@ export async function createSiteConfigTable() {
       t.text("audience_interests_json");
       t.text("shopping_interests_json");
       t.string("unique_viewers", 64);
+      t.string("unique_viewers_sub", 128);
       t.string("watch_time_hours", 64);
       t.string("avg_view_duration", 64);
       t.string("avg_percentage_viewed", 64);
       t.string("returning_viewers", 64);
       t.text("hero_config_json");
+      t.text("channel_snapshots_json");
       t.timestamp("updated_at").defaultTo(k.raw("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"));
     });
   } else {
@@ -57,6 +60,11 @@ export async function createSiteConfigTable() {
         t.string("avg_view_duration", 64);
         t.string("avg_percentage_viewed", 64);
         t.string("returning_viewers", 64);
+      });
+    }
+    if (!(await k.schema.hasColumn("site_config", "unique_viewers_sub"))) {
+      await k.schema.alterTable("site_config", (t) => {
+        t.string("unique_viewers_sub", 128);
       });
     }
     if (!(await k.schema.hasColumn("site_config", "audience_interests_json"))) {
@@ -72,6 +80,11 @@ export async function createSiteConfigTable() {
     if (!(await k.schema.hasColumn("site_config", "hero_config_json"))) {
       await k.schema.alterTable("site_config", (t) => {
         t.text("hero_config_json");
+      });
+    }
+    if (!(await k.schema.hasColumn("site_config", "channel_snapshots_json"))) {
+      await k.schema.alterTable("site_config", (t) => {
+        t.text("channel_snapshots_json");
       });
     }
   }
@@ -95,6 +108,7 @@ export async function getSiteConfig() {
       retention: row.retention,
       channelBanner: row.channel_banner,
       uniqueViewers: row.unique_viewers,
+      uniqueViewersSub: row.unique_viewers_sub,
       watchTimeHours: row.watch_time_hours,
       avgViewDuration: row.avg_view_duration,
       avgPercentageViewed: row.avg_percentage_viewed,
@@ -106,6 +120,7 @@ export async function getSiteConfig() {
     audienceInterests: row.audience_interests_json ? JSON.parse(row.audience_interests_json) : [],
     shoppingInterests: row.shopping_interests_json ? JSON.parse(row.shopping_interests_json) : [],
     heroConfig: row.hero_config_json ? JSON.parse(row.hero_config_json) : null,
+    channelSnapshots: row.channel_snapshots_json ? JSON.parse(row.channel_snapshots_json) : [],
   };
 }
 
@@ -128,6 +143,7 @@ export async function upsertSiteConfig(data: any) {
       retention: stats.retention || "",
       channel_banner: stats.channelBanner || "",
       unique_viewers: stats.uniqueViewers || "",
+      unique_viewers_sub: stats.uniqueViewersSub || "",
       watch_time_hours: stats.watchTimeHours || "",
       avg_view_duration: stats.avgViewDuration || "",
       avg_percentage_viewed: stats.avgPercentageViewed || "",
@@ -138,6 +154,7 @@ export async function upsertSiteConfig(data: any) {
       audience_interests_json: JSON.stringify(data.audienceInterests || []),
       shopping_interests_json: JSON.stringify(data.shoppingInterests || []),
       hero_config_json: JSON.stringify(data.heroConfig || {}),
+      channel_snapshots_json: JSON.stringify(data.channelSnapshots || []),
     })
     .onConflict("id")
     .merge();

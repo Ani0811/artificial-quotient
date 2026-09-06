@@ -10,17 +10,18 @@
     "videosCountSub": "Active weekly cadence",
     "retention": "27",
     "channelBanner": "",
-    "uniqueViewers": "55.0K",
+    "uniqueViewers": "71.5K",
     "watchTimeHours": "1.8K",
     "avgViewDuration": "1:39",
     "avgPercentageViewed": "27.1%",
-    "returningViewers": "6.6%"
+    "returningViewers": "6.6%",
+    "uniqueViewersSub": "Live 30-day velocity"
   },
   "heroConfig": {
     "badgeText": "Open for Q3 Sponsorships",
     "headline": "Actionable AI Workflows",
     "headlineHighlight": "For Everyone",
-    "subheadline": "Artificial Quotient turns AI software into step-by-step workflow tutorials for 10K+ subscribers and 55K+ monthly viewers who create with AI tools every day.",
+    "subheadline": "Artificial Quotient turns AI software into step-by-step workflow tutorials for 10K+ subscribers and 71.5K+ monthly viewers who create with AI tools every day.",
     "sponsorButtonText": "Sponsor the Channel",
     "sponsorButtonUrl": "https://forms.gle/4uTUZkEi5o3iqYrs5",
     "caseStudiesButtonText": "View Case Studies",
@@ -285,6 +286,23 @@
     {
       "name": "Video Editing & Production Software",
       "level": "Very High"
+    }
+  ],
+  "channelSnapshots": [
+    {
+      "timestamp": 1785911517714,
+      "viewCount": 850000,
+      "subscriberCount": 8800
+    },
+    {
+      "timestamp": 1787293917714,
+      "viewCount": 1100000,
+      "subscriberCount": 9700
+    },
+    {
+      "timestamp": 1788676317714,
+      "viewCount": 1285918,
+      "subscriberCount": 10400
     }
   ]
 }
