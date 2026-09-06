@@ -37,15 +37,15 @@ const backupDir = path.join(process.cwd(), "src", "data", "backups");
 import { syncYouTubeData } from "@/lib/youtube-sync";
 
 export async function GET() {
+  // Trigger automatic live YouTube synchronization (throttled by 15-minute cache)
+  try {
+    await syncYouTubeData({ force: false });
+  } catch (ytErr) {
+    console.warn("Background YouTube auto-sync warning in GET /api/admin/data:", ytErr);
+  }
+
   try {
     await initDatabase();
-
-    // Trigger automatic live YouTube synchronization (throttled by 15-minute cache)
-    try {
-      await syncYouTubeData({ force: false });
-    } catch (ytErr) {
-      console.warn("Background YouTube auto-sync warning in GET /api/admin/data:", ytErr);
-    }
 
     const siteConfigData = await getSiteConfig();
     const allDbCountries = await getCountriesFromDb();

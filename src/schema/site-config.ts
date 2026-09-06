@@ -117,13 +117,13 @@ export async function upsertSiteConfig(data: any) {
   await k("site_config")
     .insert({
       id: "default",
-      subscribers: stats.subscribers || "10,100+",
+      subscribers: stats.subscribers || "",
       subscribers_sub: stats.subscribersSub || "",
-      monthly_views: stats.monthlyViews || "850,000+",
+      monthly_views: stats.monthlyViews || "",
       monthly_views_sub: stats.monthlyViewsSub || "",
-      new_subs: stats.newSubs || "+1,200",
+      new_subs: stats.newSubs || "",
       new_subs_sub: stats.newSubsSub || "",
-      videos_count: stats.videosCount || "222",
+      videos_count: stats.videosCount || "",
       videos_count_sub: stats.videosCountSub || "",
       retention: stats.retention || "",
       channel_banner: stats.channelBanner || "",

@@ -120,7 +120,7 @@ export default function ContactPage() {
                 </svg>
               </div>
               <h3 className="font-heading text-xl font-bold text-brand-text dark:text-white mb-1">YouTube Channel</h3>
-              <p className="text-brand-muted dark:text-zinc-400 text-sm mb-4">Join 10.1k+ automation builders learning weekly AI workflows.</p>
+              <p className="text-brand-muted dark:text-zinc-400 text-sm mb-4">Join 10K+ automation builders learning weekly AI workflows.</p>
               <a
                 href="https://www.youtube.com/@ArtificialQuotient01"
                 target="_blank"

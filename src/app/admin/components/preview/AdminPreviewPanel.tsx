@@ -112,7 +112,7 @@ export function AdminPreviewPanel({
                       <Users className="w-3 h-3 text-emerald-400" /> Subscribers
                     </div>
                     <div className="flex items-baseline gap-1 mt-0.5">
-                      <span className="text-base font-extrabold text-white">{heroForm.subscribersCount || "10.1k"}</span>
+                      <span className="text-base font-extrabold text-white">{heroForm.subscribersCount || statsForm.subscribers || ""}</span>
                       <span className="text-[9px] font-bold text-emerald-400 flex items-center">
                         <TrendingUp className="w-2.5 h-2.5 mr-0.5" /> {heroForm.subscribersBadge || "Active"}
                       </span>
@@ -124,7 +124,7 @@ export function AdminPreviewPanel({
                       <Play className="w-3 h-3 text-cyan-400" /> Total Views
                     </div>
                     <div className="flex items-baseline gap-1 mt-0.5">
-                      <span className="text-base font-extrabold text-white">{heroForm.monthlyViewsCount || "69.5k"}</span>
+                      <span className="text-base font-extrabold text-white">{heroForm.monthlyViewsCount || statsForm.monthlyViews || ""}</span>
                       <span className="text-[9px] font-bold text-cyan-400 flex items-center">
                         <Sparkles className="w-2.5 h-2.5 mr-0.5" /> {heroForm.monthlyViewsBadge || "Growing"}
                       </span>

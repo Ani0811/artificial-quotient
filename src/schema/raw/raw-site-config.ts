@@ -50,15 +50,15 @@ export async function upsertRawSiteConfig(data: any) {
   `;
 
   await k.raw(sql, [
-    data.stats.subscribers || "10,100+",
+    data.stats.subscribers || "",
     data.stats.subscribersSub || "",
-    data.stats.monthlyViews || "850,000+",
+    data.stats.monthlyViews || "",
     data.stats.monthlyViewsSub || "",
-    data.stats.newSubs || "+1,200",
+    data.stats.newSubs || "",
     data.stats.newSubsSub || "",
-    data.stats.videosCount || "222",
+    data.stats.videosCount || "",
     data.stats.videosCountSub || "",
-    data.stats.retention || "27",
+    data.stats.retention || "",
     data.stats.channelBanner || "",
     JSON.stringify(data.demographics || []),
     JSON.stringify(data.geographies || []),

@@ -44,13 +44,13 @@ INSERT INTO site_config
 VALUES 
   (
     'default', 
-    '10.0K', 
+    '10.4K', 
     '+12.4% this month', 
-    '69.5K', 
-    '~120K monthly views', 
+    '1.3M', 
+    '', 
     '+1,200', 
     'High velocity growth', 
-    '229', 
+    '233', 
     'Active weekly cadence', 
     '27', 
     '', 

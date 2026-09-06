@@ -156,12 +156,12 @@ export function HeroTab({
               <span className="text-[11px] font-bold uppercase text-emerald-400 block">Metric 1 (Subscribers)</span>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-[10px] font-bold text-brand-muted dark:text-emerald-200/60 mb-1">Value (e.g. 10.1k)</label>
+                  <label className="block text-[10px] font-bold text-brand-muted dark:text-emerald-200/60 mb-1">Value (Auto-synced from YouTube)</label>
                   <input 
                     type="text" 
                     value={heroForm.subscribersCount || ""} 
                     disabled={isViewer}
-                    placeholder="10.1k"
+                    placeholder="Auto-synced"
                     onChange={(e) => setHeroForm({ ...heroForm, subscribersCount: e.target.value })}
                     className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
                   />
@@ -184,12 +184,12 @@ export function HeroTab({
               <span className="text-[11px] font-bold uppercase text-cyan-400 block">Metric 2 (Total Views)</span>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-[10px] font-bold text-brand-muted dark:text-emerald-200/60 mb-1">Value (e.g. 69.5k)</label>
+                  <label className="block text-[10px] font-bold text-brand-muted dark:text-emerald-200/60 mb-1">Value (Auto-synced from YouTube)</label>
                   <input 
                     type="text" 
                     value={heroForm.monthlyViewsCount || ""} 
                     disabled={isViewer}
-                    placeholder="69.5k"
+                    placeholder="Auto-synced"
                     onChange={(e) => setHeroForm({ ...heroForm, monthlyViewsCount: e.target.value })}
                     className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
                   />

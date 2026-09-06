@@ -104,9 +104,9 @@ export default function DashboardClient({ currentUser }: DashboardClientProps) {
     channelLogo: "",
     subscribeUrl: "https://www.youtube.com/@ArtificialQuotient01",
     subscribeButtonText: "Subscribe",
-    subscribersCount: "10.1k",
+    subscribersCount: "",
     subscribersBadge: "Active",
-    monthlyViewsCount: "69.5k",
+    monthlyViewsCount: "",
     monthlyViewsBadge: "Growing",
     retentionPercent: "27%",
     retentionLabel: "Avg. Viewer Retention",
@@ -379,7 +379,7 @@ export default function DashboardClient({ currentUser }: DashboardClientProps) {
           setSponsorResults(data.data.sponsorResults);
         }
         if (data.data?.stats) {
-          setStatsForm(data.data.stats);
+          setStatsForm((prev) => ({ ...prev, ...data.data.stats }));
         }
         if (data.data?.heroConfig) {
           setHeroForm((prev) => ({ ...prev, ...data.data.heroConfig }));

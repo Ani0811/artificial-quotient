@@ -58,9 +58,9 @@ export default function Hero({ heroConfig, stats, isLoading }: HeroProps) {
   const subscribeUrl = heroConfig?.subscribeUrl || "https://www.youtube.com/@ArtificialQuotient01";
   const subscribeButtonText = heroConfig?.subscribeButtonText || "Subscribe";
 
-  const subscribersCount = heroConfig?.subscribersCount || stats?.subscribers || "10.4k";
+  const subscribersCount = stats?.subscribers || heroConfig?.subscribersCount || "";
   const subscribersBadge = heroConfig?.subscribersBadge || "Active";
-  const monthlyViewsCount = heroConfig?.monthlyViewsCount || stats?.monthlyViews || "1.3M";
+  const monthlyViewsCount = stats?.monthlyViews || heroConfig?.monthlyViewsCount || "";
   const monthlyViewsBadge = heroConfig?.monthlyViewsBadge || "Growing";
   
   const retentionRaw = heroConfig?.retentionPercent || stats?.retention || "27%";

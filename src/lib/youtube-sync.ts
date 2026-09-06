@@ -48,7 +48,7 @@ export async function fetchLiveChannelStats(
           return {
             subscribers: formatViewsCount(subCount),
             monthlyViews: formatViewsCount(viewCount),
-            videosCount: vidCount ? `${vidCount}` : "232",
+            videosCount: vidCount ? `${vidCount}` : "",
             rawSubscribers: subCount,
             rawViews: viewCount,
             rawVideos: vidCount,
@@ -125,9 +125,9 @@ export async function fetchLiveChannelStats(
 
       if (subscribers || monthlyViews) {
         return {
-          subscribers: subscribers || "10.4k",
-          monthlyViews: monthlyViews || "1.3M",
-          videosCount: videosCount || "232",
+          subscribers: subscribers || "",
+          monthlyViews: monthlyViews || "",
+          videosCount: videosCount || "",
           rawViews: rawViews || undefined,
           rawSubscribers: rawSubs || undefined,
         };
@@ -228,12 +228,21 @@ export async function syncYouTubeData({ force = false, syncVideos = false }: { f
       return { success: false, message: "Could not retrieve live stats from YouTube." };
     }
 
+    const filePath = path.join(process.cwd(), "src", "data", "site-data.json");
+    let existingData: any = {};
+    try {
+      const fileContents = await fs.readFile(filePath, "utf8");
+      existingData = JSON.parse(fileContents);
+    } catch {}
+
     let updatedStats: any = {
+      ...(existingData.stats || {}),
       subscribers: liveStats.subscribers,
       monthlyViews: liveStats.monthlyViews,
-      videosCount: liveStats.videosCount ? `${liveStats.videosCount}+` : "232+",
+      ...(liveStats.videosCount ? { videosCount: `${liveStats.videosCount}+` } : {}),
     };
     let updatedHeroConfig: any = {
+      ...(existingData.heroConfig || {}),
       subscribersCount: liveStats.subscribers,
       monthlyViewsCount: liveStats.monthlyViews,
     };
@@ -313,17 +322,16 @@ export async function syncYouTubeData({ force = false, syncVideos = false }: { f
       const fileContents = await fs.readFile(filePath, "utf8");
       const jsonData = JSON.parse(fileContents);
 
-      if (jsonData.stats) {
-        jsonData.stats.subscribers = liveStats.subscribers;
-        jsonData.stats.monthlyViews = liveStats.monthlyViews;
-        if (liveStats.videosCount) {
-          jsonData.stats.videosCount = liveStats.videosCount;
-        }
+      if (!jsonData.stats) jsonData.stats = {};
+      jsonData.stats.subscribers = liveStats.subscribers;
+      jsonData.stats.monthlyViews = liveStats.monthlyViews;
+      if (liveStats.videosCount) {
+        jsonData.stats.videosCount = liveStats.videosCount;
       }
-      if (jsonData.heroConfig) {
-        jsonData.heroConfig.subscribersCount = liveStats.subscribers;
-        jsonData.heroConfig.monthlyViewsCount = liveStats.monthlyViews;
-      }
+
+      if (!jsonData.heroConfig) jsonData.heroConfig = {};
+      jsonData.heroConfig.subscribersCount = liveStats.subscribers;
+      jsonData.heroConfig.monthlyViewsCount = liveStats.monthlyViews;
       if (updatedWpList.length > 0) {
         jsonData.whatPerforms = updatedWpList;
       }
