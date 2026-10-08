@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Play, Users, TrendingUp, Sparkles, CheckCircle2, ShieldCheck, Flame, Zap } from "lucide-react";
+import { Play, Users, TrendingUp, Sparkles, CheckCircle2 } from "lucide-react";
 import { handleSmoothScroll } from "@/lib/scroll";
 import { LogoImage } from "@/components/ui/logo-image";
 import { HeroConfig, ChannelStats } from "@/types";
@@ -13,7 +13,7 @@ interface HeroProps {
   isLoading?: boolean;
 }
 
-export default function Hero({ heroConfig, stats, isLoading }: HeroProps) {
+export default function Hero({ heroConfig, stats }: HeroProps) {
   // 3D Perspective Tilt State
   const [rotate, setRotate] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
@@ -46,7 +46,7 @@ export default function Hero({ heroConfig, stats, isLoading }: HeroProps) {
   const badgeText = heroConfig?.badgeText || "Open for Q3 Sponsorships";
   const headline = heroConfig?.headline || "Actionable AI Workflows";
   const headlineHighlight = heroConfig?.headlineHighlight || "For Everyone";
-  const subheadline = heroConfig?.subheadline || "Artificial Quotient turns AI software into step-by-step workflow tutorials for 10K+ subscribers and 55K+ monthly viewers who create with AI tools every day.";
+  const subheadline = heroConfig?.subheadline || "Artificial Quotient turns AI software into step-by-step workflow tutorials for 10K+ subscribers and 105K+ monthly viewers who create with AI tools every day.";
   const sponsorButtonText = heroConfig?.sponsorButtonText || "Sponsor the Channel";
   const sponsorButtonUrl = heroConfig?.sponsorButtonUrl || "https://forms.gle/4uTUZkEi5o3iqYrs5";
   const caseStudiesButtonText = heroConfig?.caseStudiesButtonText || "View Case Studies";
@@ -108,7 +108,7 @@ export default function Hero({ heroConfig, stats, isLoading }: HeroProps) {
             </a>
             <Link 
               href="/#case-studies" 
-              onClick={(e) => handleSmoothScroll(e, "case-studies")}
+              onClick={(e: MouseEvent<HTMLAnchorElement>) => handleSmoothScroll(e, "case-studies")}
               className="bg-brand-card dark:bg-zinc-900/90 hover:bg-gray-50 dark:hover:bg-zinc-800 text-brand-text dark:text-white border border-brand-border dark:border-zinc-800 px-5 py-3 sm:px-8 sm:py-4 rounded-xl font-bold text-sm sm:text-lg text-center transition-all shadow-sm hover:-translate-y-0.5"
             >
               {caseStudiesButtonText}

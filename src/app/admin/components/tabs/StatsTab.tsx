@@ -18,6 +18,7 @@ interface StatsTabProps {
     retention: string;
     channelBanner: string;
     uniqueViewers: string;
+    uniqueViewersSub?: string;
     watchTimeHours: string;
     avgViewDuration: string;
     avgPercentageViewed: string;
@@ -131,18 +132,21 @@ export function StatsTab({
             />
           </div>
           <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80">Monthly Viewers</label>
-              <span className="text-[10px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-500/10 border border-blue-500/20 px-1.5 py-0.5 rounded">
-                Dynamic 30D Velocity
-              </span>
-            </div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1.5">Monthly Viewers</label>
             <input 
               type="text" 
               value={statsForm.uniqueViewers} 
               disabled={isViewer}
               onChange={(e) => setStatsForm({ ...statsForm, uniqueViewers: e.target.value })}
-              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-2 disabled:opacity-50" 
+            />
+            <label className="block text-[11px] font-bold text-brand-muted dark:text-emerald-200/60 mb-1">Monthly Viewers Subtext</label>
+            <input 
+              type="text" 
+              value={statsForm.uniqueViewersSub || ""} 
+              disabled={isViewer}
+              onChange={(e) => setStatsForm({ ...statsForm, uniqueViewersSub: e.target.value })}
+              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-white rounded-xl px-3.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
             />
           </div>
           <div>

@@ -1,6 +1,7 @@
 import { getSiteConfig, upsertSiteConfig, getWhatPerforms, syncWhatPerforms, getSponsorCaseStudies, syncSponsorCaseStudies } from "@/schema";
 import { initDatabase } from "@/lib/db";
 import { getYoutubeId, formatViewsCount, estimateClicksFromViews } from "@/app/admin/utils";
+import { isYouTubeAnalyticsConfigured, fetchLive30DayAnalytics, MonthlyAnalyticsResult } from "@/lib/youtube-analytics";
 import fs from "fs/promises";
 import path from "path";
 
@@ -336,14 +337,6 @@ export async function syncYouTubeData({ force = false, syncVideos = false }: { f
       ];
     }
 
-    // Calculate dynamic 30-day velocity
-    const velocity = calculateMonthlyVelocity(
-      existingSnapshots,
-      currentRawViews,
-      now,
-      existingData?.stats?.uniqueViewers || "70.0K"
-    );
-
     // Record new snapshot if at least 1 hour elapsed since last recorded snapshot
     const lastSnapshot = existingSnapshots[existingSnapshots.length - 1];
     if ((!lastSnapshot || now - lastSnapshot.timestamp >= 60 * 60 * 1000) && currentRawViews > 0) {
@@ -358,13 +351,26 @@ export async function syncYouTubeData({ force = false, syncVideos = false }: { f
     const pruneCutoff = now - (60 * dayMs);
     const updatedSnapshots = existingSnapshots.filter((s) => s.timestamp >= pruneCutoff);
 
+    let analyticsData: MonthlyAnalyticsResult | null = null;
+    if (isYouTubeAnalyticsConfigured()) {
+      try {
+        analyticsData = await fetchLive30DayAnalytics();
+      } catch (analyticsErr) {
+        console.warn("YouTube Analytics fetch notice:", analyticsErr);
+      }
+    }
+
     let updatedStats: any = {
       ...(existingData.stats || {}),
       subscribers: liveStats.subscribers,
       monthlyViews: liveStats.monthlyViews,
       ...(liveStats.videosCount ? { videosCount: `${liveStats.videosCount}+` } : {}),
-      uniqueViewers: velocity.velocityFormatted,
-      uniqueViewersSub: velocity.subtext,
+      ...(analyticsData ? {
+        uniqueViewers: analyticsData.formattedViews,
+        uniqueViewersSub: "Verified YouTube Studio 30D",
+        ...(analyticsData.watchTimeHours ? { watchTimeHours: analyticsData.watchTimeHours } : {}),
+        ...(analyticsData.avgViewDuration && analyticsData.avgViewDuration !== "0:00" ? { avgViewDuration: analyticsData.avgViewDuration } : {}),
+      } : {}),
     };
     let updatedHeroConfig: any = {
       ...(existingData.heroConfig || {}),
@@ -398,8 +404,12 @@ export async function syncYouTubeData({ force = false, syncVideos = false }: { f
           subscribers: liveStats.subscribers,
           monthlyViews: liveStats.monthlyViews,
           videosCount: liveStats.videosCount ? `${liveStats.videosCount}+` : currentConfig.stats.videosCount,
-          uniqueViewers: velocity.velocityFormatted,
-          uniqueViewersSub: velocity.subtext,
+          ...(analyticsData ? {
+            uniqueViewers: analyticsData.formattedViews,
+            uniqueViewersSub: "Verified YouTube Studio 30D",
+            ...(analyticsData.watchTimeHours ? { watchTimeHours: analyticsData.watchTimeHours } : {}),
+            ...(analyticsData.avgViewDuration && analyticsData.avgViewDuration !== "0:00" ? { avgViewDuration: analyticsData.avgViewDuration } : {}),
+          } : {}),
         };
 
         if (!currentConfig.heroConfig) {
@@ -465,22 +475,24 @@ export async function syncYouTubeData({ force = false, syncVideos = false }: { f
       if (!jsonData.stats) jsonData.stats = {};
       jsonData.stats.subscribers = liveStats.subscribers;
       jsonData.stats.monthlyViews = liveStats.monthlyViews;
-      jsonData.stats.uniqueViewers = velocity.velocityFormatted;
-      jsonData.stats.uniqueViewersSub = velocity.subtext;
       if (liveStats.videosCount) {
         jsonData.stats.videosCount = liveStats.videosCount;
+      }
+      if (analyticsData) {
+        jsonData.stats.uniqueViewers = analyticsData.formattedViews;
+        jsonData.stats.uniqueViewersSub = "Verified YouTube Studio 30D";
+        if (analyticsData.watchTimeHours) {
+          jsonData.stats.watchTimeHours = analyticsData.watchTimeHours;
+        }
+        if (analyticsData.avgViewDuration && analyticsData.avgViewDuration !== "0:00") {
+          jsonData.stats.avgViewDuration = analyticsData.avgViewDuration;
+        }
       }
       jsonData.channelSnapshots = updatedSnapshots;
 
       if (!jsonData.heroConfig) jsonData.heroConfig = {};
       jsonData.heroConfig.subscribersCount = liveStats.subscribers;
       jsonData.heroConfig.monthlyViewsCount = liveStats.monthlyViews;
-      if (typeof jsonData.heroConfig.subheadline === "string") {
-        jsonData.heroConfig.subheadline = jsonData.heroConfig.subheadline.replace(
-          /\b55K\+/g,
-          `${velocity.velocityFormatted}+`
-        );
-      }
       if (updatedWpList.length > 0) {
         jsonData.whatPerforms = updatedWpList;
       }

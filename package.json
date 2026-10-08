@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "npx cross-env NEXT_PRIVATE_WORKERS=1 next build --webpack",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "youtube:auth": "node scripts/get-youtube-token.mjs"
   },
   "dependencies": {
     "@getbrevo/brevo": "^6.0.3",

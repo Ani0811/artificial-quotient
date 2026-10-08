@@ -80,6 +80,7 @@ export interface ChannelStats {
   retention: string;
   channelBanner?: string;
   uniqueViewers?: string;
+  uniqueViewersSub?: string;
   watchTimeHours?: string;
   avgViewDuration?: string;
   avgPercentageViewed?: string;

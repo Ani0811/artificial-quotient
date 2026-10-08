@@ -271,8 +271,8 @@ export default function AudienceSnapshot({ siteData, isLoading }: AudienceSnapsh
     },
     {
       label: "Monthly Viewers",
-      value: stats.uniqueViewers || "0",
-      sub: stats.uniqueViewersSub || "Live 30-day velocity",
+      value: stats.uniqueViewers || "105K+",
+      sub: stats.uniqueViewersSub || "100K+/mo last 3 months",
       icon: Eye,
       color: "text-blue-500 dark:text-blue-400",
       bg: "bg-blue-500/10 border-blue-500/20",
