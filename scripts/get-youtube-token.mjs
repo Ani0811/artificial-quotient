@@ -133,23 +133,41 @@ async function main() {
     }
   });
 
+  function extractCode(raw) {
+    if (!raw) return "";
+    let trimmed = raw.trim();
+    if (trimmed.includes("code=")) {
+      try {
+        const parsed = new URL(trimmed.startsWith("http") ? trimmed : `http://localhost/?${trimmed}`);
+        const c = parsed.searchParams.get("code");
+        if (c) return decodeURIComponent(c);
+      } catch {}
+      const match = trimmed.match(/[?&]code=([^&]+)/) || trimmed.match(/code=([^&]+)/);
+      if (match && match[1]) return decodeURIComponent(match[1]);
+    }
+    return trimmed;
+  }
+
   server.listen(REDIRECT_PORT, () => {
     console.log(`Waiting for browser authorization callback on http://localhost:${REDIRECT_PORT}/callback ...`);
-    console.log("(Or you can copy the 'code=' parameter from the URL bar after logging in)\n");
+    console.log("(If testing on another device, you can paste the full URL or code below)\n");
   });
 
-  // Also support manual input if browser auto-redirect is blocked or remote
   const terminalInputPromise = (async () => {
-    const input = await rl.question("Paste authorization code manually (or press Enter if using browser): ");
+    const input = await rl.question("Paste the URL or authorization code here: ");
     return input.trim();
   })();
 
-  const selectedCode = await Promise.race([
+  const rawResult = await Promise.race([
     serverPromise,
-    terminalInputPromise.then((c) => (c ? c : serverPromise)),
+    terminalInputPromise,
   ]);
 
-  server.close();
+  try {
+    server.close();
+  } catch {}
+
+  const selectedCode = extractCode(rawResult);
 
   if (!selectedCode) {
     console.error("[Error] No authorization code received.");
