@@ -49,6 +49,111 @@ export function HeroTab({
           </label>
         </div>
 
+        {/* Hero Copy & Messaging */}
+        <div className="space-y-3 pb-3 border-b border-brand-border dark:border-[#16382e]">
+          <div className="text-xs font-bold text-emerald-500 uppercase tracking-wider flex items-center gap-1.5">
+            <span>Hero Copy &amp; Messaging</span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">
+                Badge Text
+              </label>
+              <input 
+                type="text" 
+                value={heroForm.badgeText || ""} 
+                disabled={isViewer}
+                placeholder="Open for Q3 Sponsorships"
+                onChange={(e) => setHeroForm({ ...heroForm, badgeText: e.target.value })}
+                className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">
+                Headline (Primary)
+              </label>
+              <input 
+                type="text" 
+                value={heroForm.headline || ""} 
+                disabled={isViewer}
+                placeholder="Actionable AI Workflows"
+                onChange={(e) => setHeroForm({ ...heroForm, headline: e.target.value })}
+                className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">
+                Headline Highlight (Gradient)
+              </label>
+              <input 
+                type="text" 
+                value={heroForm.headlineHighlight || ""} 
+                disabled={isViewer}
+                placeholder="For Everyone"
+                onChange={(e) => setHeroForm({ ...heroForm, headlineHighlight: e.target.value })}
+                className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">
+              Subheadline (Audience &amp; Reach Pitch)
+            </label>
+            <textarea 
+              rows={2}
+              value={heroForm.subheadline || ""} 
+              disabled={isViewer}
+              placeholder="Artificial Quotient turns AI software into step-by-step workflow tutorials for 10K+ subscribers and 130K+ monthly viewers who create with AI tools every day."
+              onChange={(e) => setHeroForm({ ...heroForm, subheadline: e.target.value })}
+              className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50 resize-y" 
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">
+                Sponsor Button Text
+              </label>
+              <input 
+                type="text" 
+                value={heroForm.sponsorButtonText || ""} 
+                disabled={isViewer}
+                placeholder="Sponsor the Channel"
+                onChange={(e) => setHeroForm({ ...heroForm, sponsorButtonText: e.target.value })}
+                className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">
+                Sponsor Button URL
+              </label>
+              <input 
+                type="text" 
+                value={heroForm.sponsorButtonUrl || ""} 
+                disabled={isViewer}
+                placeholder="https://forms.gle/..."
+                onChange={(e) => setHeroForm({ ...heroForm, sponsorButtonUrl: e.target.value })}
+                className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-brand-muted dark:text-emerald-200/80 mb-1">
+                Case Studies Button Text
+              </label>
+              <input 
+                type="text" 
+                value={heroForm.caseStudiesButtonText || ""} 
+                disabled={isViewer}
+                placeholder="View Case Studies"
+                onChange={(e) => setHeroForm({ ...heroForm, caseStudiesButtonText: e.target.value })}
+                className="w-full border border-brand-border dark:border-[#16382e] bg-brand-card dark:bg-[#0c201a] text-brand-text dark:text-white rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" 
+              />
+            </div>
+          </div>
+        </div>
+
         {/* Card Branding */}
         <div className="space-y-2">
           <div className="text-xs font-bold text-emerald-500 uppercase tracking-wider flex items-center gap-1.5">

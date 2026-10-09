@@ -36,7 +36,7 @@ function AdminLoginForm() {
     try {
       if (!isFirebaseConfigured()) {
         setError(
-          "Firebase environment variables (NEXT_PUBLIC_FIREBASE_API_KEY, NEXT_PUBLIC_FIREBASE_PROJECT_ID) are not yet configured in your .env file."
+          "Google Sign-In requires Firebase keys in .env.local. You can log in immediately using the Admin Email and Password form below."
         );
         setGoogleLoading(false);
         return;

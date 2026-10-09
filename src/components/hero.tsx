@@ -46,7 +46,7 @@ export default function Hero({ heroConfig, stats }: HeroProps) {
   const badgeText = heroConfig?.badgeText || "Open for Q3 Sponsorships";
   const headline = heroConfig?.headline || "Actionable AI Workflows";
   const headlineHighlight = heroConfig?.headlineHighlight || "For Everyone";
-  const subheadline = heroConfig?.subheadline || "Artificial Quotient turns AI software into step-by-step workflow tutorials for 10K+ subscribers and 105K+ monthly viewers who create with AI tools every day.";
+  const subheadline = heroConfig?.subheadline || "Artificial Quotient turns AI software into step-by-step workflow tutorials for 10K+ subscribers and 130K+ monthly viewers who create with AI tools every day.";
   const sponsorButtonText = heroConfig?.sponsorButtonText || "Sponsor the Channel";
   const sponsorButtonUrl = heroConfig?.sponsorButtonUrl || "https://forms.gle/4uTUZkEi5o3iqYrs5";
   const caseStudiesButtonText = heroConfig?.caseStudiesButtonText || "View Case Studies";

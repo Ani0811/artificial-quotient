@@ -1,13 +1,9 @@
-import { Metadata } from "next";
+"use client";
+
 import Link from "next/link";
 import { ArrowLeft, ShieldCheck, Lock, Eye, Server, UserCheck, Mail, FileText } from "lucide-react";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
-
-export const metadata: Metadata = {
-  title: "Privacy Policy | Artificial Quotient",
-  description: "Privacy policy for Artificial Quotient. Learn how we handle client data, sponsorship inquiries, and visitor information with security and transparency.",
-};
 
 export default function PrivacyPolicyPage() {
   const lastUpdated = "August 17, 2026";

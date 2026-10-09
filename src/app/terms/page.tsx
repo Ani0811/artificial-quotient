@@ -1,13 +1,9 @@
-import { Metadata } from "next";
+"use client";
+
 import Link from "next/link";
 import { ArrowLeft, FileText, Shield, CheckCircle, Scale, AlertCircle, Mail } from "lucide-react";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
-
-export const metadata: Metadata = {
-  title: "Terms and Conditions | Artificial Quotient",
-  description: "Terms of service and sponsorship agreement guidelines for Artificial Quotient media partnerships, sponsored content, and client collaborations.",
-};
 
 export default function TermsPage() {
   const lastUpdated = "August 17, 2026";

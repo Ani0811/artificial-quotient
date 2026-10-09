@@ -17,5 +17,43 @@
     "recoveryKey": "AQ-SEC-0000",
     "status": "Active",
     "lastLogin": "2026-08-01T00:00:00.000Z"
+  },
+  {
+    "id": "admin-2",
+    "name": "Channel Admin",
+    "email": "artificialquotient01@gmail.com",
+    "password": "admin123",
+    "role": "Super Admin",
+    "permissions": [
+      "hero",
+      "stats",
+      "case-studies",
+      "what-performs",
+      "brands",
+      "backup",
+      "users"
+    ],
+    "recoveryKey": "AQ-SEC-0001",
+    "status": "Active",
+    "lastLogin": "2026-10-09T00:00:00.000Z"
+  },
+  {
+    "id": "admin-3",
+    "name": "Anirudha Basuthakur",
+    "email": "anirudha.basuthakur@gmail.com",
+    "password": "admin123",
+    "role": "Super Admin",
+    "permissions": [
+      "hero",
+      "stats",
+      "case-studies",
+      "what-performs",
+      "brands",
+      "backup",
+      "users"
+    ],
+    "recoveryKey": "AQ-SEC-0002",
+    "status": "Active",
+    "lastLogin": "2026-10-09T00:00:00.000Z"
   }
 ]

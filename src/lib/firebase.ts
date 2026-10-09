@@ -1,6 +1,6 @@
-import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, Auth } from "firebase/auth";
-import { getAnalytics, isSupported, Analytics } from "firebase/analytics";
+import { initializeApp, getApps, getApp } from "firebase/app";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getAnalytics, isSupported } from "firebase/analytics";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "",
@@ -19,21 +19,21 @@ export const isFirebaseConfigured = () => {
   );
 };
 
-export function getFirebaseApp(): FirebaseApp {
+export function getFirebaseApp(): any {
   if (!getApps().length) {
     return initializeApp(firebaseConfig);
   }
   return getApp();
 }
 
-export function getFirebaseAuth(): Auth {
+export function getFirebaseAuth(): any {
   const app = getFirebaseApp();
   return getAuth(app);
 }
 
-let analyticsInstance: Analytics | null = null;
+let analyticsInstance: any = null;
 
-export async function getFirebaseAnalytics(): Promise<Analytics | null> {
+export async function getFirebaseAnalytics(): Promise<any> {
   if (typeof window !== "undefined") {
     try {
       const supported = await isSupported();
