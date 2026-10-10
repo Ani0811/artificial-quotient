@@ -95,6 +95,23 @@ export async function getSiteConfig() {
   const row = await k("site_config").where("id", "default").first();
   if (!row) return null;
 
+  let heroConfig = row.hero_config_json ? JSON.parse(row.hero_config_json) : null;
+  const currentMetric = (row.unique_viewers && String(row.unique_viewers).trim() !== "" && row.unique_viewers !== "0")
+    ? row.unique_viewers
+    : "130K+";
+
+  // Auto-heal stale 55K in the database row so MySQL permanently updates
+  if (heroConfig && typeof heroConfig.subheadline === "string" && /55k/i.test(heroConfig.subheadline)) {
+    heroConfig.subheadline = heroConfig.subheadline.replace(/55k\+?/gi, currentMetric);
+    try {
+      await k("site_config")
+        .where("id", "default")
+        .update({ hero_config_json: JSON.stringify(heroConfig) });
+    } catch (e) {
+      console.warn("Auto-healing hero_config_json in DB warning:", e);
+    }
+  }
+
   return {
     stats: {
       subscribers: row.subscribers,
@@ -119,7 +136,7 @@ export async function getSiteConfig() {
     rates: row.rates_json ? JSON.parse(row.rates_json) : {},
     audienceInterests: row.audience_interests_json ? JSON.parse(row.audience_interests_json) : [],
     shoppingInterests: row.shopping_interests_json ? JSON.parse(row.shopping_interests_json) : [],
-    heroConfig: row.hero_config_json ? JSON.parse(row.hero_config_json) : null,
+    heroConfig,
     channelSnapshots: row.channel_snapshots_json ? JSON.parse(row.channel_snapshots_json) : [],
   };
 }
@@ -129,6 +146,14 @@ export async function upsertSiteConfig(data: any) {
   if (!data.stats && !data.heroConfig) return;
 
   const stats = data.stats || {};
+  const heroConfig = data.heroConfig ? { ...data.heroConfig } : undefined;
+  if (heroConfig && typeof heroConfig.subheadline === "string" && /55k/i.test(heroConfig.subheadline)) {
+    const currentMetric = (stats.uniqueViewers && String(stats.uniqueViewers).trim() !== "" && stats.uniqueViewers !== "0")
+      ? stats.uniqueViewers
+      : "130K+";
+    heroConfig.subheadline = heroConfig.subheadline.replace(/55k\+?/gi, currentMetric);
+  }
+
   await k("site_config")
     .insert({
       id: "default",
@@ -153,7 +178,7 @@ export async function upsertSiteConfig(data: any) {
       rates_json: JSON.stringify(data.rates || {}),
       audience_interests_json: JSON.stringify(data.audienceInterests || []),
       shopping_interests_json: JSON.stringify(data.shoppingInterests || []),
-      hero_config_json: JSON.stringify(data.heroConfig || {}),
+      hero_config_json: JSON.stringify(heroConfig || {}),
       channel_snapshots_json: JSON.stringify(data.channelSnapshots || []),
     })
     .onConflict("id")

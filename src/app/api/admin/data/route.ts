@@ -50,12 +50,22 @@ function sanitizeStats(rawStats: any) {
   };
 }
 
-function sanitizeHeroConfig(rawHero: any) {
+function sanitizeHeroConfig(rawHero: any, rawStats?: any) {
   const defaults = defaultSiteData.heroConfig;
   const h = rawHero || {};
+  const currentMetric = (rawStats?.uniqueViewers && String(rawStats.uniqueViewers).trim() !== "" && rawStats.uniqueViewers !== "0")
+    ? rawStats.uniqueViewers
+    : (defaultSiteData.stats?.uniqueViewers || "130K+");
+
+  let subheadline = h.subheadline || defaults.subheadline;
+  if (typeof subheadline === "string" && /55k/i.test(subheadline)) {
+    subheadline = subheadline.replace(/55k\+?/gi, currentMetric);
+  }
+
   return {
     ...defaults,
     ...h,
+    subheadline,
     subscribersCount: (h.subscribersCount && String(h.subscribersCount).trim() !== "" && h.subscribersCount !== "0") ? h.subscribersCount : defaults.subscribersCount,
     monthlyViewsCount: (h.monthlyViewsCount && String(h.monthlyViewsCount).trim() !== "" && h.monthlyViewsCount !== "0") ? h.monthlyViewsCount : defaults.monthlyViewsCount,
     subscribersBadge: (h.subscribersBadge && String(h.subscribersBadge).trim() !== "") ? h.subscribersBadge : defaults.subscribersBadge,
@@ -89,7 +99,7 @@ export async function GET() {
         {
           ...fallbackData,
           stats: sanitizeStats(fallbackData?.stats),
-          heroConfig: sanitizeHeroConfig(fallbackData?.heroConfig),
+          heroConfig: sanitizeHeroConfig(fallbackData?.heroConfig, fallbackData?.stats),
           dbStatus: "Fallback Local JSON Store",
         },
         {
@@ -195,7 +205,7 @@ export async function GET() {
       return NextResponse.json(
         {
           stats: sanitizeStats(siteConfigData.stats),
-          heroConfig: sanitizeHeroConfig(siteConfigData.heroConfig),
+          heroConfig: sanitizeHeroConfig(siteConfigData.heroConfig, siteConfigData.stats),
           rates: siteConfigData.rates,
           demographics: siteConfigData.demographics,
           geographies: siteConfigData.geographies,
@@ -230,7 +240,7 @@ export async function GET() {
       {
         ...fallbackData,
         stats: sanitizeStats(fallbackData?.stats),
-        heroConfig: sanitizeHeroConfig(fallbackData?.heroConfig),
+        heroConfig: sanitizeHeroConfig(fallbackData?.heroConfig, fallbackData?.stats),
         dbStatus: "Fallback JSON Data Store",
       },
       {
@@ -255,7 +265,7 @@ export async function GET() {
       {
         ...fallbackData,
         stats: sanitizeStats(fallbackData?.stats),
-        heroConfig: sanitizeHeroConfig(fallbackData?.heroConfig),
+        heroConfig: sanitizeHeroConfig(fallbackData?.heroConfig, fallbackData?.stats),
         dbStatus: "Fallback Bundled JSON (MySQL Error)",
       },
       {

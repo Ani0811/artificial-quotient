@@ -177,9 +177,13 @@ export default function DashboardClient({ currentUser }: DashboardClientProps) {
             }));
           }
           if (data.heroConfig) {
+            const currentUv = (data.stats?.uniqueViewers && data.stats.uniqueViewers !== "0") ? data.stats.uniqueViewers : "130K+";
             setHeroForm((prev) => ({
               ...prev,
               ...data.heroConfig,
+              subheadline: data.heroConfig.subheadline
+                ? data.heroConfig.subheadline.replace(/55k\+?/gi, currentUv)
+                : prev.subheadline,
               subscribersCount: (data.heroConfig.subscribersCount && String(data.heroConfig.subscribersCount).trim() !== "" && data.heroConfig.subscribersCount !== "0") ? data.heroConfig.subscribersCount : prev.subscribersCount,
               monthlyViewsCount: (data.heroConfig.monthlyViewsCount && String(data.heroConfig.monthlyViewsCount).trim() !== "" && data.heroConfig.monthlyViewsCount !== "0") ? data.heroConfig.monthlyViewsCount : prev.monthlyViewsCount,
             }));
@@ -336,8 +340,13 @@ export default function DashboardClient({ currentUser }: DashboardClientProps) {
     if (isViewer || isSaving) return;
     setIsSaving(true);
     setNotification(null);
+    const currentUv = (statsForm.uniqueViewers && statsForm.uniqueViewers !== "0") ? statsForm.uniqueViewers : "130K+";
+    const sanitizedHero = {
+      ...heroForm,
+      subheadline: heroForm.subheadline ? heroForm.subheadline.replace(/55k\+?/gi, currentUv) : heroForm.subheadline,
+    };
     const payload = {
-      heroConfig: heroForm,
+      heroConfig: sanitizedHero,
       stats: statsForm,
       rates: ratesForm,
       demographics: demoForm,

@@ -38,6 +38,14 @@ export default function Home() {
             heroConfig: {
               ...prev?.heroConfig,
               ...json?.heroConfig,
+              subheadline: (json?.heroConfig?.subheadline && String(json.heroConfig.subheadline).trim() !== "")
+                ? json.heroConfig.subheadline.replace(
+                    /55k\+?/gi,
+                    (json?.stats?.uniqueViewers && String(json.stats.uniqueViewers).trim() !== "" && json.stats.uniqueViewers !== "0")
+                      ? json.stats.uniqueViewers
+                      : prev?.stats?.uniqueViewers || defaultSiteData.stats.uniqueViewers || "130K+"
+                  )
+                : prev?.heroConfig?.subheadline || defaultSiteData.heroConfig.subheadline,
               subscribersCount: (json?.heroConfig?.subscribersCount && String(json.heroConfig.subscribersCount).trim() !== "" && json.heroConfig.subscribersCount !== "0")
                 ? json.heroConfig.subscribersCount
                 : prev?.heroConfig?.subscribersCount || defaultSiteData.heroConfig.subscribersCount,
