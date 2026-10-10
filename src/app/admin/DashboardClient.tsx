@@ -56,64 +56,64 @@ export default function DashboardClient({ currentUser }: DashboardClientProps) {
   const [availableCountries, setAvailableCountries] = useState<{ code: string; name: string }[]>(ALL_COUNTRIES);
 
   const [statsForm, setStatsForm] = useState({
-    subscribers: "",
-    subscribersSub: "",
-    monthlyViews: "",
-    monthlyViewsSub: "",
-    newSubs: "",
-    newSubsSub: "",
-    videosCount: "",
-    videosCountSub: "",
-    retention: "",
-    channelBanner: "",
-    uniqueViewers: "",
-    uniqueViewersSub: "",
-    watchTimeHours: "",
-    avgViewDuration: "",
-    avgPercentageViewed: "",
-    returningViewers: "",
+    subscribers: defaultSiteData.stats.subscribers || "10.7k",
+    subscribersSub: defaultSiteData.stats.subscribersSub || "+12.4% this month",
+    monthlyViews: defaultSiteData.stats.monthlyViews || "1.4M",
+    monthlyViewsSub: defaultSiteData.stats.monthlyViewsSub || "",
+    newSubs: defaultSiteData.stats.newSubs || "+1,200",
+    newSubsSub: defaultSiteData.stats.newSubsSub || "High velocity growth",
+    videosCount: defaultSiteData.stats.videosCount || "240+",
+    videosCountSub: defaultSiteData.stats.videosCountSub || "Active weekly cadence",
+    retention: defaultSiteData.stats.retention || "27",
+    channelBanner: defaultSiteData.stats.channelBanner || "",
+    uniqueViewers: defaultSiteData.stats.uniqueViewers || "130K+",
+    uniqueViewersSub: defaultSiteData.stats.uniqueViewersSub || "Verified YouTube Studio 30D",
+    watchTimeHours: defaultSiteData.stats.watchTimeHours || "1.8K",
+    avgViewDuration: defaultSiteData.stats.avgViewDuration || "1:39",
+    avgPercentageViewed: defaultSiteData.stats.avgPercentageViewed || "27.1%",
+    returningViewers: defaultSiteData.stats.returningViewers || "6.6%",
   });
 
   const [ratesForm, setRatesForm] = useState({
-    dedicatedRate: "",
-    integrationRate: "",
+    dedicatedRate: defaultSiteData.rates.dedicatedRate || "$500",
+    integrationRate: defaultSiteData.rates.integrationRate || "$300",
   });
 
   const [demoForm, setDemoForm] = useState({
-    age13_17: "",
-    age18_24: "",
-    age25_34: "",
-    age35_44: "",
-    age45_54: "",
-    age55_64: "",
-    age65_plus: "",
-    malePercent: "",
-    femalePercent: "",
+    age13_17: defaultSiteData.demographics.age13_17 || "3.4%",
+    age18_24: defaultSiteData.demographics.age18_24 || "22.4%",
+    age25_34: defaultSiteData.demographics.age25_34 || "39.9%",
+    age35_44: defaultSiteData.demographics.age35_44 || "19.9%",
+    age45_54: defaultSiteData.demographics.age45_54 || "9.3%",
+    age55_64: defaultSiteData.demographics.age55_64 || "3.6%",
+    age65_plus: defaultSiteData.demographics.age65_plus || "1.5%",
+    malePercent: defaultSiteData.demographics.malePercent || "84.4%",
+    femalePercent: defaultSiteData.demographics.femalePercent || "15.6%",
   });
 
   const [heroForm, setHeroForm] = useState<HeroConfig>({
-    badgeText: "Open for Q3 Sponsorships",
-    headline: "Actionable AI Workflows",
-    headlineHighlight: "For Everyone",
-    subheadline: "Artificial Quotient turns AI software into step-by-step workflow tutorials for 10K+ subscribers and 130K+ monthly viewers who create with AI tools every day.",
-    sponsorButtonText: "Sponsor the Channel",
-    sponsorButtonUrl: "https://forms.gle/4uTUZkEi5o3iqYrs5",
-    caseStudiesButtonText: "View Case Studies",
-    channelName: "Artificial Quotient",
-    channelHandle: "@ArtificialQuotient",
-    channelCategory: "Tech & AI",
-    channelLogo: "",
-    subscribeUrl: "https://www.youtube.com/@ArtificialQuotient01",
-    subscribeButtonText: "Subscribe",
-    subscribersCount: "",
-    subscribersBadge: "Active",
-    monthlyViewsCount: "",
-    monthlyViewsBadge: "Growing",
-    retentionPercent: "27%",
-    retentionLabel: "Avg. Viewer Retention",
-    retentionLeftText: "Top Tier Engagement",
-    retentionRightText: "Targeted Tech Audience",
-    enableRgbEffect: true,
+    badgeText: defaultSiteData.heroConfig.badgeText || "Open for Q3 Sponsorships",
+    headline: defaultSiteData.heroConfig.headline || "Actionable AI Workflows",
+    headlineHighlight: defaultSiteData.heroConfig.headlineHighlight || "For Everyone",
+    subheadline: defaultSiteData.heroConfig.subheadline || "Artificial Quotient turns AI software into step-by-step workflow tutorials for 10K+ subscribers and 130K+ monthly viewers who create with AI tools every day.",
+    sponsorButtonText: defaultSiteData.heroConfig.sponsorButtonText || "Sponsor the Channel",
+    sponsorButtonUrl: defaultSiteData.heroConfig.sponsorButtonUrl || "https://forms.gle/4uTUZkEi5o3iqYrs5",
+    caseStudiesButtonText: defaultSiteData.heroConfig.caseStudiesButtonText || "View Case Studies",
+    channelName: defaultSiteData.heroConfig.channelName || "Artificial Quotient",
+    channelHandle: defaultSiteData.heroConfig.channelHandle || "@ArtificialQuotient",
+    channelCategory: defaultSiteData.heroConfig.channelCategory || "Tech & AI",
+    channelLogo: defaultSiteData.heroConfig.channelLogo || "",
+    subscribeUrl: defaultSiteData.heroConfig.subscribeUrl || "https://www.youtube.com/@ArtificialQuotient01",
+    subscribeButtonText: defaultSiteData.heroConfig.subscribeButtonText || "Subscribe",
+    subscribersCount: defaultSiteData.heroConfig.subscribersCount || "10.7k",
+    subscribersBadge: defaultSiteData.heroConfig.subscribersBadge || "Active",
+    monthlyViewsCount: defaultSiteData.heroConfig.monthlyViewsCount || "1.4M",
+    monthlyViewsBadge: defaultSiteData.heroConfig.monthlyViewsBadge || "Growing",
+    retentionPercent: defaultSiteData.heroConfig.retentionPercent || "27%",
+    retentionLabel: defaultSiteData.heroConfig.retentionLabel || "Avg. Viewer Retention",
+    retentionLeftText: defaultSiteData.heroConfig.retentionLeftText || "Top Tier Engagement",
+    retentionRightText: defaultSiteData.heroConfig.retentionRightText || "Targeted Tech Audience",
+    enableRgbEffect: defaultSiteData.heroConfig.enableRgbEffect !== false,
   });
 
   // Permissions safeguard for tabs
@@ -168,8 +168,22 @@ export default function DashboardClient({ currentUser }: DashboardClientProps) {
         const res = await fetch("/api/admin/data", { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
-          if (data.stats) setStatsForm(data.stats);
-          if (data.heroConfig) setHeroForm((prev) => ({ ...prev, ...data.heroConfig }));
+          if (data.stats) {
+            setStatsForm((prev) => ({
+              ...prev,
+              ...data.stats,
+              subscribers: (data.stats.subscribers && String(data.stats.subscribers).trim() !== "" && data.stats.subscribers !== "0") ? data.stats.subscribers : prev.subscribers,
+              monthlyViews: (data.stats.monthlyViews && String(data.stats.monthlyViews).trim() !== "" && data.stats.monthlyViews !== "0") ? data.stats.monthlyViews : prev.monthlyViews,
+            }));
+          }
+          if (data.heroConfig) {
+            setHeroForm((prev) => ({
+              ...prev,
+              ...data.heroConfig,
+              subscribersCount: (data.heroConfig.subscribersCount && String(data.heroConfig.subscribersCount).trim() !== "" && data.heroConfig.subscribersCount !== "0") ? data.heroConfig.subscribersCount : prev.subscribersCount,
+              monthlyViewsCount: (data.heroConfig.monthlyViewsCount && String(data.heroConfig.monthlyViewsCount).trim() !== "" && data.heroConfig.monthlyViewsCount !== "0") ? data.heroConfig.monthlyViewsCount : prev.monthlyViewsCount,
+            }));
+          }
           if (data.rates) setRatesForm(data.rates);
           if (data.demographics) setDemoForm(data.demographics);
           if (data.geographies) setGeoForm(parseGeographies(data.geographies));

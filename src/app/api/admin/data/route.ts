@@ -36,26 +36,62 @@ const backupDir = path.join(process.cwd(), "src", "data", "backups");
 
 import { syncYouTubeData } from "@/lib/youtube-sync";
 
+function sanitizeStats(rawStats: any) {
+  const defaults = defaultSiteData.stats;
+  const s = rawStats || {};
+  return {
+    ...defaults,
+    ...s,
+    subscribers: (s.subscribers && String(s.subscribers).trim() !== "" && s.subscribers !== "0") ? s.subscribers : defaults.subscribers,
+    monthlyViews: (s.monthlyViews && String(s.monthlyViews).trim() !== "" && s.monthlyViews !== "0") ? s.monthlyViews : defaults.monthlyViews,
+    videosCount: (s.videosCount && String(s.videosCount).trim() !== "" && s.videosCount !== "0") ? s.videosCount : defaults.videosCount,
+    retention: (s.retention && String(s.retention).trim() !== "" && s.retention !== "0") ? s.retention : defaults.retention,
+    uniqueViewers: (s.uniqueViewers && String(s.uniqueViewers).trim() !== "" && s.uniqueViewers !== "0") ? s.uniqueViewers : defaults.uniqueViewers,
+  };
+}
+
+function sanitizeHeroConfig(rawHero: any) {
+  const defaults = defaultSiteData.heroConfig;
+  const h = rawHero || {};
+  return {
+    ...defaults,
+    ...h,
+    subscribersCount: (h.subscribersCount && String(h.subscribersCount).trim() !== "" && h.subscribersCount !== "0") ? h.subscribersCount : defaults.subscribersCount,
+    monthlyViewsCount: (h.monthlyViewsCount && String(h.monthlyViewsCount).trim() !== "" && h.monthlyViewsCount !== "0") ? h.monthlyViewsCount : defaults.monthlyViewsCount,
+    subscribersBadge: (h.subscribersBadge && String(h.subscribersBadge).trim() !== "") ? h.subscribersBadge : defaults.subscribersBadge,
+    monthlyViewsBadge: (h.monthlyViewsBadge && String(h.monthlyViewsBadge).trim() !== "") ? h.monthlyViewsBadge : defaults.monthlyViewsBadge,
+    retentionPercent: (h.retentionPercent && String(h.retentionPercent).trim() !== "" && h.retentionPercent !== "0%") ? h.retentionPercent : defaults.retentionPercent,
+    retentionLabel: (h.retentionLabel && String(h.retentionLabel).trim() !== "") ? h.retentionLabel : defaults.retentionLabel,
+    retentionLeftText: (h.retentionLeftText && String(h.retentionLeftText).trim() !== "") ? h.retentionLeftText : defaults.retentionLeftText,
+    retentionRightText: (h.retentionRightText && String(h.retentionRightText).trim() !== "") ? h.retentionRightText : defaults.retentionRightText,
+  };
+}
+
 export async function GET() {
-  // Trigger automatic live YouTube synchronization (throttled by 15-minute cache)
+  // Trigger automatic live YouTube synchronization non-blockingly (throttled by 15-minute cache)
   try {
-    await syncYouTubeData({ force: false });
-  } catch (ytErr) {
-    console.warn("Background YouTube auto-sync warning in GET /api/admin/data:", ytErr);
-  }
+    syncYouTubeData({ force: false }).catch((ytErr) => {
+      console.warn("Background YouTube auto-sync warning in GET /api/admin/data:", ytErr);
+    });
+  } catch {}
 
   try {
     const isDbReady = await initDatabase();
 
     if (!isDbReady) {
-      let fallbackData = defaultSiteData;
+      let fallbackData: any = defaultSiteData;
       try {
         const fileContents = await fs.readFile(filePath, "utf8");
         fallbackData = JSON.parse(fileContents);
       } catch {}
 
       return NextResponse.json(
-        { ...fallbackData, dbStatus: "Fallback Local JSON Store" },
+        {
+          ...fallbackData,
+          stats: sanitizeStats(fallbackData?.stats),
+          heroConfig: sanitizeHeroConfig(fallbackData?.heroConfig),
+          dbStatus: "Fallback Local JSON Store",
+        },
         {
           headers: {
             "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
@@ -158,8 +194,8 @@ export async function GET() {
 
       return NextResponse.json(
         {
-          stats: siteConfigData.stats,
-          heroConfig: siteConfigData.heroConfig,
+          stats: sanitizeStats(siteConfigData.stats),
+          heroConfig: sanitizeHeroConfig(siteConfigData.heroConfig),
           rates: siteConfigData.rates,
           demographics: siteConfigData.demographics,
           geographies: siteConfigData.geographies,
@@ -184,14 +220,19 @@ export async function GET() {
     }
 
     // Fallback to latest JSON if database rows empty
-    let fallbackData = defaultSiteData;
+    let fallbackData: any = defaultSiteData;
     try {
       const fileContents = await fs.readFile(filePath, "utf8");
       fallbackData = JSON.parse(fileContents);
     } catch {}
 
     return NextResponse.json(
-      { ...fallbackData, dbStatus: "Fallback JSON Data Store" },
+      {
+        ...fallbackData,
+        stats: sanitizeStats(fallbackData?.stats),
+        heroConfig: sanitizeHeroConfig(fallbackData?.heroConfig),
+        dbStatus: "Fallback JSON Data Store",
+      },
       {
         headers: {
           "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
@@ -204,14 +245,19 @@ export async function GET() {
     } else {
       console.error("GET site data error:", err);
     }
-    let fallbackData = defaultSiteData;
+    let fallbackData: any = defaultSiteData;
     try {
       const fileContents = await fs.readFile(filePath, "utf8");
       fallbackData = JSON.parse(fileContents);
     } catch {}
 
     return NextResponse.json(
-      { ...fallbackData, dbStatus: "Fallback Bundled JSON (MySQL Error)" },
+      {
+        ...fallbackData,
+        stats: sanitizeStats(fallbackData?.stats),
+        heroConfig: sanitizeHeroConfig(fallbackData?.heroConfig),
+        dbStatus: "Fallback Bundled JSON (MySQL Error)",
+      },
       {
         headers: {
           "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",

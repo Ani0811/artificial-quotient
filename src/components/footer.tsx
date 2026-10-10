@@ -12,7 +12,7 @@ interface FooterProps {
 }
 
 export default function Footer({ subscribersCount, isAdmin = false }: FooterProps) {
-  const [subs, setSubs] = useState<string>(subscribersCount || "10.4k");
+  const [subs, setSubs] = useState<string>(subscribersCount || "10.7k");
 
   useEffect(() => {
     if (subscribersCount) {
@@ -26,7 +26,7 @@ export default function Footer({ subscribersCount, isAdmin = false }: FooterProp
       .then((data) => {
         if (!isMounted) return;
         const liveSubs = data?.heroConfig?.subscribersCount || data?.stats?.subscribers;
-        if (liveSubs) {
+        if (liveSubs && String(liveSubs).trim() !== "" && liveSubs !== "0") {
           setSubs(liveSubs);
         }
       })

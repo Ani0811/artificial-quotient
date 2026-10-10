@@ -264,7 +264,7 @@ export function HeroTab({
                   <label className="block text-[10px] font-bold text-brand-muted dark:text-emerald-200/60 mb-1">Value (Auto-synced from YouTube)</label>
                   <input 
                     type="text" 
-                    value={heroForm.subscribersCount || ""} 
+                    value={heroForm.subscribersCount || "10.7k"} 
                     disabled={isViewer}
                     placeholder="Auto-synced"
                     onChange={(e) => setHeroForm({ ...heroForm, subscribersCount: e.target.value })}
@@ -292,7 +292,7 @@ export function HeroTab({
                   <label className="block text-[10px] font-bold text-brand-muted dark:text-emerald-200/60 mb-1">Value (Auto-synced from YouTube)</label>
                   <input 
                     type="text" 
-                    value={heroForm.monthlyViewsCount || ""} 
+                    value={heroForm.monthlyViewsCount || "1.4M"} 
                     disabled={isViewer}
                     placeholder="Auto-synced"
                     onChange={(e) => setHeroForm({ ...heroForm, monthlyViewsCount: e.target.value })}

@@ -9,9 +9,11 @@ import SponsorResults from "@/components/sponsor-results";
 import RateCard from "@/components/rate-card";
 import CampaignWorkflow from "@/components/campaign-workflow";
 
+import defaultSiteData from "@/data/site-data.json";
+
 export default function Home() {
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<any>(defaultSiteData);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -20,7 +22,33 @@ export default function Home() {
         const res = await fetch("/api/admin/data", { cache: "no-store" });
         if (res.ok && active) {
           const json = await res.json();
-          setData(json);
+          setData((prev: any) => ({
+            ...prev,
+            ...json,
+            stats: {
+              ...prev?.stats,
+              ...json?.stats,
+              subscribers: (json?.stats?.subscribers && String(json.stats.subscribers).trim() !== "" && json.stats.subscribers !== "0")
+                ? json.stats.subscribers
+                : prev?.stats?.subscribers || defaultSiteData.stats.subscribers,
+              monthlyViews: (json?.stats?.monthlyViews && String(json.stats.monthlyViews).trim() !== "" && json.stats.monthlyViews !== "0")
+                ? json.stats.monthlyViews
+                : prev?.stats?.monthlyViews || defaultSiteData.stats.monthlyViews,
+            },
+            heroConfig: {
+              ...prev?.heroConfig,
+              ...json?.heroConfig,
+              subscribersCount: (json?.heroConfig?.subscribersCount && String(json.heroConfig.subscribersCount).trim() !== "" && json.heroConfig.subscribersCount !== "0")
+                ? json.heroConfig.subscribersCount
+                : prev?.heroConfig?.subscribersCount || defaultSiteData.heroConfig.subscribersCount,
+              monthlyViewsCount: (json?.heroConfig?.monthlyViewsCount && String(json.heroConfig.monthlyViewsCount).trim() !== "" && json.heroConfig.monthlyViewsCount !== "0")
+                ? json.heroConfig.monthlyViewsCount
+                : prev?.heroConfig?.monthlyViewsCount || defaultSiteData.heroConfig.monthlyViewsCount,
+              retentionPercent: (json?.heroConfig?.retentionPercent && String(json.heroConfig.retentionPercent).trim() !== "" && json.heroConfig.retentionPercent !== "0%")
+                ? json.heroConfig.retentionPercent
+                : prev?.heroConfig?.retentionPercent || defaultSiteData.heroConfig.retentionPercent,
+            },
+          }));
         }
       } catch {
         // Fallback

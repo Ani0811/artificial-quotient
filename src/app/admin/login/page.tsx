@@ -1,12 +1,10 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Lock, ArrowLeft, ShieldAlert, KeyRound, Eye, EyeOff, RotateCcw, CheckCircle2, Mail, UserX, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { LogoImage } from "@/components/ui/logo-image";
-import { isFirebaseConfigured, getFirebaseAuth, googleProvider } from "@/lib/firebase";
-import { signInWithPopup } from "firebase/auth";
 
 function AdminLoginForm() {
   const searchParams = useSearchParams();
@@ -28,55 +26,120 @@ function AdminLoginForm() {
   const [recoveryKey, setRecoveryKey] = useState("");
   const [newPassword, setNewPassword] = useState("");
 
+  // Load Google Identity Services script
+  useEffect(() => {
+    if (typeof window !== "undefined" && !document.getElementById("google-gsi-client")) {
+      const script = document.createElement("script");
+      script.id = "google-gsi-client";
+      script.src = "https://accounts.google.com/gsi/client";
+      script.async = true;
+      script.defer = true;
+      document.head.appendChild(script);
+    }
+  }, []);
+
   const handleGoogleLogin = async () => {
     setGoogleLoading(true);
     setError("");
     setSuccess("");
 
     try {
-      if (!isFirebaseConfigured()) {
+      // 1. Fetch Google Client ID from env or server
+      let clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+      if (!clientId) {
+        try {
+          const cfgRes = await fetch("/api/auth/google", { cache: "no-store" });
+          if (cfgRes.ok) {
+            const cfg = await cfgRes.json();
+            clientId = cfg.clientId;
+          }
+        } catch {}
+      }
+
+      if (!clientId) {
         setError(
-          "Google Sign-In requires Firebase keys in .env.local. You can log in immediately using the Admin Email and Password form below."
+          "Google Client ID is not configured in .env.local. You can log in immediately using the Admin Email and Password form below."
         );
         setGoogleLoading(false);
         return;
       }
 
-      const auth = getFirebaseAuth();
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
-      const idToken = await user.getIdToken();
+      // 2. Wait briefly for Google script to initialize if not yet ready
+      if (typeof window === "undefined") return;
+      let googleObj = (window as any).google;
+      if (!googleObj?.accounts?.oauth2) {
+        await new Promise<void>((resolve) => {
+          let attempts = 0;
+          const interval = setInterval(() => {
+            attempts++;
+            if ((window as any).google?.accounts?.oauth2 || attempts > 20) {
+              clearInterval(interval);
+              resolve();
+            }
+          }, 100);
+        });
+        googleObj = (window as any).google;
+      }
 
-      const res = await fetch("/api/auth/google", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      if (!googleObj?.accounts?.oauth2) {
+        setError("Unable to load Google Identity Services. Please check your network or log in with credentials below.");
+        setGoogleLoading(false);
+        return;
+      }
+
+      // 3. Launch official Google OAuth2 Token Client popup
+      const tokenClient = googleObj.accounts.oauth2.initTokenClient({
+        client_id: clientId,
+        scope: "email profile openid",
+        callback: async (tokenResponse: any) => {
+          if (tokenResponse?.error) {
+            setError(tokenResponse.error_description || "Google sign-in was cancelled.");
+            setGoogleLoading(false);
+            return;
+          }
+
+          if (tokenResponse?.access_token) {
+            try {
+              const res = await fetch("/api/auth/google", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  accessToken: tokenResponse.access_token,
+                }),
+              });
+
+              const data = await res.json();
+
+              if (res.ok && data.success) {
+                setSuccess(data.message || "Authenticated successfully! Redirecting...");
+                setTimeout(() => {
+                  window.location.href = "/admin";
+                }, 800);
+              } else {
+                setError(data.message || "Access denied: Your Google account is not registered as an administrator.");
+                setGoogleLoading(false);
+              }
+            } catch {
+              setError("Network error communicating with authentication server.");
+              setGoogleLoading(false);
+            }
+          } else {
+            setGoogleLoading(false);
+          }
         },
-        body: JSON.stringify({
-          idToken,
-          email: user.email,
-        }),
+        error_callback: (err: any) => {
+          setGoogleLoading(false);
+          if (err?.type !== "popup_closed") {
+            setError("Google sign-in encountered an issue. Please try again.");
+          }
+        },
       });
 
-      const data = await res.json();
-
-      if (res.ok && data.success) {
-        setSuccess(data.message || `Authenticated as ${user.email}! Redirecting...`);
-        setTimeout(() => {
-          window.location.href = "/admin";
-        }, 800);
-      } else {
-        setError(data.message || "Access denied: Your Google account is not registered as an administrator.");
-      }
+      tokenClient.requestAccessToken({ prompt: "consent" });
     } catch (err: any) {
-      if (err?.code === "auth/popup-closed-by-user") {
-        setError("Google sign-in popup was closed before completing.");
-      } else if (err?.code === "auth/cancelled-popup-request") {
-        // Ignored
-      } else {
-        setError(err?.message || "Failed to sign in with Google. Please try again or use password login.");
-      }
-    } finally {
+      setError(err?.message || "Failed to initialize Google Sign-In. Please try again or use password login.");
       setGoogleLoading(false);
     }
   };

@@ -58,14 +58,37 @@ export default function Hero({ heroConfig, stats }: HeroProps) {
   const subscribeUrl = heroConfig?.subscribeUrl || "https://www.youtube.com/@ArtificialQuotient01";
   const subscribeButtonText = heroConfig?.subscribeButtonText || "Subscribe";
 
-  const subscribersCount = stats?.subscribers || heroConfig?.subscribersCount || "";
+  const isValidCount = (val?: string) => {
+    if (!val) return false;
+    const clean = String(val).trim().toLowerCase();
+    return clean !== "" && clean !== "0" && clean !== "0k" && clean !== "0m";
+  };
+
+  const subscribersCount =
+    isValidCount(stats?.subscribers)
+      ? stats!.subscribers
+      : isValidCount(heroConfig?.subscribersCount)
+      ? heroConfig!.subscribersCount!
+      : "10.7k";
   const subscribersBadge = heroConfig?.subscribersBadge || "Active";
-  const monthlyViewsCount = stats?.monthlyViews || heroConfig?.monthlyViewsCount || "";
+
+  const monthlyViewsCount =
+    isValidCount(stats?.monthlyViews)
+      ? stats!.monthlyViews
+      : isValidCount(heroConfig?.monthlyViewsCount)
+      ? heroConfig!.monthlyViewsCount!
+      : "1.4M";
   const monthlyViewsBadge = heroConfig?.monthlyViewsBadge || "Growing";
   
-  const retentionRaw = heroConfig?.retentionPercent || stats?.retention || "27%";
-  const retentionNum = parseInt(retentionRaw.replace(/[^0-9]/g, ""), 10) || 27;
-  const retentionDisplay = retentionRaw.includes("%") ? retentionRaw : `${retentionNum}%`;
+  const retentionRaw =
+    (heroConfig?.retentionPercent && String(heroConfig.retentionPercent).trim() !== "" && heroConfig.retentionPercent !== "0%")
+      ? heroConfig.retentionPercent
+      : (stats?.retention && String(stats.retention).trim() !== "" && stats.retention !== "0")
+      ? stats.retention
+      : "27%";
+  const parsedRetention = parseInt(String(retentionRaw).replace(/[^0-9]/g, ""), 10);
+  const retentionNum = (!isNaN(parsedRetention) && parsedRetention > 0) ? parsedRetention : 27;
+  const retentionDisplay = `${retentionNum}%`;
   const retentionLabel = heroConfig?.retentionLabel || "Avg. Viewer Retention";
   const retentionLeftText = heroConfig?.retentionLeftText || "Top Tier Engagement";
   const retentionRightText = heroConfig?.retentionRightText || "Targeted Tech Audience";

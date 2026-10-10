@@ -362,8 +362,8 @@ export async function syncYouTubeData({ force = false, syncVideos = false }: { f
 
     let updatedStats: any = {
       ...(existingData.stats || {}),
-      subscribers: liveStats.subscribers,
-      monthlyViews: liveStats.monthlyViews,
+      ...(liveStats.subscribers ? { subscribers: liveStats.subscribers } : {}),
+      ...(liveStats.monthlyViews ? { monthlyViews: liveStats.monthlyViews } : {}),
       ...(liveStats.videosCount ? { videosCount: `${liveStats.videosCount}+` } : {}),
       ...(analyticsData ? {
         uniqueViewers: analyticsData.formattedViews,
@@ -374,8 +374,8 @@ export async function syncYouTubeData({ force = false, syncVideos = false }: { f
     };
     let updatedHeroConfig: any = {
       ...(existingData.heroConfig || {}),
-      subscribersCount: liveStats.subscribers,
-      monthlyViewsCount: liveStats.monthlyViews,
+      ...(liveStats.subscribers ? { subscribersCount: liveStats.subscribers } : {}),
+      ...(liveStats.monthlyViews ? { monthlyViewsCount: liveStats.monthlyViews } : {}),
     };
     let updatedWpList: any[] = [];
     let updatedCsList: any[] = [];
@@ -401,8 +401,8 @@ export async function syncYouTubeData({ force = false, syncVideos = false }: { f
 
         currentConfig.stats = {
           ...currentConfig.stats,
-          subscribers: liveStats.subscribers,
-          monthlyViews: liveStats.monthlyViews,
+          ...(liveStats.subscribers ? { subscribers: liveStats.subscribers } : {}),
+          ...(liveStats.monthlyViews ? { monthlyViews: liveStats.monthlyViews } : {}),
           videosCount: liveStats.videosCount ? `${liveStats.videosCount}+` : currentConfig.stats.videosCount,
           ...(analyticsData ? {
             uniqueViewers: analyticsData.formattedViews,
@@ -415,8 +415,8 @@ export async function syncYouTubeData({ force = false, syncVideos = false }: { f
         if (!currentConfig.heroConfig) {
           currentConfig.heroConfig = {};
         }
-        currentConfig.heroConfig.subscribersCount = liveStats.subscribers;
-        currentConfig.heroConfig.monthlyViewsCount = liveStats.monthlyViews;
+        if (liveStats.subscribers) currentConfig.heroConfig.subscribersCount = liveStats.subscribers;
+        if (liveStats.monthlyViews) currentConfig.heroConfig.monthlyViewsCount = liveStats.monthlyViews;
 
         await upsertSiteConfig(currentConfig);
         updatedStats = currentConfig.stats;
@@ -473,8 +473,12 @@ export async function syncYouTubeData({ force = false, syncVideos = false }: { f
       const jsonData = JSON.parse(fileContents);
 
       if (!jsonData.stats) jsonData.stats = {};
-      jsonData.stats.subscribers = liveStats.subscribers;
-      jsonData.stats.monthlyViews = liveStats.monthlyViews;
+      if (liveStats.subscribers) {
+        jsonData.stats.subscribers = liveStats.subscribers;
+      }
+      if (liveStats.monthlyViews) {
+        jsonData.stats.monthlyViews = liveStats.monthlyViews;
+      }
       if (liveStats.videosCount) {
         jsonData.stats.videosCount = liveStats.videosCount;
       }
@@ -491,8 +495,12 @@ export async function syncYouTubeData({ force = false, syncVideos = false }: { f
       jsonData.channelSnapshots = updatedSnapshots;
 
       if (!jsonData.heroConfig) jsonData.heroConfig = {};
-      jsonData.heroConfig.subscribersCount = liveStats.subscribers;
-      jsonData.heroConfig.monthlyViewsCount = liveStats.monthlyViews;
+      if (liveStats.subscribers) {
+        jsonData.heroConfig.subscribersCount = liveStats.subscribers;
+      }
+      if (liveStats.monthlyViews) {
+        jsonData.heroConfig.monthlyViewsCount = liveStats.monthlyViews;
+      }
       if (updatedWpList.length > 0) {
         jsonData.whatPerforms = updatedWpList;
       }
