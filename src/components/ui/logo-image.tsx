@@ -35,7 +35,7 @@ export function LogoImage({
       width={width}
       height={height}
       priority={priority}
-      quality={90}
+      quality={75}
       className={className}
       onError={() => setHasError(true)}
     />
