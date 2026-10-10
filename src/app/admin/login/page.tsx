@@ -93,7 +93,11 @@ function AdminLoginForm() {
         scope: "email profile openid",
         callback: async (tokenResponse: any) => {
           if (tokenResponse?.error) {
-            setError(tokenResponse.error_description || "Google sign-in was cancelled.");
+            if (tokenResponse.error === "invalid_client" || String(tokenResponse.error_description || "").toLowerCase().includes("origin")) {
+              setError("Google OAuth origin error: Please add http://localhost:3000 to 'Authorized JavaScript origins' in Google Cloud Console.");
+            } else {
+              setError(tokenResponse.error_description || "Google sign-in was cancelled.");
+            }
             setGoogleLoading(false);
             return;
           }
@@ -131,8 +135,10 @@ function AdminLoginForm() {
         },
         error_callback: (err: any) => {
           setGoogleLoading(false);
-          if (err?.type !== "popup_closed") {
-            setError("Google sign-in encountered an issue. Please try again.");
+          if (err?.type === "origin_mismatch" || String(err?.message || "").toLowerCase().includes("origin")) {
+            setError("Google OAuth Error: 'http://localhost:3000' is not listed in 'Authorized JavaScript origins' in Google Cloud Console.");
+          } else if (err?.type !== "popup_closed") {
+            setError("Google sign-in encountered an issue. Please verify Authorized JavaScript origins in Google Cloud Console or use password login.");
           }
         },
       });
@@ -305,12 +311,12 @@ function AdminLoginForm() {
                 <div className="h-px flex-1 bg-brand-border/60 dark:bg-zinc-800"></div>
               </div>
 
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div className="space-y-1.5">
+              <form onSubmit={handleLogin} className="space-y-4" suppressHydrationWarning>
+                <div className="space-y-1.5" suppressHydrationWarning>
                   <label className="block text-sm font-medium text-brand-text dark:text-zinc-200">
                     Admin Email Address
                   </label>
-                  <div className="relative">
+                  <div className="relative" suppressHydrationWarning>
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-brand-muted dark:text-zinc-500">
                       <Mail className="w-4 h-4" />
                     </div>
@@ -318,13 +324,15 @@ function AdminLoginForm() {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
+                      autoComplete="username"
+                      suppressHydrationWarning
                       className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-brand-border/80 dark:border-zinc-700 bg-white/50 dark:bg-zinc-950/50 focus:outline-none focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue dark:focus:border-brand-blue text-brand-text dark:text-white transition-all text-sm"
                       placeholder="admin@artificialquotient.com"
                     />
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
+                <div className="space-y-1.5" suppressHydrationWarning>
                   <div className="flex items-center justify-between">
                     <label className="block text-sm font-medium text-brand-text dark:text-zinc-200">
                       Access Password
@@ -342,7 +350,7 @@ function AdminLoginForm() {
                     </button>
                   </div>
 
-                  <div className="relative">
+                  <div className="relative" suppressHydrationWarning>
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-brand-muted dark:text-zinc-500">
                       <KeyRound className="w-4.5 h-4.5" />
                     </div>
@@ -350,6 +358,8 @@ function AdminLoginForm() {
                       type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
+                      autoComplete="current-password"
+                      suppressHydrationWarning
                       className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-brand-border/80 dark:border-zinc-700 bg-white/50 dark:bg-zinc-950/50 focus:outline-none focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue dark:focus:border-brand-blue text-brand-text dark:text-white transition-all text-sm"
                       placeholder="••••••••••••"
                       required
@@ -403,8 +413,8 @@ function AdminLoginForm() {
             </div>
           ) : (
             /* Reset Password Form */
-          <form onSubmit={handleResetPassword} className="space-y-4">
-            <div className="space-y-1.5">
+          <form onSubmit={handleResetPassword} className="space-y-4" suppressHydrationWarning>
+            <div className="space-y-1.5" suppressHydrationWarning>
               <label className="block text-xs font-semibold uppercase tracking-wider text-brand-muted dark:text-zinc-400">
                 Admin Email Address *
               </label>
@@ -412,13 +422,15 @@ function AdminLoginForm() {
                 type="email"
                 value={recoveryEmail}
                 onChange={(e) => setRecoveryEmail(e.target.value)}
+                autoComplete="email"
+                suppressHydrationWarning
                 className="w-full px-3.5 py-2.5 rounded-xl border border-brand-border/80 dark:border-zinc-700 bg-white/50 dark:bg-zinc-950/50 focus:outline-none focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue dark:focus:border-brand-blue text-brand-text dark:text-white transition-all text-xs sm:text-sm"
                 placeholder="admin@artificialquotient.com"
                 required
               />
             </div>
 
-            <div className="space-y-1.5">
+            <div className="space-y-1.5" suppressHydrationWarning>
               <label className="block text-xs font-semibold uppercase tracking-wider text-brand-muted dark:text-zinc-400">
                 Security Recovery PIN / Key *
               </label>
@@ -426,6 +438,8 @@ function AdminLoginForm() {
                 type="text"
                 value={recoveryKey}
                 onChange={(e) => setRecoveryKey(e.target.value)}
+                autoComplete="off"
+                suppressHydrationWarning
                 className="w-full px-3.5 py-2.5 rounded-xl border border-brand-border/80 dark:border-zinc-700 bg-white/50 dark:bg-zinc-950/50 focus:outline-none focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue dark:focus:border-brand-blue text-brand-text dark:text-white transition-all text-xs sm:text-sm font-mono"
                 placeholder="e.g. AQ-SEC-9842"
                 required
@@ -435,15 +449,17 @@ function AdminLoginForm() {
               </p>
             </div>
 
-            <div className="space-y-1.5">
+            <div className="space-y-1.5" suppressHydrationWarning>
               <label className="block text-xs font-semibold uppercase tracking-wider text-brand-muted dark:text-zinc-400">
                 New Access Password *
               </label>
-              <div className="relative">
+              <div className="relative" suppressHydrationWarning>
                 <input
                   type={showNewPassword ? "text" : "password"}
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
+                  autoComplete="new-password"
+                  suppressHydrationWarning
                   className="w-full pl-3.5 pr-10 py-2.5 rounded-xl border border-brand-border/80 dark:border-zinc-700 bg-white/50 dark:bg-zinc-950/50 focus:outline-none focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue dark:focus:border-brand-blue text-brand-text dark:text-white transition-all text-xs sm:text-sm font-mono"
                   placeholder="Enter new password (min. 4 chars)"
                   required

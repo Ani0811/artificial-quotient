@@ -6,7 +6,7 @@
     "monthlyViewsSub": "",
     "newSubs": "+1,200",
     "newSubsSub": "High velocity growth",
-    "videosCount": "240+",
+    "videosCount": "241",
     "videosCountSub": "Active weekly cadence",
     "retention": "27",
     "channelBanner": "",
@@ -290,11 +290,6 @@
   ],
   "channelSnapshots": [
     {
-      "timestamp": 1785911517714,
-      "viewCount": 850000,
-      "subscriberCount": 8800
-    },
-    {
       "timestamp": 1787293917714,
       "viewCount": 1100000,
       "subscriberCount": 9700
@@ -303,6 +298,10 @@
       "timestamp": 1788676317714,
       "viewCount": 1285918,
       "subscriberCount": 10400
+    },
+    {
+      "timestamp": 1791622563216,
+      "viewCount": 1445156
     }
   ]
 }

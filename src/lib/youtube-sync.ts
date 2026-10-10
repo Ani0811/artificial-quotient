@@ -382,88 +382,90 @@ export async function syncYouTubeData({ force = false, syncVideos = false }: { f
 
     // 2. Attempt MySQL Database Update (Gracefully handled if DB is offline)
     try {
-      await initDatabase();
-      const currentConfig = await getSiteConfig();
+      const isDbReady = await initDatabase();
+      if (isDbReady) {
+        const currentConfig = await getSiteConfig();
 
-      if (currentConfig) {
-        // Merge with any snapshots already in DB
-        if (currentConfig.channelSnapshots && Array.isArray(currentConfig.channelSnapshots) && currentConfig.channelSnapshots.length > 0) {
-          const combined = [...currentConfig.channelSnapshots];
-          for (const s of updatedSnapshots) {
-            if (!combined.some((c) => Math.abs(c.timestamp - s.timestamp) < 60000)) {
-              combined.push(s);
+        if (currentConfig) {
+          // Merge with any snapshots already in DB
+          if (currentConfig.channelSnapshots && Array.isArray(currentConfig.channelSnapshots) && currentConfig.channelSnapshots.length > 0) {
+            const combined = [...currentConfig.channelSnapshots];
+            for (const s of updatedSnapshots) {
+              if (!combined.some((c) => Math.abs(c.timestamp - s.timestamp) < 60000)) {
+                combined.push(s);
+              }
+            }
+            currentConfig.channelSnapshots = combined.filter((s) => s.timestamp >= pruneCutoff).sort((a, b) => a.timestamp - b.timestamp);
+          } else {
+            currentConfig.channelSnapshots = updatedSnapshots;
+          }
+
+          currentConfig.stats = {
+            ...currentConfig.stats,
+            ...(liveStats.subscribers ? { subscribers: liveStats.subscribers } : {}),
+            ...(liveStats.monthlyViews ? { monthlyViews: liveStats.monthlyViews } : {}),
+            videosCount: liveStats.videosCount ? `${liveStats.videosCount}+` : currentConfig.stats.videosCount,
+            ...(analyticsData ? {
+              uniqueViewers: analyticsData.formattedViews,
+              uniqueViewersSub: "Verified YouTube Studio 30D",
+              ...(analyticsData.watchTimeHours ? { watchTimeHours: analyticsData.watchTimeHours } : {}),
+              ...(analyticsData.avgViewDuration && analyticsData.avgViewDuration !== "0:00" ? { avgViewDuration: analyticsData.avgViewDuration } : {}),
+            } : {}),
+          };
+
+          if (!currentConfig.heroConfig) {
+            currentConfig.heroConfig = {};
+          }
+          if (liveStats.subscribers) currentConfig.heroConfig.subscribersCount = liveStats.subscribers;
+          if (liveStats.monthlyViews) currentConfig.heroConfig.monthlyViewsCount = liveStats.monthlyViews;
+
+          await upsertSiteConfig(currentConfig);
+          updatedStats = currentConfig.stats;
+          updatedHeroConfig = currentConfig.heroConfig;
+        }
+
+        // Sync individual What Performs & Case Studies videos if requested
+        if (syncVideos) {
+          const wpList = await getWhatPerforms();
+          updatedWpList = [...wpList];
+          for (const item of updatedWpList) {
+            const vId = getYoutubeId(item.ytUrl);
+            if (vId) {
+              const vStats = await fetchPublicVideoStats(vId);
+              if (vStats?.views) {
+                item.views = vStats.views;
+                item.clicks = estimateClicksFromViews(vStats.views);
+              }
+              if (vStats?.thumbnail && !item.thumbnail) {
+                item.thumbnail = vStats.thumbnail;
+              }
+              if (vStats?.title && (!item.title || item.title.includes("New Highlight"))) {
+                item.title = vStats.title;
+              }
             }
           }
-          currentConfig.channelSnapshots = combined.filter((s) => s.timestamp >= pruneCutoff).sort((a, b) => a.timestamp - b.timestamp);
-        } else {
-          currentConfig.channelSnapshots = updatedSnapshots;
-        }
+          if (updatedWpList.length > 0) {
+            await syncWhatPerforms(updatedWpList);
+          }
 
-        currentConfig.stats = {
-          ...currentConfig.stats,
-          ...(liveStats.subscribers ? { subscribers: liveStats.subscribers } : {}),
-          ...(liveStats.monthlyViews ? { monthlyViews: liveStats.monthlyViews } : {}),
-          videosCount: liveStats.videosCount ? `${liveStats.videosCount}+` : currentConfig.stats.videosCount,
-          ...(analyticsData ? {
-            uniqueViewers: analyticsData.formattedViews,
-            uniqueViewersSub: "Verified YouTube Studio 30D",
-            ...(analyticsData.watchTimeHours ? { watchTimeHours: analyticsData.watchTimeHours } : {}),
-            ...(analyticsData.avgViewDuration && analyticsData.avgViewDuration !== "0:00" ? { avgViewDuration: analyticsData.avgViewDuration } : {}),
-          } : {}),
-        };
-
-        if (!currentConfig.heroConfig) {
-          currentConfig.heroConfig = {};
-        }
-        if (liveStats.subscribers) currentConfig.heroConfig.subscribersCount = liveStats.subscribers;
-        if (liveStats.monthlyViews) currentConfig.heroConfig.monthlyViewsCount = liveStats.monthlyViews;
-
-        await upsertSiteConfig(currentConfig);
-        updatedStats = currentConfig.stats;
-        updatedHeroConfig = currentConfig.heroConfig;
-      }
-
-      // Sync individual What Performs & Case Studies videos if requested
-      if (syncVideos) {
-        const wpList = await getWhatPerforms();
-        updatedWpList = [...wpList];
-        for (const item of updatedWpList) {
-          const vId = getYoutubeId(item.ytUrl);
-          if (vId) {
-            const vStats = await fetchPublicVideoStats(vId);
-            if (vStats?.views) {
-              item.views = vStats.views;
-              item.clicks = estimateClicksFromViews(vStats.views);
-            }
-            if (vStats?.thumbnail && !item.thumbnail) {
-              item.thumbnail = vStats.thumbnail;
-            }
-            if (vStats?.title && (!item.title || item.title.includes("New Highlight"))) {
-              item.title = vStats.title;
+          const csList = await getSponsorCaseStudies();
+          updatedCsList = [...csList];
+          for (const item of updatedCsList) {
+            const vId = getYoutubeId(item.ytUrl);
+            if (vId && item.thumbnailUrl !== "none") {
+              const vStats = await fetchPublicVideoStats(vId);
+              if (vStats?.thumbnail && (!item.thumbnailUrl || item.thumbnailUrl.includes("maxresdefault"))) {
+                item.thumbnailUrl = vStats.thumbnail;
+              }
             }
           }
-        }
-        if (updatedWpList.length > 0) {
-          await syncWhatPerforms(updatedWpList);
-        }
-
-        const csList = await getSponsorCaseStudies();
-        updatedCsList = [...csList];
-        for (const item of updatedCsList) {
-          const vId = getYoutubeId(item.ytUrl);
-          if (vId && item.thumbnailUrl !== "none") {
-            const vStats = await fetchPublicVideoStats(vId);
-            if (vStats?.thumbnail && (!item.thumbnailUrl || item.thumbnailUrl.includes("maxresdefault"))) {
-              item.thumbnailUrl = vStats.thumbnail;
-            }
+          if (updatedCsList.length > 0) {
+            await syncSponsorCaseStudies(updatedCsList);
           }
-        }
-        if (updatedCsList.length > 0) {
-          await syncSponsorCaseStudies(updatedCsList);
         }
       }
     } catch (dbErr) {
-      console.warn("MySQL sync notice (proceeding with filesystem data store):", dbErr);
+      // Graceful fallback to filesystem storage
     }
 
     // 3. Update site-data.json for full consistency across all environments

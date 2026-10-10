@@ -5,6 +5,18 @@ const nextConfig = {
     cpus: 1,
     workerThreads: false,
   },
+  images: {
+    qualities: [75, 90],
+  },
+  async redirects() {
+    return [
+      {
+        source: "/login",
+        destination: "/admin/login",
+        permanent: false,
+      },
+    ];
+  },
   async headers() {
     return [
       {
