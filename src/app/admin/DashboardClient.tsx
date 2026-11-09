@@ -205,7 +205,7 @@ export default function DashboardClient({ currentUser }: DashboardClientProps) {
           if (data.dbStatus) setDbStatus(data.dbStatus);
         }
 
-        const usersRes = await fetch("/api/admin/users");
+        const usersRes = await fetch("/api/admin/users", { cache: "no-store" });
         if (usersRes.ok) {
           const usersData = await usersRes.json();
           if (usersData.users) setAdminUsers(usersData.users);
@@ -365,17 +365,19 @@ export default function DashboardClient({ currentUser }: DashboardClientProps) {
         body: JSON.stringify(payload),
       });
 
-      if (res.ok) {
+      const resData = await res.json().catch(() => null);
+
+      if (res.ok && resData?.success !== false) {
         setSavedSuccess(true);
         setNotification({
           type: "success",
-          message: "All changes successfully saved and published live to database!",
+          message: resData?.message || "All changes successfully saved and published live to database!",
         });
         setTimeout(() => setSavedSuccess(false), 3000);
       } else {
         setNotification({
           type: "error",
-          message: "Failed to save changes to database. Please check your connection.",
+          message: resData?.message || "Failed to save changes to database. Please check your connection.",
         });
       }
     } catch {
@@ -498,10 +500,17 @@ export default function DashboardClient({ currentUser }: DashboardClientProps) {
         body: JSON.stringify(backupData),
       });
 
-      if (res.ok) {
+      const resData = await res.json().catch(() => null);
+
+      if (res.ok && resData?.success !== false) {
         setNotification({
           type: "success",
-          message: "Backup restored successfully and saved to database!",
+          message: resData?.message || "Backup restored successfully and saved to database!",
+        });
+      } else {
+        setNotification({
+          type: "error",
+          message: resData?.message || "Failed to save restored backup to database.",
         });
       }
     } catch {
@@ -538,15 +547,17 @@ export default function DashboardClient({ currentUser }: DashboardClientProps) {
         body: JSON.stringify(defaultSiteData),
       });
 
-      if (res.ok) {
+      const resData = await res.json().catch(() => null);
+
+      if (res.ok && resData?.success !== false) {
         setNotification({
           type: "success",
-          message: "All sections successfully reset to latest default seed data and saved to database!",
+          message: resData?.message || "All sections successfully reset to latest default seed data and saved to database!",
         });
       } else {
         setNotification({
           type: "error",
-          message: "Failed to save reset data to database.",
+          message: resData?.message || "Failed to save reset data to database.",
         });
       }
     } catch {

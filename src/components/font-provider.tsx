@@ -70,7 +70,7 @@ export default function FontProvider({ children }: { children: React.ReactNode }
   useEffect(() => {
     async function loadSiteFonts() {
       try {
-        const res = await fetch("/api/admin/data");
+        const res = await fetch("/api/admin/data", { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
           if (data.fonts) {

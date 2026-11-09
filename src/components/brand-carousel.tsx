@@ -39,7 +39,7 @@ export default function BrandCarousel({ brands }: BrandCarouselProps) {
       setItems(brands || []);
       return;
     }
-    fetch("/api/admin/data")
+    fetch("/api/admin/data", { cache: "no-store" })
       .then((r) => r.json())
       .then((data) => {
         if (data.brandItems && data.brandItems.length > 0) {

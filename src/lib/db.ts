@@ -133,20 +133,6 @@ export async function initDatabase(): Promise<boolean> {
     const configCount = await k("site_config").count("id as cnt").first();
     if (Number(configCount?.cnt || 0) === 0) {
       await seedSiteDataFromJSON();
-    } else {
-      // Check if what_performs_cards table has outdated placeholder entries (e.g. Revid.AI, Flashloop AI, Marky Agent)
-      try {
-        const currentWp = await k("what_performs_cards").select("id", "title");
-        const hasAllWhatPerforms = defaultSiteData.whatPerforms.every((fileW: any) =>
-          currentWp.some((dbW: any) => dbW.id === fileW.id && dbW.title === fileW.title)
-        ) && currentWp.length === defaultSiteData.whatPerforms.length;
-
-        if (!hasAllWhatPerforms) {
-          await syncWhatPerforms(defaultSiteData.whatPerforms);
-        }
-      } catch (err) {
-        console.warn("Could not check/sync what_performs_cards:", err);
-      }
     }
 
     isInitialized = true;

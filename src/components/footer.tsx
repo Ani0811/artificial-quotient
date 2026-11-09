@@ -21,7 +21,7 @@ export default function Footer({ subscribersCount, isAdmin = false }: FooterProp
     }
 
     let isMounted = true;
-    fetch("/api/admin/data")
+    fetch("/api/admin/data", { cache: "no-store" })
       .then((res) => res.json())
       .then((data) => {
         if (!isMounted) return;
@@ -30,15 +30,15 @@ export default function Footer({ subscribersCount, isAdmin = false }: FooterProp
           setSubs(liveSubs);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
 
     return () => {
       isMounted = false;
     };
   }, [subscribersCount]);
 
-  const formattedSubText = subs.toLowerCase().includes("subscriber") 
-    ? subs 
+  const formattedSubText = subs.toLowerCase().includes("subscriber")
+    ? subs
     : `${subs} Subscribers`;
 
   return (
@@ -49,15 +49,15 @@ export default function Footer({ subscribersCount, isAdmin = false }: FooterProp
 
       <div className="max-w-6xl mx-auto px-4 pt-16 pb-12 relative z-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 pb-12 border-b border-brand-border dark:border-zinc-800/80">
-          
+
           {/* Brand & Mission Column (Spans full on mobile, 2 cols on lg) */}
           <div className="sm:col-span-2 lg:col-span-2 flex flex-col gap-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl overflow-hidden border border-emerald-500/30 shadow-md flex items-center justify-center bg-brand-dark dark:bg-zinc-800">
-                <LogoImage 
-                  alt="Artificial Quotient Logo" 
-                  width={40} 
-                  height={40} 
+                <LogoImage
+                  alt="Artificial Quotient Logo"
+                  width={40}
+                  height={40}
                   className="w-full h-full object-contain p-0.5"
                 />
               </div>
@@ -79,7 +79,7 @@ export default function Footer({ subscribersCount, isAdmin = false }: FooterProp
                 aria-label="YouTube Channel"
               >
                 <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
                 </svg>
               </a>
               <a
@@ -107,36 +107,36 @@ export default function Footer({ subscribersCount, isAdmin = false }: FooterProp
             <h3 className="font-heading font-bold text-sm text-brand-text dark:text-white uppercase tracking-wider">
               Explore
             </h3>
-            <Link 
-              href="/#brands" 
+            <Link
+              href="/#brands"
               onClick={(e) => handleSmoothScroll(e, "brands")}
               className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors"
             >
               Sponsor Brands
             </Link>
-            <Link 
-              href="/#stats" 
+            <Link
+              href="/#stats"
               onClick={(e) => handleSmoothScroll(e, "stats")}
               className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors"
             >
               Channel Stats
             </Link>
-            <Link 
-              href="/#case-studies" 
+            <Link
+              href="/#case-studies"
               onClick={(e) => handleSmoothScroll(e, "case-studies")}
               className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors"
             >
               Case Studies
             </Link>
-            <Link 
-              href="/#pricing" 
+            <Link
+              href="/#pricing"
               onClick={(e) => handleSmoothScroll(e, "pricing")}
               className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors"
             >
               Pricing
             </Link>
-            <Link 
-              href="/contact" 
+            <Link
+              href="/contact"
               className="text-sm text-brand-muted dark:text-zinc-400 hover:text-emerald-500 transition-colors"
             >
               Contact Us

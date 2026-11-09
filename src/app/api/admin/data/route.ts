@@ -121,7 +121,7 @@ export async function GET() {
       let tools = await getToolItems();
       let brandItems = await getBrandItems();
 
-      // Auto-sync missing/outdated seed data into MySQL database
+      // Only seed database tables if they are empty
       try {
         let fileData: any = defaultSiteData;
         try {
@@ -131,75 +131,27 @@ export async function GET() {
           // Use bundled defaultSiteData
         }
 
-        if (fileData.sponsorResults && Array.isArray(fileData.sponsorResults)) {
-          const hasAllCases = fileData.sponsorResults.every((fileCs: any) =>
-            sponsorResults.some((dbCs: any) => 
-              dbCs.id === fileCs.id && 
-              dbCs.partnerName === fileCs.partnerName && 
-              (dbCs.logoUrl || "") === (fileCs.logoUrl || "") &&
-              (dbCs.thumbnailUrl || "") === (fileCs.thumbnailUrl || "") &&
-              (dbCs.ytUrl || "") === (fileCs.ytUrl || "") &&
-              Boolean(dbCs.hidden) === Boolean(fileCs.hidden)
-            )
-          ) && sponsorResults.length === fileData.sponsorResults.length;
-
-          if (!hasAllCases) {
-            await syncSponsorCaseStudies(fileData.sponsorResults);
-            sponsorResults = await getSponsorCaseStudies();
-          }
+        if (sponsorResults.length === 0 && fileData.sponsorResults && Array.isArray(fileData.sponsorResults) && fileData.sponsorResults.length > 0) {
+          await syncSponsorCaseStudies(fileData.sponsorResults);
+          sponsorResults = await getSponsorCaseStudies();
         }
 
-        if (fileData.brandItems && Array.isArray(fileData.brandItems)) {
-          const hasAllBrands = fileData.brandItems.every((fileB: any) =>
-            brandItems.some((dbB: any) => 
-              dbB.id === fileB.id && 
-              dbB.name === fileB.name && 
-              (dbB.logoUrl || "") === (fileB.logoUrl || "") &&
-              (dbB.category || "") === (fileB.category || "") &&
-              (dbB.tagline || "") === (fileB.tagline || "") &&
-              Boolean(dbB.hidden) === Boolean(fileB.hidden)
-            )
-          ) && brandItems.length === fileData.brandItems.length;
-
-          if (!hasAllBrands) {
-            await syncBrandItems(fileData.brandItems);
-            brandItems = await getBrandItems();
-          }
+        if (brandItems.length === 0 && fileData.brandItems && Array.isArray(fileData.brandItems) && fileData.brandItems.length > 0) {
+          await syncBrandItems(fileData.brandItems);
+          brandItems = await getBrandItems();
         }
 
-        if (fileData.whatPerforms && Array.isArray(fileData.whatPerforms)) {
-          const hasOutdatedData = whatPerforms.some(
-            (dbW: any) => dbW.title === "Revid.AI" || dbW.title === "Flashloop AI" || dbW.title === "Marky Agent"
-          );
-          const hasAllWhatPerforms = fileData.whatPerforms.every((fileW: any) =>
-            whatPerforms.some((dbW: any) => 
-              dbW.id === fileW.id && 
-              dbW.title === fileW.title && 
-              dbW.views === fileW.views &&
-              (dbW.thumbnail || "") === (fileW.thumbnail || "") &&
-              (dbW.ytUrl || "") === (fileW.ytUrl || "") &&
-              Boolean(dbW.hidden) === Boolean(fileW.hidden)
-            )
-          ) && whatPerforms.length === fileData.whatPerforms.length;
-
-          if (hasOutdatedData || !hasAllWhatPerforms) {
-            await syncWhatPerforms(fileData.whatPerforms);
-            whatPerforms = await getWhatPerforms();
-          }
+        if (whatPerforms.length === 0 && fileData.whatPerforms && Array.isArray(fileData.whatPerforms) && fileData.whatPerforms.length > 0) {
+          await syncWhatPerforms(fileData.whatPerforms);
+          whatPerforms = await getWhatPerforms();
         }
 
-        if (fileData.tools && Array.isArray(fileData.tools)) {
-          const hasAllTools = fileData.tools.every((fileT: any) =>
-            tools.some((dbT: any) => dbT.id === fileT.id && dbT.name === fileT.name)
-          ) && tools.length === fileData.tools.length;
-
-          if (!hasAllTools) {
-            await syncToolItems(fileData.tools);
-            tools = await getToolItems();
-          }
+        if (tools.length === 0 && fileData.tools && Array.isArray(fileData.tools) && fileData.tools.length > 0) {
+          await syncToolItems(fileData.tools);
+          tools = await getToolItems();
         }
       } catch (e) {
-        console.warn("Auto-sync warning in GET /api/admin/data:", e);
+        console.warn("Seeding check warning in GET /api/admin/data:", e);
       }
 
       return NextResponse.json(
@@ -290,37 +242,73 @@ export async function POST(request: Request) {
 
   try {
     const data = await request.json();
-    await initDatabase();
+    const isDbReady = await initDatabase();
 
-    // Delegate database operations to specialized schema modules
-    await upsertSiteConfig(data);
+    let dbUpdated = false;
+    let dbErrorMessage = "";
 
-    if (data.sponsorResults && Array.isArray(data.sponsorResults)) {
-      await syncSponsorCaseStudies(data.sponsorResults);
+    if (isDbReady) {
+      try {
+        // Delegate database operations to specialized schema modules
+        await upsertSiteConfig(data);
+
+        if (data.sponsorResults && Array.isArray(data.sponsorResults)) {
+          await syncSponsorCaseStudies(data.sponsorResults);
+        }
+
+        if (data.whatPerforms && Array.isArray(data.whatPerforms)) {
+          await syncWhatPerforms(data.whatPerforms);
+        }
+
+        if (data.tools && Array.isArray(data.tools)) {
+          await syncToolItems(data.tools);
+        }
+
+        if (data.brandItems && Array.isArray(data.brandItems)) {
+          await syncBrandItems(data.brandItems);
+        }
+
+        dbUpdated = true;
+      } catch (dbErr: any) {
+        console.error("Database operation error in POST /api/admin/data:", dbErr);
+        dbErrorMessage = dbErr.message || "Database write error";
+      }
     }
 
-    if (data.whatPerforms && Array.isArray(data.whatPerforms)) {
-      await syncWhatPerforms(data.whatPerforms);
+    // Always write JSON file backup snapshot so fallback store & local files stay in sync
+    let fileUpdated = false;
+    try {
+      const formattedData = JSON.stringify(data, null, 2);
+      await fs.writeFile(filePath, formattedData, "utf8");
+
+      await fs.mkdir(backupDir, { recursive: true });
+      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+      const snapshotPath = path.join(backupDir, `site-data-${timestamp}.json`);
+      await fs.writeFile(snapshotPath, formattedData, "utf8");
+      fileUpdated = true;
+    } catch (fsErr: any) {
+      console.warn("Filesystem snapshot write warning in POST /api/admin/data:", fsErr);
     }
 
-    if (data.tools && Array.isArray(data.tools)) {
-      await syncToolItems(data.tools);
+    if (!dbUpdated && !fileUpdated) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: dbErrorMessage ? `Failed to save changes: ${dbErrorMessage}` : "Failed to persist changes to database or local storage." 
+        }, 
+        { status: 500 }
+      );
     }
 
-    if (data.brandItems && Array.isArray(data.brandItems)) {
-      await syncBrandItems(data.brandItems);
-    }
+    const message = dbUpdated 
+      ? "All changes successfully saved and published live to database!"
+      : "Saved changes to local data store (Database offline).";
 
-    // Also write JSON file backup snapshot
-    const formattedData = JSON.stringify(data, null, 2);
-    await fs.writeFile(filePath, formattedData, "utf8");
-
-    await fs.mkdir(backupDir, { recursive: true });
-    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-    const snapshotPath = path.join(backupDir, `site-data-${timestamp}.json`);
-    await fs.writeFile(snapshotPath, formattedData, "utf8");
-
-    return NextResponse.json({ success: true, message: "Saved to MySQL (AQ-Dashboard) via Knex Schema Modules!" });
+    return NextResponse.json({ 
+      success: true, 
+      message, 
+      dbStatus: dbUpdated ? "Connected to MySQL (AQ-Dashboard)" : "Saved to Local JSON Storage" 
+    });
   } catch (err: any) {
     console.error("POST site data error:", err);
     return NextResponse.json({ success: false, message: err.message || "Failed to update site data" }, { status: 500 });
