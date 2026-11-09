@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { initDatabase } from "@/lib/db";
-import { 
-  getSiteConfig, 
-  upsertSiteConfig, 
-  getSponsorCaseStudies, 
-  syncSponsorCaseStudies, 
-  getWhatPerforms, 
-  syncWhatPerforms, 
-  getToolItems, 
+import {
+  getSiteConfig,
+  upsertSiteConfig,
+  getSponsorCaseStudies,
+  syncSponsorCaseStudies,
+  getWhatPerforms,
+  syncWhatPerforms,
+  getToolItems,
   syncToolItems,
   getBrandItems,
   syncBrandItems,
@@ -83,7 +83,7 @@ export async function GET() {
     syncYouTubeData({ force: false }).catch((ytErr) => {
       console.warn("Background YouTube auto-sync warning in GET /api/admin/data:", ytErr);
     });
-  } catch {}
+  } catch { }
 
   try {
     const isDbReady = await initDatabase();
@@ -93,7 +93,7 @@ export async function GET() {
       try {
         const fileContents = await fs.readFile(filePath, "utf8");
         fallbackData = JSON.parse(fileContents);
-      } catch {}
+      } catch { }
 
       return NextResponse.json(
         {
@@ -186,7 +186,7 @@ export async function GET() {
     try {
       const fileContents = await fs.readFile(filePath, "utf8");
       fallbackData = JSON.parse(fileContents);
-    } catch {}
+    } catch { }
 
     return NextResponse.json(
       {
@@ -211,7 +211,7 @@ export async function GET() {
     try {
       const fileContents = await fs.readFile(filePath, "utf8");
       fallbackData = JSON.parse(fileContents);
-    } catch {}
+    } catch { }
 
     return NextResponse.json(
       {
@@ -232,85 +232,86 @@ export async function GET() {
 import { verifyAdminSession } from "@/lib/admin-auth";
 
 export async function POST(request: Request) {
-  const auth = await verifyAdminSession(undefined, false);
-  if (!auth.isAuthenticated || auth.errorResponse) {
-    return NextResponse.json(
-      { success: false, message: auth.errorResponse?.message || "Unauthorized" },
-      { status: auth.errorResponse?.status || 401 }
-    );
-  }
-
   try {
-    const data = await request.json();
-    const isDbReady = await initDatabase();
-
-    let dbUpdated = false;
-    let dbErrorMessage = "";
-
-    if (isDbReady) {
-      try {
-        // Delegate database operations to specialized schema modules
-        await upsertSiteConfig(data);
-
-        if (data.sponsorResults && Array.isArray(data.sponsorResults)) {
-          await syncSponsorCaseStudies(data.sponsorResults);
-        }
-
-        if (data.whatPerforms && Array.isArray(data.whatPerforms)) {
-          await syncWhatPerforms(data.whatPerforms);
-        }
-
-        if (data.tools && Array.isArray(data.tools)) {
-          await syncToolItems(data.tools);
-        }
-
-        if (data.brandItems && Array.isArray(data.brandItems)) {
-          await syncBrandItems(data.brandItems);
-        }
-
-        dbUpdated = true;
-      } catch (dbErr: any) {
-        console.error("Database operation error in POST /api/admin/data:", dbErr);
-        dbErrorMessage = dbErr.message || "Database write error";
-      }
-    }
-
-    // Always write JSON file backup snapshot so fallback store & local files stay in sync
-    let fileUpdated = false;
-    try {
-      const formattedData = JSON.stringify(data, null, 2);
-      await fs.writeFile(filePath, formattedData, "utf8");
-
-      await fs.mkdir(backupDir, { recursive: true });
-      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-      const snapshotPath = path.join(backupDir, `site-data-${timestamp}.json`);
-      await fs.writeFile(snapshotPath, formattedData, "utf8");
-      fileUpdated = true;
-    } catch (fsErr: any) {
-      console.warn("Filesystem snapshot write warning in POST /api/admin/data:", fsErr);
-    }
-
-    if (!dbUpdated && !fileUpdated) {
+    const auth = await verifyAdminSession(undefined, false);
+    if (!auth.isAuthenticated || auth.errorResponse) {
       return NextResponse.json(
-        { 
-          success: false, 
-          message: dbErrorMessage ? `Failed to save changes: ${dbErrorMessage}` : "Failed to persist changes to database or local storage." 
-        }, 
-        { status: 500 }
+        { success: false, message: auth.errorResponse?.message || "Unauthorized: Admin session required." },
+        { status: auth.errorResponse?.status || 401 }
       );
     }
 
-    const message = dbUpdated 
-      ? "All changes successfully saved and published live to database!"
-      : "Saved changes to local data store (Database offline).";
+      const data = await request.json();
+      const isDbReady = await initDatabase();
 
-    return NextResponse.json({ 
-      success: true, 
-      message, 
-      dbStatus: dbUpdated ? "Connected to MySQL (AQ-Dashboard)" : "Saved to Local JSON Storage" 
-    });
-  } catch (err: any) {
-    console.error("POST site data error:", err);
-    return NextResponse.json({ success: false, message: err.message || "Failed to update site data" }, { status: 500 });
+      let dbUpdated = false;
+      let dbErrorMessage = "";
+
+      if (isDbReady) {
+        try {
+          // Delegate database operations to specialized schema modules
+          await upsertSiteConfig(data);
+
+          if (data.sponsorResults && Array.isArray(data.sponsorResults)) {
+            await syncSponsorCaseStudies(data.sponsorResults);
+          }
+
+          if (data.whatPerforms && Array.isArray(data.whatPerforms)) {
+            await syncWhatPerforms(data.whatPerforms);
+          }
+
+          if (data.tools && Array.isArray(data.tools)) {
+            await syncToolItems(data.tools);
+          }
+
+          if (data.brandItems && Array.isArray(data.brandItems)) {
+            await syncBrandItems(data.brandItems);
+          }
+
+          dbUpdated = true;
+        } catch (dbErr: any) {
+          console.error("Database operation error in POST /api/admin/data:", dbErr);
+          dbErrorMessage = dbErr.message || "Database write error";
+        }
+      }
+
+      // Always write JSON file backup snapshot so fallback store & local files stay in sync
+      let fileUpdated = false;
+      try {
+        const formattedData = JSON.stringify(data, null, 2);
+        await fs.mkdir(path.dirname(filePath), { recursive: true });
+        await fs.writeFile(filePath, formattedData, "utf8");
+
+        await fs.mkdir(backupDir, { recursive: true });
+        const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+        const snapshotPath = path.join(backupDir, `site-data-${timestamp}.json`);
+        await fs.writeFile(snapshotPath, formattedData, "utf8");
+        fileUpdated = true;
+      } catch (fsErr: any) {
+        console.warn("Filesystem snapshot write warning in POST /api/admin/data:", fsErr);
+      }
+
+      if (!dbUpdated && !fileUpdated) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: dbErrorMessage ? `Failed to save changes: ${dbErrorMessage}` : "Failed to persist changes to database or local storage."
+          },
+          { status: 500 }
+        );
+      }
+
+      const message = dbUpdated
+        ? "All changes successfully saved and published live to database!"
+        : "Saved changes to local data store (Database offline).";
+
+      return NextResponse.json({
+        success: true,
+        message,
+        dbStatus: dbUpdated ? "Connected to MySQL (AQ-Dashboard)" : "Saved to Local JSON Storage"
+      });
+    } catch (err: any) {
+      console.error("POST site data error:", err);
+      return NextResponse.json({ success: false, message: err.message || "Failed to update site data" }, { status: 500 });
+    }
   }
-}

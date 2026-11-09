@@ -4,8 +4,8 @@ import fs from "fs/promises";
 import path from "path";
 
 // MySQL Connection Pool Configuration
-const rawHost = process.env.MYSQL_HOST || "127.0.0.1";
-const host = rawHost === "localhost" ? "127.0.0.1" : rawHost;
+const rawHost = process.env.MYSQL_HOST || "localhost";
+const host = rawHost;
 
 const poolConfig = {
   host: host,
@@ -30,8 +30,8 @@ export function getKnex(): Knex {
         database: poolConfig.database,
         charset: "utf8mb4",
       },
-      pool: { 
-        min: 0, 
+      pool: {
+        min: 0,
         max: 5,
         acquireTimeoutMillis: 3000,
         createTimeoutMillis: 3000,
@@ -67,19 +67,19 @@ export async function ensureDatabaseExists(): Promise<boolean> {
 
     if (!rootConn) return false;
 
-    await rootConn.query(`CREATE DATABASE IF NOT EXISTS \`${poolConfig.database}\``).catch(() => {});
-    await rootConn.end().catch(() => {});
+    await rootConn.query(`CREATE DATABASE IF NOT EXISTS \`${poolConfig.database}\``).catch(() => { });
+    await rootConn.end().catch(() => { });
     return true;
   } catch {
     return false;
   }
 }
 
-import { 
-  createAdminUsersTable, 
-  createSiteConfigTable, 
-  createSponsorCaseStudiesTable, 
-  createWhatPerformsTable, 
+import {
+  createAdminUsersTable,
+  createSiteConfigTable,
+  createSponsorCaseStudiesTable,
+  createWhatPerformsTable,
   createToolItemsTable,
   createBrandItemsTable,
   createCountriesTable,
@@ -107,7 +107,17 @@ export async function initDatabase(): Promise<boolean> {
   }
   lastDbCheckTime = now;
 
-  const canConnect = await ensureDatabaseExists();
+  // 1. First test if Knex can query the target database directly (works on shared hosting/cPanel where DB already exists)
+  let canConnect = false;
+  try {
+    const k = getKnex();
+    await k.raw("SELECT 1");
+    canConnect = true;
+  } catch {
+    // 2. If direct connection fails, try ensuring the database exists (local dev setup)
+    canConnect = await ensureDatabaseExists();
+  }
+
   if (!canConnect) {
     isDbReachable = false;
     return false;

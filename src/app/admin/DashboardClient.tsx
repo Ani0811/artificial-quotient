@@ -375,15 +375,16 @@ export default function DashboardClient({ currentUser }: DashboardClientProps) {
         });
         setTimeout(() => setSavedSuccess(false), 3000);
       } else {
+        const errorMsg = resData?.message || (res.status === 401 ? "Session expired. Please log in again." : `Server returned error (${res.status}). Please check server logs.`);
         setNotification({
           type: "error",
-          message: resData?.message || "Failed to save changes to database. Please check your connection.",
+          message: errorMsg,
         });
       }
-    } catch {
+    } catch (err: any) {
       setNotification({
         type: "error",
-        message: "Network error occurred while saving changes.",
+        message: err?.message ? `Network error: ${err.message}` : "Network error occurred while saving changes.",
       });
     } finally {
       setIsSaving(false);
