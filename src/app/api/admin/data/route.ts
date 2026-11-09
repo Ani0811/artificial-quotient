@@ -241,77 +241,77 @@ export async function POST(request: Request) {
       );
     }
 
-      const data = await request.json();
-      const isDbReady = await initDatabase();
+    const data = await request.json();
+    const isDbReady = await initDatabase();
 
-      let dbUpdated = false;
-      let dbErrorMessage = "";
+    let dbUpdated = false;
+    let dbErrorMessage = "";
 
-      if (isDbReady) {
-        try {
-          // Delegate database operations to specialized schema modules
-          await upsertSiteConfig(data);
-
-          if (data.sponsorResults && Array.isArray(data.sponsorResults)) {
-            await syncSponsorCaseStudies(data.sponsorResults);
-          }
-
-          if (data.whatPerforms && Array.isArray(data.whatPerforms)) {
-            await syncWhatPerforms(data.whatPerforms);
-          }
-
-          if (data.tools && Array.isArray(data.tools)) {
-            await syncToolItems(data.tools);
-          }
-
-          if (data.brandItems && Array.isArray(data.brandItems)) {
-            await syncBrandItems(data.brandItems);
-          }
-
-          dbUpdated = true;
-        } catch (dbErr: any) {
-          console.error("Database operation error in POST /api/admin/data:", dbErr);
-          dbErrorMessage = dbErr.message || "Database write error";
-        }
-      }
-
-      // Always write JSON file backup snapshot so fallback store & local files stay in sync
-      let fileUpdated = false;
+    if (isDbReady) {
       try {
-        const formattedData = JSON.stringify(data, null, 2);
-        await fs.mkdir(path.dirname(filePath), { recursive: true });
-        await fs.writeFile(filePath, formattedData, "utf8");
+        // Delegate database operations to specialized schema modules
+        await upsertSiteConfig(data);
 
-        await fs.mkdir(backupDir, { recursive: true });
-        const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-        const snapshotPath = path.join(backupDir, `site-data-${timestamp}.json`);
-        await fs.writeFile(snapshotPath, formattedData, "utf8");
-        fileUpdated = true;
-      } catch (fsErr: any) {
-        console.warn("Filesystem snapshot write warning in POST /api/admin/data:", fsErr);
+        if (data.sponsorResults && Array.isArray(data.sponsorResults)) {
+          await syncSponsorCaseStudies(data.sponsorResults);
+        }
+
+        if (data.whatPerforms && Array.isArray(data.whatPerforms)) {
+          await syncWhatPerforms(data.whatPerforms);
+        }
+
+        if (data.tools && Array.isArray(data.tools)) {
+          await syncToolItems(data.tools);
+        }
+
+        if (data.brandItems && Array.isArray(data.brandItems)) {
+          await syncBrandItems(data.brandItems);
+        }
+
+        dbUpdated = true;
+      } catch (dbErr: any) {
+        console.error("Database operation error in POST /api/admin/data:", dbErr);
+        dbErrorMessage = dbErr.message || "Database write error";
       }
-
-      if (!dbUpdated && !fileUpdated) {
-        return NextResponse.json(
-          {
-            success: false,
-            message: dbErrorMessage ? `Failed to save changes: ${dbErrorMessage}` : "Failed to persist changes to database or local storage."
-          },
-          { status: 500 }
-        );
-      }
-
-      const message = dbUpdated
-        ? "All changes successfully saved and published live to database!"
-        : "Saved changes to local data store (Database offline).";
-
-      return NextResponse.json({
-        success: true,
-        message,
-        dbStatus: dbUpdated ? "Connected to MySQL (AQ-Dashboard)" : "Saved to Local JSON Storage"
-      });
-    } catch (err: any) {
-      console.error("POST site data error:", err);
-      return NextResponse.json({ success: false, message: err.message || "Failed to update site data" }, { status: 500 });
     }
+
+    // Always write JSON file backup snapshot so fallback store & local files stay in sync
+    let fileUpdated = false;
+    try {
+      const formattedData = JSON.stringify(data, null, 2);
+      await fs.mkdir(path.dirname(filePath), { recursive: true });
+      await fs.writeFile(filePath, formattedData, "utf8");
+
+      await fs.mkdir(backupDir, { recursive: true });
+      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+      const snapshotPath = path.join(backupDir, `site-data-${timestamp}.json`);
+      await fs.writeFile(snapshotPath, formattedData, "utf8");
+      fileUpdated = true;
+    } catch (fsErr: any) {
+      console.warn("Filesystem snapshot write warning in POST /api/admin/data:", fsErr);
+    }
+
+    if (!dbUpdated && !fileUpdated) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: dbErrorMessage ? `Failed to save changes: ${dbErrorMessage}` : "Failed to persist changes to database or local storage."
+        },
+        { status: 500 }
+      );
+    }
+
+    const message = dbUpdated
+      ? "All changes successfully saved and published live to database!"
+      : "Saved changes to local data store (Database offline).";
+
+    return NextResponse.json({
+      success: true,
+      message,
+      dbStatus: dbUpdated ? "Connected to MySQL (AQ-Dashboard)" : "Saved to Local JSON Storage"
+    });
+  } catch (err: any) {
+    console.error("POST site data error:", err);
+    return NextResponse.json({ success: false, message: err.message || "Failed to update site data" }, { status: 500 });
   }
+}

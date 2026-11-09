@@ -4,11 +4,12 @@ import fs from "fs/promises";
 import path from "path";
 
 // MySQL Connection Pool Configuration
-const rawHost = process.env.MYSQL_HOST || "localhost";
-const host = rawHost;
+const host = (!process.env.MYSQL_HOST || process.env.MYSQL_HOST === "localhost")
+  ? "127.0.0.1"
+  : process.env.MYSQL_HOST;
 
 const poolConfig = {
-  host: host,
+  host,
   port: Number(process.env.MYSQL_PORT) || 3306,
   user: process.env.MYSQL_USER || "root",
   password: process.env.MYSQL_PASSWORD || "",
@@ -29,6 +30,7 @@ export function getKnex(): Knex {
         password: poolConfig.password,
         database: poolConfig.database,
         charset: "utf8mb4",
+        connectTimeout: 3000,
       },
       pool: {
         min: 0,
@@ -38,6 +40,18 @@ export function getKnex(): Knex {
         idleTimeoutMillis: 10000,
       },
     });
+
+    // Prevent unhandled pool errors from crashing Phusion Passenger/Node.js process
+    try {
+      const client = (db as any)?.client;
+      if (client?.pool && typeof client.pool.on === "function") {
+        client.pool.on("error", (err: any) => {
+          console.warn("Knex pool connection warning (handled):", err?.message || err);
+        });
+      }
+    } catch {
+      // Safe guard
+    }
   }
   return db;
 }
@@ -107,15 +121,13 @@ export async function initDatabase(): Promise<boolean> {
   }
   lastDbCheckTime = now;
 
-  // 1. First test if Knex can query the target database directly (works on shared hosting/cPanel where DB already exists)
   let canConnect = false;
   try {
     const k = getKnex();
     await k.raw("SELECT 1");
     canConnect = true;
   } catch {
-    // 2. If direct connection fails, try ensuring the database exists (local dev setup)
-    canConnect = await ensureDatabaseExists();
+    canConnect = await ensureDatabaseExists().catch(() => false);
   }
 
   if (!canConnect) {

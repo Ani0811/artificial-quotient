@@ -29,13 +29,17 @@ app.prepare()
 
       // Background periodic YouTube stats auto-refresh
       const triggerAutoSync = () => {
+        const numericPort = Number(port);
+        if (!numericPort || isNaN(numericPort) || numericPort <= 0) return;
         const http = require("http");
-        const req = http.get(`http://127.0.0.1:${port}/api/admin/data`, (res) => {
-          res.resume();
-        });
-        req.on("error", (e) => {
+        try {
+          const req = http.get(`http://127.0.0.1:${numericPort}/api/admin/data`, (res) => {
+            res.resume();
+          });
+          req.on("error", () => {});
+        } catch {
           // Non-critical background ping
-        });
+        }
       };
 
       // Trigger warm-up sync 5 seconds after server start
