@@ -1,26 +1,10 @@
 import type { Metadata } from "next";
-import { Inter, Outfit, Caveat } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { ThemeProvider } from "@/components/theme-provider";
 import GoogleAnalytics from "@/components/analytics/google-analytics";
 import StructuredData from "@/components/seo/structured-data";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  variable: "--font-outfit",
-});
-
-const caveat = Caveat({
-  subsets: ["latin"],
-  variable: "--font-caveat",
-});
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://artificial-quotient.com";
 const gtmId = process.env.NEXT_PUBLIC_GTM_ID;
@@ -131,11 +115,14 @@ export default async function RootLayout({
           />
         )}
         {/* End Google Tag Manager */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
         <link rel="icon" href="/logo/logo-removebg-preview.png?v=5" type="image/png" sizes="any" />
         <link rel="shortcut icon" href="/logo/logo-removebg-preview.png?v=5" type="image/png" />
         <link rel="apple-touch-icon" href="/logo/logo-removebg-preview.png?v=5" />
       </head>
-      <body suppressHydrationWarning className={`${inter.variable} ${outfit.variable} ${caveat.variable} antialiased bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-emerald-50 font-body flex flex-col min-h-screen transition-colors duration-200 relative`}>
+      <body suppressHydrationWarning className={`antialiased bg-brand-bg dark:bg-[#061612] text-brand-text dark:text-emerald-50 font-body flex flex-col min-h-screen transition-colors duration-200 relative`}>
         {/* Google Tag Manager (noscript) */}
         {gtmId && (
           <noscript>

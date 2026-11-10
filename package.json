@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node -e \"const fs = require('fs'); ['api', 'admin', 'admin/login', 'admin/data', 'case-studies'].forEach(d => { fs.mkdirSync('.next/server/app/' + d, { recursive: true }); fs.mkdirSync('.next/types/app/' + d, { recursive: true }); });\"",
     "build": "npx cross-env NEXT_PRIVATE_WORKERS=1 next build --webpack",
     "start": "next start",
     "lint": "next lint",
